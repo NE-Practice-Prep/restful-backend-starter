@@ -1,0 +1,9 @@
+node_modules/
+.env
+dist/
+.mcp.json
+.codex/config.toml
+.cursor/mcp.json
+opencode.json
+.vscode/mcp.json
+src/generated
