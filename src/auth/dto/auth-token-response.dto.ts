@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { AuthenticatedUserDto } from "./authenticated-user.dto";
+import { CurrentUserResponseDto } from "../../common/dto/public-user.dto";
 
 export class AuthTokenResponseDto {
   @ApiProperty({
@@ -10,6 +10,12 @@ export class AuthTokenResponseDto {
   })
   accessToken!: string;
 
-  @ApiProperty({ type: () => AuthenticatedUserDto })
-  user!: AuthenticatedUserDto;
+  @ApiProperty({ type: Number, example: 3600 })
+  expiresIn!: number;
+
+  @ApiProperty({ type: () => CurrentUserResponseDto })
+  user!: CurrentUserResponseDto;
+
+  @ApiProperty({ type: Boolean, example: true })
+  emailVerified!: boolean;
 }

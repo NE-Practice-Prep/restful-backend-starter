@@ -1,1 +1,1 @@
-export { Role } from "../../generated/prisma/enums";
+export { UserRole as Role } from "../../generated/prisma/enums";

@@ -1,29 +1,38 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsOptional, IsString } from "class-validator";
-import { IsArray, IsEnum } from "class-validator";
+import { IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
 
 import { Role } from "../../common/enums/role.enum";
-import { ROLE_VALUES } from "../../common/enums/role.swagger";
+import { UserStatus } from "../../common/enums/user-status.enum";
+import { ROLE_VALUES, STATUS_VALUES } from "../../common/enums/role.swagger";
 
 export class UpdateUserDto {
+  @ApiPropertyOptional({ type: String, example: "Jane Cooper" })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
   @ApiPropertyOptional({ type: String, example: "updated@example.com" })
   @IsOptional()
   @IsEmail()
   email?: string;
 
-  @ApiPropertyOptional({ type: String, example: "Jane Doe", nullable: true })
+  @ApiPropertyOptional({ enum: ROLE_VALUES, example: "editor" })
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
+
+  @ApiPropertyOptional({ enum: STATUS_VALUES, example: "active" })
+  @IsOptional()
+  @IsEnum(UserStatus)
+  status?: UserStatus;
+
+  @ApiPropertyOptional({ type: String, example: "+1 (415) 555-0100" })
   @IsOptional()
   @IsString()
-  name?: string | null;
+  phone?: string;
 
-  @ApiPropertyOptional({ enum: ROLE_VALUES, isArray: true, example: ["USER", "MODERATOR"] })
+  @ApiPropertyOptional({ type: String, example: "San Francisco, US" })
   @IsOptional()
-  @IsArray()
-  @IsEnum(Role, { each: true })
-  roles?: Role[];
-
-  @ApiPropertyOptional({ type: Boolean, example: true })
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+  @IsString()
+  location?: string;
 }

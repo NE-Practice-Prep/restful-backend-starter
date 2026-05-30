@@ -1,18 +1,25 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
-  Put,
+  Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from "multer";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -31,142 +38,127 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import type { AuthenticatedUser } from "../auth/types/authenticated-user.type";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { UpdateUserRolesDto } from "./dto/update-user-roles.dto";
 import { UpdateMeDto } from "./dto/update-me.dto";
-import { PublicUserDto } from "../common/dto/public-user.dto";
+import { ChangePasswordDto } from "../auth/dto/change-password.dto";
+import { PublicUserDto, CurrentUserResponseDto } from "../common/dto/public-user.dto";
+import { ListUsersQueryDto, parseListUsersQuery } from "./dto/list-users-query.dto";
+import { OkResponseDto } from "../common/dto/ok-response.dto";
 
 @ApiTags("users")
 @Controller("users")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(@Inject(UsersService) private readonly usersService: UsersService) {}
 
-  @ApiOperation({
-    summary: "Get current user profile",
-    description: "Returns the authenticated user's full profile from the database.",
-  })
+  @ApiOperation({ summary: "Get current user profile" })
   @ApiBearerAuth()
-  @ApiOkResponse({ type: PublicUserDto })
+  @ApiOkResponse({ type: CurrentUserResponseDto })
   @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
   @UseGuards(JwtAuthGuard)
   @Get("me")
   me(@CurrentUser() user: AuthenticatedUser) {
-    return this.usersService.findByIdOrThrow(user.sub);
+    return this.usersService.getCurrentUser(user.sub);
   }
 
-  @ApiOperation({
-    summary: "Update current user profile",
-    description: "Updates profile fields for the authenticated user. Only name can be changed here.",
-  })
+  @ApiOperation({ summary: "Update current user profile" })
   @ApiBearerAuth()
   @ApiBody({ type: UpdateMeDto })
-  @ApiOkResponse({ type: PublicUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
+  @ApiOkResponse({ type: CurrentUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Patch("me")
   updateMe(@CurrentUser() user: AuthenticatedUser, @Body() dto: UpdateMeDto) {
     return this.usersService.updateMe(user.sub, dto);
   }
 
-  @ApiOperation({
-    summary: "List users",
-    description: "Returns up to 20 users ordered by most recently created. Requires ADMIN role.",
-  })
+  @ApiOperation({ summary: "Change current user password" })
   @ApiBearerAuth()
-  @ApiOkResponse({ type: PublicUserDto, isArray: true })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN role" })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiOkResponse({ type: OkResponseDto })
+  @UseGuards(JwtAuthGuard)
+  @Post("me/password")
+  changePassword(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePasswordDto) {
+    return this.usersService.changePassword(user.sub, dto);
   }
 
-  @ApiOperation({
-    summary: "Get user by ID",
-    description: "Returns a single user by ID. Requires ADMIN or MODERATOR role.",
-  })
+  @ApiOperation({ summary: "Upload avatar" })
   @ApiBearerAuth()
-  @ApiParam({ name: "id", description: "User ID", example: "clxyz123abc456def789" })
-  @ApiOkResponse({ type: PublicUserDto })
+  @ApiConsumes("multipart/form-data")
+  @UseGuards(JwtAuthGuard)
+  @Post("me/avatar")
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  uploadAvatar(
+    @CurrentUser() user: AuthenticatedUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) throw new BadRequestException("File is required");
+    return this.usersService.uploadAvatar(user.sub, file);
+  }
+
+  @ApiOperation({ summary: "Remove avatar" })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete("me/avatar")
+  removeAvatar(@CurrentUser() user: AuthenticatedUser) {
+    return this.usersService.removeAvatar(user.sub);
+  }
+
+  @ApiOperation({ summary: "List users" })
+  @ApiBearerAuth()
   @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN or MODERATOR role" })
-  @ApiNotFoundResponse({ description: "User not found" })
+  @ApiForbiddenResponse({ description: "Requires admin role" })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MODERATOR)
+  @Roles(Role.admin)
+  @Get()
+  findAll(@Query() query: ListUsersQueryDto) {
+    return this.usersService.findAll(parseListUsersQuery(query));
+  }
+
+  @ApiOperation({ summary: "Get user by ID" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: PublicUserDto })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.usersService.findByIdOrThrow(id);
   }
 
-  @ApiOperation({
-    summary: "Create a user",
-    description:
-      "Creates a new user account. Requires ADMIN role. Defaults to USER role and active status when omitted.",
-  })
+  @ApiOperation({ summary: "Create a user" })
   @ApiBearerAuth()
-  @ApiOkResponse({ type: PublicUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN role" })
-  @ApiBadRequestResponse({ description: "Email already registered" })
   @ApiBody({ type: CreateUserDto })
+  @ApiOkResponse({ type: PublicUserDto })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.usersService.create(dto);
   }
 
-  @ApiOperation({
-    summary: "Update a user",
-    description: "Partially updates a user by ID. Requires ADMIN role.",
-  })
+  @ApiOperation({ summary: "Update a user" })
   @ApiBearerAuth()
-  @ApiParam({ name: "id", description: "User ID", example: "clxyz123abc456def789" })
-  @ApiOkResponse({ type: PublicUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN role" })
-  @ApiNotFoundResponse({ description: "User not found" })
+  @ApiParam({ name: "id" })
   @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({ type: PublicUserDto })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @Patch(":id")
   update(@Param("id") id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.updateById(id, dto);
   }
 
-  @ApiOperation({
-    summary: "Replace user roles",
-    description: "Replaces the full role list for a user. Requires ADMIN role.",
-  })
+  @ApiOperation({ summary: "Delete a user" })
   @ApiBearerAuth()
-  @ApiParam({ name: "id", description: "User ID", example: "clxyz123abc456def789" })
-  @ApiOkResponse({ type: PublicUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN role" })
-  @ApiNotFoundResponse({ description: "User not found" })
-  @ApiBody({ type: UpdateUserRolesDto })
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: OkResponseDto })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @Put(":id/roles")
-  setRoles(@Param("id") id: string, @Body() dto: UpdateUserRolesDto) {
-    return this.usersService.setRoles(id, dto.roles);
-  }
-
-  @ApiOperation({
-    summary: "Deactivate a user",
-    description: "Soft-deletes a user by setting isActive to false. Requires ADMIN role.",
-  })
-  @ApiBearerAuth()
-  @ApiParam({ name: "id", description: "User ID", example: "clxyz123abc456def789" })
-  @ApiOkResponse({ type: PublicUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @ApiForbiddenResponse({ description: "Requires ADMIN role" })
-  @ApiNotFoundResponse({ description: "User not found" })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.admin)
   @Delete(":id")
-  deactivate(@Param("id") id: string) {
-    return this.usersService.deactivate(id);
+  delete(@Param("id") id: string) {
+    return this.usersService.deleteById(id);
   }
 }

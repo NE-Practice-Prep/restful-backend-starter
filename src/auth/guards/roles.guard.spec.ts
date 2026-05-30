@@ -7,13 +7,13 @@ import { RolesGuard } from "./roles.guard";
 import { ROLES_KEY } from "../decorators/roles.decorator";
 import { Role } from "../../common/enums/role.enum";
 
-function makeContext(userRoles: Role[] | undefined, handlerFn = () => {}): ExecutionContext {
+function makeContext(userRole: Role | undefined, handlerFn = () => {}): ExecutionContext {
   return {
     getHandler: vi.fn().mockReturnValue(handlerFn),
     getClass: vi.fn().mockReturnValue(class {}),
     switchToHttp: vi.fn().mockReturnValue({
       getRequest: vi.fn().mockReturnValue({
-        user: userRoles !== undefined ? { roles: userRoles } : undefined,
+        user: userRole !== undefined ? { role: userRole } : undefined,
       }),
     }),
   } as unknown as ExecutionContext;
@@ -32,47 +32,23 @@ describe("RolesGuard", () => {
   it("allows access when no roles are required", () => {
     vi.mocked(reflector.getAllAndOverride).mockReturnValue(undefined);
 
-    expect(guard.canActivate(makeContext([Role.USER]))).toBe(true);
-  });
-
-  it("allows access when the required roles list is empty", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([]);
-
-    expect(guard.canActivate(makeContext([Role.USER]))).toBe(true);
+    expect(guard.canActivate(makeContext(Role.viewer))).toBe(true);
   });
 
   it("allows access when the user has the required role", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN]);
+    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.admin]);
 
-    expect(guard.canActivate(makeContext([Role.ADMIN]))).toBe(true);
-  });
-
-  it("allows access when the user has one of multiple required roles", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN, Role.MODERATOR]);
-
-    expect(guard.canActivate(makeContext([Role.MODERATOR]))).toBe(true);
-  });
-
-  it("allows access when the user has multiple roles and one matches", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN]);
-
-    expect(guard.canActivate(makeContext([Role.USER, Role.ADMIN]))).toBe(true);
-  });
-
-  it("denies access when the user has no roles", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN]);
-
-    expect(guard.canActivate(makeContext([]))).toBe(false);
+    expect(guard.canActivate(makeContext(Role.admin))).toBe(true);
   });
 
   it("denies access when the user lacks the required role", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN]);
+    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.admin]);
 
-    expect(guard.canActivate(makeContext([Role.USER]))).toBe(false);
+    expect(guard.canActivate(makeContext(Role.viewer))).toBe(false);
   });
 
   it("denies access when no user is present on the request", () => {
-    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.ADMIN]);
+    vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.admin]);
 
     expect(guard.canActivate(makeContext(undefined))).toBe(false);
   });
@@ -85,7 +61,7 @@ describe("RolesGuard", () => {
     const context = {
       getHandler: vi.fn().mockReturnValue(handler),
       getClass: vi.fn().mockReturnValue(klass),
-      switchToHttp: vi.fn().mockReturnValue({ getRequest: vi.fn().mockReturnValue({ user: { roles: [Role.USER] } }) }),
+      switchToHttp: vi.fn().mockReturnValue({ getRequest: vi.fn().mockReturnValue({ user: { role: Role.viewer } }) }),
     } as unknown as ExecutionContext;
 
     guard.canActivate(context);

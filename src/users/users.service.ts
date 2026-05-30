@@ -1,103 +1,261 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { join, extname } from "node:path";
+import { randomUUID } from "node:crypto";
 
 import { PrismaService } from "../prisma/prisma.service";
 import { Role } from "../common/enums/role.enum";
+import { UserStatus } from "../common/enums/user-status.enum";
+import { EmailService } from "../email/email.service";
+import { toCurrentUser, toWorkspaceUser } from "../common/mappers/user.mapper";
 import type { CreateUserDto } from "./dto/create-user.dto";
 import type { UpdateMeDto } from "./dto/update-me.dto";
 import type { UpdateUserDto } from "./dto/update-user.dto";
+import type { parseListUsersQuery } from "./dto/list-users-query.dto";
+import type { ChangePasswordDto } from "../auth/dto/change-password.dto";
+
+type ListUsersParams = ReturnType<typeof parseListUsersQuery>;
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
-  async findAll() {
-    return this.prisma.user.findMany({
-      take: 20,
-      orderBy: { createdAt: "desc" },
-      select: this.publicUserSelect,
-    });
+  async findAll(params: ListUsersParams) {
+    const where = {
+      ...(params.role ? { role: params.role } : {}),
+      ...(params.status ? { status: params.status } : {}),
+      ...(params.q
+        ? {
+            OR: [
+              { name: { contains: params.q, mode: "insensitive" as const } },
+              { email: { contains: params.q, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+    };
+
+    const orderBy = { createdAt: params.order };
+    const skip = (params.page - 1) * params.limit;
+
+    const [total, rows] = await Promise.all([
+      this.prisma.user.count({ where }),
+      this.prisma.user.findMany({
+        where,
+        orderBy,
+        skip,
+        take: params.limit,
+        select: this.workspaceUserSelect,
+      }),
+    ]);
+
+    const data = rows.map(toWorkspaceUser);
+    const totalPages = Math.max(1, Math.ceil(total / params.limit));
+
+    return {
+      data,
+      meta: {
+        total,
+        page: params.page,
+        limit: params.limit,
+        totalPages,
+      },
+    };
   }
 
   async findByIdOrThrow(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: this.publicUserSelect,
+      select: this.workspaceUserSelect,
     });
     if (!user) throw new NotFoundException("User not found");
-    return user;
+    return toWorkspaceUser(user);
+  }
+
+  async getCurrentUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: this.profileSelect,
+    });
+    if (!user) throw new NotFoundException("User not found");
+    return toCurrentUser(user);
   }
 
   async create(dto: CreateUserDto) {
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (existing) throw new BadRequestException("Email already registered");
+    if (existing) throw new ConflictException("Email already registered");
 
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const tempPassword = randomUUID().slice(0, 12);
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
-        email: dto.email,
-        name: dto.name ?? null,
+        email: dto.email.trim(),
+        name: dto.name.trim(),
+        role: dto.role,
+        status: dto.status,
+        phone: dto.phone?.trim() || null,
+        location: dto.location?.trim() || null,
         passwordHash,
-        roles: (dto.roles ?? [Role.USER]) as unknown as Role[],
-        isActive: dto.isActive ?? true,
+        emailVerified: dto.status === UserStatus.active,
       },
-      select: this.publicUserSelect,
+      select: this.workspaceUserSelect,
     });
+
+    if (dto.status === UserStatus.invited) {
+      await this.email.sendInvitation(user.email, user.name);
+    }
+
+    return toWorkspaceUser(user);
   }
 
   async updateById(id: string, dto: UpdateUserDto) {
     await this.findByIdOrThrow(id);
 
-    return this.prisma.user.update({
+    if (dto.email) {
+      const existing = await this.prisma.user.findFirst({
+        where: { email: dto.email, NOT: { id } },
+      });
+      if (existing) throw new ConflictException("Email already in use");
+    }
+
+    const user = await this.prisma.user.update({
       where: { id },
       data: {
-        email: dto.email,
-        name: dto.name,
-        roles: dto.roles as unknown as Role[] | undefined,
-        isActive: dto.isActive,
+        name: dto.name?.trim(),
+        email: dto.email?.trim(),
+        role: dto.role,
+        status: dto.status,
+        phone: dto.phone === undefined ? undefined : dto.phone.trim() || null,
+        location: dto.location === undefined ? undefined : dto.location.trim() || null,
       },
-      select: this.publicUserSelect,
+      select: this.workspaceUserSelect,
     });
+
+    return toWorkspaceUser(user);
   }
 
-  async setRoles(id: string, roles: Role[]) {
+  async deleteById(id: string) {
     await this.findByIdOrThrow(id);
-
-    return this.prisma.user.update({
-      where: { id },
-      data: { roles: roles as unknown as Role[] },
-      select: this.publicUserSelect,
-    });
-  }
-
-  async deactivate(id: string) {
-    await this.findByIdOrThrow(id);
-
-    return this.prisma.user.update({
-      where: { id },
-      data: { isActive: false },
-      select: this.publicUserSelect,
-    });
+    await this.prisma.user.delete({ where: { id } });
+    return { ok: true };
   }
 
   async updateMe(userId: string, dto: UpdateMeDto) {
-    return this.prisma.user.update({
+    if (dto.email) {
+      const existing = await this.prisma.user.findFirst({
+        where: { email: dto.email, NOT: { id: userId } },
+      });
+      if (existing) throw new ConflictException("Email already in use");
+    }
+
+    const user = await this.prisma.user.update({
       where: { id: userId },
-      data: { name: dto.name },
-      select: this.publicUserSelect,
+      data: {
+        name: dto.name?.trim(),
+        email: dto.email?.trim(),
+        bio: dto.bio,
+        location: dto.location?.trim(),
+        phone: dto.phone?.trim(),
+      },
+      select: this.profileSelect,
     });
+
+    return toCurrentUser(user);
   }
 
-  private get publicUserSelect() {
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, passwordHash: true },
+    });
+
+    if (!user || !user.passwordHash) throw new BadRequestException("Password not set");
+
+    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!ok) throw new BadRequestException("Current password is incorrect");
+
+    const newHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newHash },
+    });
+
+    return { ok: true };
+  }
+
+  async uploadAvatar(userId: string, file: Express.Multer.File) {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.mimetype)) {
+      throw new BadRequestException("Unsupported image type");
+    }
+
+    const uploadsDir = join(process.cwd(), "uploads", "avatars");
+    await mkdir(uploadsDir, { recursive: true });
+
+    const ext = extname(file.originalname) || ".jpg";
+    const filename = `${userId}-${randomUUID()}${ext}`;
+    const filepath = join(uploadsDir, filename);
+
+    await writeFile(filepath, file.buffer);
+
+    const avatarUrl = `/uploads/avatars/${filename}`;
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { avatarUrl },
+      select: this.profileSelect,
+    });
+
+    return { avatar: avatarUrl, user: toCurrentUser(user) };
+  }
+
+  async removeAvatar(userId: string) {
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { avatarUrl: true },
+    });
+
+    if (existing?.avatarUrl?.startsWith("/uploads/")) {
+      const filepath = join(process.cwd(), existing.avatarUrl);
+      await unlink(filepath).catch(() => undefined);
+    }
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { avatarUrl: null },
+      select: this.profileSelect,
+    });
+
+    return { user: toCurrentUser(user) };
+  }
+
+  private get workspaceUserSelect() {
     return {
       id: true,
       email: true,
       name: true,
-      roles: true,
-      isActive: true,
+      role: true,
+      status: true,
+      phone: true,
+      location: true,
+      bio: true,
+      avatarUrl: true,
+      emailVerified: true,
       createdAt: true,
-      updatedAt: true,
     } as const;
+  }
+
+  private get profileSelect() {
+    return this.workspaceUserSelect;
   }
 }

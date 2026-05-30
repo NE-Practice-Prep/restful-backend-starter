@@ -7,19 +7,32 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  USER
-  ADMIN
-  MODERATOR
+enum UserRole {
+  admin
+  editor
+  viewer
+}
+
+enum UserStatus {
+  active
+  invited
+  suspended
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String?
-  roles        Role[]   @default([USER])
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                         String     @id @default(cuid())
+  email                      String     @unique
+  name                       String     @default("")
+  passwordHash               String?
+  role                       UserRole   @default(viewer)
+  status                     UserStatus @default(invited)
+  phone                      String?
+  location                   String?
+  bio                        String     @default("")
+  avatarUrl                  String?
+  emailVerified              Boolean    @default(false)
+  emailVerificationCode      String?
+  emailVerificationExpiresAt DateTime?
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @updatedAt
 }

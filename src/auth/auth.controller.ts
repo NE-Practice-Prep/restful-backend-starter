@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -15,64 +17,59 @@ import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import type { AuthenticatedUser } from "./types/authenticated-user.type";
-import { ChangePasswordDto } from "./dto/change-password.dto";
+import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthTokenResponseDto } from "./dto/auth-token-response.dto";
-import { AuthenticatedUserDto } from "./dto/authenticated-user.dto";
 import { OkResponseDto } from "../common/dto/ok-response.dto";
 
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
 
-  @ApiOperation({
-    summary: "Register a new account",
-    description: "Creates a user with the USER role and returns a JWT access token.",
-  })
+  @ApiOperation({ summary: "Register a new account" })
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({ type: AuthTokenResponseDto })
-  @ApiBadRequestResponse({ description: "Email already registered" })
+  @ApiConflictResponse({ description: "Email already registered" })
   @Post("register")
   register(@Body() dto: RegisterDto) {
     return this.auth.register(dto);
   }
 
-  @ApiOperation({
-    summary: "Log in",
-    description: "Authenticates with email and password and returns a JWT access token.",
-  })
+  @ApiOperation({ summary: "Log in" })
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: AuthTokenResponseDto })
-  @ApiUnauthorizedResponse({ description: "Invalid credentials or inactive account" })
+  @ApiUnauthorizedResponse({ description: "Invalid credentials" })
+  @ApiForbiddenResponse({ description: "Email not verified or account suspended" })
   @Post("login")
   login(@Body() dto: LoginDto) {
     return this.auth.login(dto);
   }
 
-  @ApiOperation({
-    summary: "Get JWT payload",
-    description: "Returns the authenticated user's claims from the JWT (sub, email, roles).",
-  })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: AuthenticatedUserDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
-  @UseGuards(JwtAuthGuard)
-  @Get("me")
-  me(@CurrentUser() user: AuthenticatedUser) {
-    return user;
+  @ApiOperation({ summary: "Log out" })
+  @ApiOkResponse({ type: OkResponseDto })
+  @Post("logout")
+  logout() {
+    return this.auth.logout();
   }
 
-  @ApiOperation({
-    summary: "Change password",
-    description: "Updates the authenticated user's password after verifying the current one.",
-  })
+  @ApiOperation({ summary: "Verify email with OTP code" })
   @ApiBearerAuth()
-  @ApiBody({ type: ChangePasswordDto })
+  @ApiBody({ type: VerifyEmailDto })
   @ApiOkResponse({ type: OkResponseDto })
-  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT, or current password is incorrect" })
+  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
   @UseGuards(JwtAuthGuard)
-  @Put("change-password")
-  changePassword(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePasswordDto) {
-    return this.auth.changePassword(user, dto);
+  @Post("verify-email")
+  verifyEmail(@CurrentUser() user: AuthenticatedUser, @Body() dto: VerifyEmailDto) {
+    return this.auth.verifyEmail(user, dto.code);
+  }
+
+  @ApiOperation({ summary: "Resend email verification code" })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiUnauthorizedResponse({ description: "Missing or invalid JWT" })
+  @UseGuards(JwtAuthGuard)
+  @Post("resend-verification")
+  resendVerification(@CurrentUser() user: AuthenticatedUser) {
+    return this.auth.resendVerification(user);
   }
 }

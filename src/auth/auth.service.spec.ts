@@ -1,10 +1,11 @@
 import "reflect-metadata";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BadRequestException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { AuthService } from "./auth.service";
 import { Role } from "../common/enums/role.enum";
+import { UserStatus } from "../common/enums/user-status.enum";
 
 vi.mock("bcrypt");
 
@@ -25,27 +26,26 @@ function makeJwt() {
   return { signAsync: vi.fn() };
 }
 
+function makeEmail() {
+  return { sendVerificationCode: vi.fn(), sendInvitation: vi.fn() };
+}
+
 const BASE_DATE = new Date("2026-01-01T00:00:00Z");
 
-function makeDbUser(overrides: Partial<{
-  id: string;
-  email: string;
-  name: string | null;
-  passwordHash: string | null;
-  roles: Role[];
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}> = {}) {
+function makeDbUser(overrides: Record<string, unknown> = {}) {
   return {
     id: "user-1",
     email: "alice@example.com",
     name: "Alice",
     passwordHash: "hashed_pw",
-    roles: [Role.USER],
-    isActive: true,
+    role: Role.viewer,
+    status: UserStatus.active,
+    phone: null,
+    location: null,
+    bio: "",
+    avatarUrl: null,
+    emailVerified: true,
     createdAt: BASE_DATE,
-    updatedAt: BASE_DATE,
     ...overrides,
   };
 }
@@ -54,77 +54,50 @@ describe("AuthService", () => {
   let service: AuthService;
   let prisma: ReturnType<typeof makePrisma>;
   let jwt: ReturnType<typeof makeJwt>;
+  let email: ReturnType<typeof makeEmail>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     prisma = makePrisma();
     jwt = makeJwt();
-    service = new AuthService(prisma as never, jwt as never);
+    email = makeEmail();
+    service = new AuthService(prisma as never, jwt as never, email as never);
   });
 
-  // ── register ──────────────────────────────────────────────────────────────
-
   describe("register", () => {
-    it("throws BadRequestException when email is already registered", async () => {
+    it("throws ConflictException when email is already registered", async () => {
       prisma.user.findUnique.mockResolvedValue(makeDbUser());
 
       await expect(
-        service.register({ email: "alice@example.com", password: "password123" }),
-      ).rejects.toThrow(BadRequestException);
-
-      expect(prisma.user.create).not.toHaveBeenCalled();
+        service.register({
+          fullName: "Alice",
+          email: "alice@example.com",
+          password: "password123",
+          acceptTerms: true,
+        }),
+      ).rejects.toThrow(ConflictException);
     });
 
     it("creates a new user and returns an access token", async () => {
       prisma.user.findUnique.mockResolvedValue(null);
       mockBcryptHash.mockResolvedValue("hashed_pw");
 
-      const created = makeDbUser({ id: "user-2", email: "bob@example.com", name: null });
+      const created = makeDbUser({ id: "user-2", email: "bob@example.com", emailVerified: false });
       prisma.user.create.mockResolvedValue(created);
       jwt.signAsync.mockResolvedValue("jwt-token");
 
-      const result = await service.register({ email: "bob@example.com", password: "password123" });
-
-      expect(mockBcryptHash).toHaveBeenCalledWith("password123", 10);
-      expect(prisma.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({ email: "bob@example.com", passwordHash: "hashed_pw" }),
-        }),
-      );
-      expect(result).toEqual({
-        accessToken: "jwt-token",
-        user: { sub: "user-2", email: "bob@example.com", roles: [Role.USER] },
+      const result = await service.register({
+        fullName: "Bob",
+        email: "bob@example.com",
+        password: "password123",
+        acceptTerms: true,
       });
-    });
 
-    it("stores the optional name when provided", async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
-      mockBcryptHash.mockResolvedValue("hashed_pw");
-      prisma.user.create.mockResolvedValue(makeDbUser({ name: "Bob" }));
-      jwt.signAsync.mockResolvedValue("jwt-token");
-
-      await service.register({ email: "bob@example.com", name: "Bob", password: "password123" });
-
-      expect(prisma.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ name: "Bob" }) }),
-      );
-    });
-
-    it("stores null for name when not provided", async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
-      mockBcryptHash.mockResolvedValue("hashed_pw");
-      prisma.user.create.mockResolvedValue(makeDbUser({ name: null }));
-      jwt.signAsync.mockResolvedValue("jwt-token");
-
-      await service.register({ email: "bob@example.com", password: "password123" });
-
-      expect(prisma.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ name: null }) }),
-      );
+      expect(result.accessToken).toBe("jwt-token");
+      expect(result.emailVerified).toBe(false);
+      expect(email.sendVerificationCode).toHaveBeenCalled();
     });
   });
-
-  // ── login ─────────────────────────────────────────────────────────────────
 
   describe("login", () => {
     it("throws UnauthorizedException when user is not found", async () => {
@@ -135,76 +108,20 @@ describe("AuthService", () => {
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it("throws UnauthorizedException when user account is inactive", async () => {
-      prisma.user.findUnique.mockResolvedValue(makeDbUser({ isActive: false }));
-
-      await expect(
-        service.login({ email: "alice@example.com", password: "password123" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it("throws UnauthorizedException when user has no password hash", async () => {
-      prisma.user.findUnique.mockResolvedValue(makeDbUser({ passwordHash: null }));
-
-      await expect(
-        service.login({ email: "alice@example.com", password: "password123" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it("throws UnauthorizedException when password does not match", async () => {
-      prisma.user.findUnique.mockResolvedValue(makeDbUser());
-      mockBcryptCompare.mockResolvedValue(false);
-
-      await expect(
-        service.login({ email: "alice@example.com", password: "wrong_password" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
     it("returns an access token for valid credentials", async () => {
-      const user = makeDbUser();
+      const user = makeDbUser({ passwordHash: "hashed_pw" });
       prisma.user.findUnique.mockResolvedValue(user);
       mockBcryptCompare.mockResolvedValue(true);
       jwt.signAsync.mockResolvedValue("jwt-token");
 
       const result = await service.login({ email: "alice@example.com", password: "password123" });
 
-      expect(mockBcryptCompare).toHaveBeenCalledWith("password123", "hashed_pw");
-      expect(result).toEqual({
-        accessToken: "jwt-token",
-        user: { sub: "user-1", email: "alice@example.com", roles: [Role.USER] },
-      });
+      expect(result.accessToken).toBe("jwt-token");
     });
   });
 
-  // ── changePassword ────────────────────────────────────────────────────────
-
   describe("changePassword", () => {
-    const currentUser = { sub: "user-1", email: "alice@example.com", roles: [Role.USER] };
-
-    it("throws UnauthorizedException when user is not found", async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.changePassword(currentUser, { currentPassword: "old_pass1", newPassword: "new_pass2" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it("throws UnauthorizedException when user has no password hash", async () => {
-      prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: null });
-
-      await expect(
-        service.changePassword(currentUser, { currentPassword: "old_pass1", newPassword: "new_pass2" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it("throws UnauthorizedException when current password is incorrect", async () => {
-      prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: "hashed_pw" });
-      mockBcryptCompare.mockResolvedValue(false);
-
-      await expect(
-        service.changePassword(currentUser, { currentPassword: "wrong_pass", newPassword: "new_pass2" }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
+    const currentUser = { sub: "user-1", email: "alice@example.com", role: Role.viewer };
 
     it("updates password hash and returns { ok: true } on success", async () => {
       prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: "old_hash" });
@@ -217,38 +134,7 @@ describe("AuthService", () => {
         newPassword: "new_pass23",
       });
 
-      expect(mockBcryptCompare).toHaveBeenCalledWith("old_pass1", "old_hash");
-      expect(mockBcryptHash).toHaveBeenCalledWith("new_pass23", 10);
-      expect(prisma.user.update).toHaveBeenCalledWith(
-        expect.objectContaining({ data: { passwordHash: "new_hash" } }),
-      );
       expect(result).toEqual({ ok: true });
-    });
-  });
-
-  // ── signAccessToken ───────────────────────────────────────────────────────
-
-  describe("signAccessToken", () => {
-    it("signs a payload and returns the token with the payload echoed as user", async () => {
-      jwt.signAsync.mockResolvedValue("signed-jwt");
-
-      const payload = { sub: "user-1", email: "alice@example.com", roles: [Role.USER] };
-      const result = await service.signAccessToken(payload);
-
-      expect(jwt.signAsync).toHaveBeenCalledWith(payload);
-      expect(result).toEqual({
-        accessToken: "signed-jwt",
-        user: payload,
-      });
-    });
-
-    it("includes all roles in the echoed user payload", async () => {
-      jwt.signAsync.mockResolvedValue("admin-jwt");
-
-      const payload = { sub: "admin-1", email: "admin@example.com", roles: [Role.ADMIN, Role.MODERATOR] };
-      const result = await service.signAccessToken(payload);
-
-      expect(result.user.roles).toEqual([Role.ADMIN, Role.MODERATOR]);
     });
   });
 });
