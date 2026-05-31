@@ -69,4 +69,47 @@ export class EmailService {
       text,
     });
   }
+
+  async sendExpiryWarning(
+    email: string,
+    name: string,
+    serialNumber: string,
+    type: string,
+    expiryDate: Date,
+    daysLeft: number,
+  ): Promise<void> {
+    const appUrl = (process.env.APP_URL ?? "http://localhost:3000").trim();
+    const expiry = expiryDate.toISOString().slice(0, 10);
+    const subject = `Fire extinguisher ${serialNumber} expiring soon`;
+    const text = `Hi ${name},\n\nYour fire extinguisher (${type}, serial ${serialNumber}) will expire on ${expiry} — ${daysLeft} day(s) remaining.\n\nPlease log in at ${appUrl} to request a renewal.\n\nFire Extinguisher Management`;
+
+    await this.sendPlainEmail(email, subject, text);
+  }
+
+  async sendExpiryNotice(
+    email: string,
+    name: string,
+    serialNumber: string,
+    type: string,
+    expiryDate: Date,
+  ): Promise<void> {
+    const appUrl = (process.env.APP_URL ?? "http://localhost:3000").trim();
+    const expiry = expiryDate.toISOString().slice(0, 10);
+    const subject = `Fire extinguisher ${serialNumber} has expired`;
+    const text = `Hi ${name},\n\nYour fire extinguisher (${type}, serial ${serialNumber}) expired on ${expiry}.\n\nPlease log in at ${appUrl} to request a renewal immediately.\n\nFire Extinguisher Management`;
+
+    await this.sendPlainEmail(email, subject, text);
+  }
+
+  private async sendPlainEmail(email: string, subject: string, text: string): Promise<void> {
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      this.logger.warn(`SMTP not configured. Email to ${email}: ${subject}\n${text}`);
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+
+    await transporter.sendMail({ from, to: email, subject, text });
+  }
 }
