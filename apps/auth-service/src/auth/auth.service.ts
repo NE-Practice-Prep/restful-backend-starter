@@ -23,6 +23,14 @@ import type { JwtPayload } from "./jwt-payload.type";
 const DEFAULT_EXPIRES_SECONDS = 3600;
 const REMEMBER_ME_EXPIRES_SECONDS = 30 * 24 * 3600;
 
+function maybeExposeVerificationCode(code: string, delivered: boolean) {
+  if (delivered || process.env.NODE_ENV === "production") {
+    return {};
+  }
+
+  return { devVerificationCode: code };
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -55,9 +63,12 @@ export class AuthService {
       select: this.profileSelect,
     });
 
-    await this.email.sendVerificationCode(user.email, verificationCode);
+    const { delivered } = await this.email.sendVerificationCode(user.email, verificationCode);
 
-    return this.buildAuthResponse(user, DEFAULT_EXPIRES_SECONDS);
+    return {
+      ...(await this.buildAuthResponse(user, DEFAULT_EXPIRES_SECONDS)),
+      ...maybeExposeVerificationCode(verificationCode, delivered),
+    };
   }
 
   async login(dto: LoginDto) {
@@ -153,9 +164,9 @@ export class AuthService {
       },
     });
 
-    await this.email.sendVerificationCode(user.email, verificationCode);
+    const { delivered } = await this.email.sendVerificationCode(user.email, verificationCode);
 
-    return { ok: true };
+    return { ok: true, ...maybeExposeVerificationCode(verificationCode, delivered) };
   }
 
   async changePassword(currentUser: AuthenticatedUser, dto: ChangePasswordDto) {

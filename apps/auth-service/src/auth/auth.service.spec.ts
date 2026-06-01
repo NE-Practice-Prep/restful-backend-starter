@@ -27,7 +27,10 @@ function makeJwt() {
 }
 
 function makeEmail() {
-  return { sendVerificationCode: vi.fn(), sendInvitation: vi.fn() };
+  return {
+    sendVerificationCode: vi.fn().mockResolvedValue({ delivered: true }),
+    sendInvitation: vi.fn(),
+  };
 }
 
 const BASE_DATE = new Date("2026-01-01T00:00:00Z");

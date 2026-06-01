@@ -29,24 +29,32 @@ export class EmailService {
     return this.transporter;
   }
 
-  async sendVerificationCode(email: string, code: string): Promise<void> {
+  async sendVerificationCode(email: string, code: string): Promise<{ delivered: boolean }> {
     const subject = "Verify your email";
     const text = `Your verification code is ${code}. It expires in 15 minutes.`;
 
     const transporter = this.getTransporter();
     if (!transporter) {
       this.logger.warn(`SMTP not configured. Verification code for ${email}: ${code}`);
-      return;
+      return { delivered: false };
     }
 
     const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
 
-    await transporter.sendMail({
-      from,
-      to: email,
-      subject,
-      text,
-    });
+    try {
+      await transporter.sendMail({
+        from,
+        to: email,
+        subject,
+        text,
+      });
+      return { delivered: true };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown SMTP error";
+      this.logger.warn(`Failed to send verification email to ${email}: ${message}`);
+      this.logger.warn(`Verification code for ${email}: ${code}`);
+      return { delivered: false };
+    }
   }
 
   async sendInvitation(email: string, name: string): Promise<void> {
@@ -62,11 +70,17 @@ export class EmailService {
 
     const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
 
-    await transporter.sendMail({
-      from,
-      to: email,
-      subject,
-      text,
-    });
+    try {
+      await transporter.sendMail({
+        from,
+        to: email,
+        subject,
+        text,
+      });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown SMTP error";
+      this.logger.warn(`Failed to send invitation to ${email}: ${message}`);
+      this.logger.warn(`Invitation for ${email}: ${text}`);
+    }
   }
 }
