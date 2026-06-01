@@ -29,7 +29,7 @@ import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 export class AuthGatewayController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
-    private readonly proxy: MicroserviceProxyService,
+    @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
   ) {}
 
   @ApiOperation({ summary: "Register a new account" })

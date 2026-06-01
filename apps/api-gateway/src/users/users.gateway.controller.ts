@@ -50,7 +50,7 @@ import { ListUsersQueryDto, parseListUsersQuery } from "./dto/list-users-query.d
 export class UsersGatewayController {
   constructor(
     @Inject(USERS_SERVICE) private readonly usersClient: ClientProxy,
-    private readonly proxy: MicroserviceProxyService,
+    @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
   ) {}
 
   @ApiOperation({ summary: "Get current user profile" })

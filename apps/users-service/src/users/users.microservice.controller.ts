@@ -1,4 +1,4 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
 import { USERS_PATTERNS } from "@shared/microservices/patterns";
@@ -15,7 +15,7 @@ type ListUsersParams = ReturnType<typeof parseListUsersQuery>;
 
 @Controller()
 export class UsersMicroserviceController {
-  constructor(private readonly users: UsersService) {}
+  constructor(@Inject(UsersService) private readonly users: UsersService) {}
 
   @MessagePattern(USERS_PATTERNS.ME)
   async me(@Payload() data: { userId: string }) {
