@@ -8,6 +8,7 @@ import { join } from "node:path";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { Transport, type MicroserviceOptions } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
@@ -15,6 +16,20 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // --- TCP Microservice ---
+  const rawMsPort = (process.env.MICROSERVICE_PORT ?? "").trim();
+  const parsedMsPort = rawMsPort.length > 0 ? Number(rawMsPort) : Number.NaN;
+  const msPort =
+    Number.isFinite(parsedMsPort) && parsedMsPort >= 0 && parsedMsPort <= 65535
+      ? parsedMsPort
+      : 3002;
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: { host: "0.0.0.0", port: msPort },
+  });
+
+  // --- HTTP setup (unchanged) ---
   const uploadsDir = join(process.cwd(), "uploads");
   mkdirSync(uploadsDir, { recursive: true });
   app.useStaticAssets(uploadsDir, { prefix: "/uploads/" });
@@ -55,9 +70,12 @@ async function bootstrap() {
   const parsedPort = rawPort.length > 0 ? Number(rawPort) : Number.NaN;
   const port =
     Number.isFinite(parsedPort) && parsedPort >= 0 && parsedPort <= 65535 ? parsedPort : 3001;
+
+  await app.startAllMicroservices();
   await app.listen(port);
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`HTTP server running at http://localhost:${port}`);
   console.log(`Swagger docs at http://localhost:${port}/api`);
+  console.log(`TCP microservice listening on port ${msPort}`);
 }
 
 bootstrap().catch((error) => {
