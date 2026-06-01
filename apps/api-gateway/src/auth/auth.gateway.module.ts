@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
+import { MicroservicesModule } from "../clients/microservices.module";
 import { AuthGatewayController } from "./auth.gateway.controller";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
@@ -20,6 +21,7 @@ import { RolesGuard } from "./guards/roles.guard";
         };
       },
     }),
+    MicroservicesModule,
   ],
   controllers: [AuthGatewayController],
   providers: [JwtStrategy, JwtAuthGuard, RolesGuard],

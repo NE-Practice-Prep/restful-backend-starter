@@ -1,7 +1,7 @@
-import { createPrismaClient } from "../src/lib/prisma";
+import { createPrismaClient } from "../libs/shared/src/lib/prisma";
 import * as bcrypt from "bcrypt";
-import { Role } from "../src/common/enums/role.enum";
-import { UserStatus } from "../src/common/enums/user-status.enum";
+import { Role } from "../libs/shared/src/common/enums/role.enum";
+import { UserStatus } from "../libs/shared/src/common/enums/user-status.enum";
 
 const prisma = createPrismaClient();
 
