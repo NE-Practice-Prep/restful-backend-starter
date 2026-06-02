@@ -57,6 +57,29 @@ export class EmailService {
     }
   }
 
+  async sendPasswordResetCode(email: string, code: string): Promise<void> {
+    const subject = "Reset your password";
+    const text = [
+      `Your password reset code is ${code}.`,
+      "It expires in 15 minutes.",
+    ].join("\n");
+
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      this.logger.warn(`SMTP not configured. Password reset code for ${email}: ${code}`);
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject,
+      text,
+    });
+  }
+
   async sendInvitation(email: string, name: string): Promise<void> {
     const appUrl = (process.env.APP_URL ?? "http://localhost:3000").trim();
     const subject = "You have been invited";

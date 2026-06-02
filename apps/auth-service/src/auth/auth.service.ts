@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { randomBytes, randomInt } from "node:crypto";
 import * as bcrypt from "bcrypt";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
@@ -18,10 +19,17 @@ import type { ChangePasswordDto } from "@shared/dto/change-password.dto";
 import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
 import type { RegisterDto } from "./dto/register.dto";
 import type { LoginDto } from "./dto/login.dto";
+import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import type { VerifyResetPasswordDto } from "./dto/verify-reset-password.dto";
+import type { ResetPasswordDto } from "./dto/reset-password.dto";
 import type { JwtPayload } from "./jwt-payload.type";
 
 const DEFAULT_EXPIRES_SECONDS = 3600;
 const REMEMBER_ME_EXPIRES_SECONDS = 30 * 24 * 3600;
+const RESET_CODE_EXPIRES_MS = 15 * 60 * 1000;
+const RESET_TOKEN_EXPIRES_MS = 15 * 60 * 1000;
+const GENERIC_RESET_MESSAGE =
+  "If an account exists for that email, password reset instructions have been sent";
 
 function maybeExposeVerificationCode(code: string, delivered: boolean) {
   if (delivered || process.env.NODE_ENV === "production") {
@@ -96,6 +104,121 @@ export class AuthService {
   }
 
   async logout() {
+    return { ok: true };
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const emailAddress = dto.email.trim();
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailAddress },
+      select: { id: true, email: true, status: true, emailVerificationCode: true },
+    });
+
+    if (!user || user.status === UserStatus.suspended) {
+      return { ok: true, message: GENERIC_RESET_MESSAGE };
+    }
+
+    const resetCode = this.generateOtpCode(user.emailVerificationCode);
+    const resetExpires = new Date(Date.now() + RESET_CODE_EXPIRES_MS);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetCode: resetCode,
+        passwordResetExpiresAt: resetExpires,
+        passwordResetToken: null,
+        passwordResetTokenExpiresAt: null,
+      },
+    });
+
+    await this.email.sendPasswordResetCode(user.email, resetCode);
+
+    return {
+      ok: true,
+      message: GENERIC_RESET_MESSAGE,
+      ...(this.shouldExposeDevCodes() ? { devResetCode: resetCode } : {}),
+    };
+  }
+
+  async verifyResetPassword(dto: VerifyResetPasswordDto) {
+    const emailAddress = dto.email.trim();
+    const resetCode = dto.code.trim();
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailAddress },
+      select: {
+        id: true,
+        passwordResetCode: true,
+        passwordResetExpiresAt: true,
+      },
+    });
+
+    if (
+      !user ||
+      !user.passwordResetCode ||
+      user.passwordResetCode !== resetCode ||
+      !user.passwordResetExpiresAt ||
+      user.passwordResetExpiresAt < new Date()
+    ) {
+      throw new BadRequestException("Invalid or expired reset code");
+    }
+
+    const resetToken = this.generateResetToken();
+    const resetTokenExpires = new Date(Date.now() + RESET_TOKEN_EXPIRES_MS);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetCode: null,
+        passwordResetExpiresAt: null,
+        passwordResetToken: resetToken,
+        passwordResetTokenExpiresAt: resetTokenExpires,
+      },
+    });
+
+    return { ok: true, resetToken };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const emailAddress = dto.email.trim();
+    const resetToken = dto.token.trim();
+
+    if (!resetToken) {
+      throw new BadRequestException("Reset session is required");
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailAddress },
+      select: {
+        id: true,
+        passwordResetToken: true,
+        passwordResetTokenExpiresAt: true,
+      },
+    });
+
+    if (
+      !user ||
+      !user.passwordResetToken ||
+      user.passwordResetToken !== resetToken ||
+      !user.passwordResetTokenExpiresAt ||
+      user.passwordResetTokenExpiresAt < new Date()
+    ) {
+      throw new BadRequestException("Invalid or expired reset session");
+    }
+
+    const newHash = await bcrypt.hash(dto.newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: newHash,
+        passwordResetCode: null,
+        passwordResetExpiresAt: null,
+        passwordResetToken: null,
+        passwordResetTokenExpiresAt: null,
+      },
+    });
+
     return { ok: true };
   }
 
@@ -209,7 +332,24 @@ export class AuthService {
   }
 
   private generateVerificationCode(): string {
-    return String(Math.floor(1000 + Math.random() * 9000));
+    return this.generateOtpCode();
+  }
+
+  private generateOtpCode(disallowedCode?: string | null): string {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const code = String(randomInt(100000, 1000000));
+      if (!disallowedCode || code !== disallowedCode) return code;
+    }
+
+    return String((Number(disallowedCode) + 1) % 900000).padStart(6, "0");
+  }
+
+  private generateResetToken(): string {
+    return randomBytes(32).toString("hex");
+  }
+
+  private shouldExposeDevCodes(): boolean {
+    return process.env.NODE_ENV !== "production";
   }
 
   private get profileSelect() {

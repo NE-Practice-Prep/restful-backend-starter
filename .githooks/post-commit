@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+
+if [ "${AUTO_PUSH:-1}" = "0" ]; then
+  echo "auto-push: AUTO_PUSH=0; skipping push"
+  exit 0
+fi
+
+branch="$(git symbolic-ref --quiet --short HEAD || true)"
+if [ -z "$branch" ]; then
+  echo "auto-push: detached HEAD; skipping push"
+  exit 0
+fi
+
+remote="$(git config --get "branch.$branch.remote" || true)"
+if [ -z "$remote" ]; then
+  remote="origin"
+fi
+
+if ! git remote get-url "$remote" >/dev/null 2>&1; then
+  echo "auto-push: remote '$remote' not found; skipping push"
+  exit 0
+fi
+
+upstream="$(git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>/dev/null || true)"
+if [ -n "$upstream" ]; then
+  echo "auto-push: pushing $branch to $upstream"
+  git push
+else
+  echo "auto-push: setting upstream and pushing $branch to $remote/$branch"
+  git push -u "$remote" "$branch"
+fi

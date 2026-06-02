@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { CurrentUserResponseDto } from "../../common/dto/public-user.dto";
+import { CurrentUserResponseDto } from "@shared/common/dto/public-user.dto";
 
 export class AuthTokenResponseDto {
   @ApiProperty({

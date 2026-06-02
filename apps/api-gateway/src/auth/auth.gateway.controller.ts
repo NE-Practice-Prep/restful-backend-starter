@@ -21,6 +21,9 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { VerifyResetPasswordDto } from "./dto/verify-reset-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { AuthTokenResponseDto } from "./dto/auth-token-response.dto";
 import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 
@@ -56,6 +59,40 @@ export class AuthGatewayController {
   @Post("logout")
   logout() {
     return this.proxy.send(this.authClient, AUTH_PATTERNS.LOGOUT, {});
+  }
+
+  @ApiOperation({ summary: "Request password reset instructions" })
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({ type: OkResponseDto })
+  @Post("forgot-password")
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.proxy.send(this.authClient, AUTH_PATTERNS.FORGOT_PASSWORD, dto);
+  }
+
+  @ApiOperation({ summary: "Verify password reset OTP code" })
+  @ApiBody({ type: VerifyResetPasswordDto })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        ok: { type: "boolean", example: true },
+        resetToken: { type: "string", example: "reset-session-token" },
+      },
+    },
+  })
+  @ApiBadRequestResponse({ description: "Invalid or expired reset code" })
+  @Post("verify-reset-password")
+  verifyResetPassword(@Body() dto: VerifyResetPasswordDto) {
+    return this.proxy.send(this.authClient, AUTH_PATTERNS.VERIFY_RESET_PASSWORD, dto);
+  }
+
+  @ApiOperation({ summary: "Reset password with a verified reset session token" })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiBadRequestResponse({ description: "Invalid or expired reset session" })
+  @Post("reset-password")
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.proxy.send(this.authClient, AUTH_PATTERNS.RESET_PASSWORD, dto);
   }
 
   @ApiOperation({ summary: "Verify email with OTP code" })

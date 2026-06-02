@@ -1,0 +1,17 @@
+
+> restufl-backend@ dev:all C:\Users\ad\Documents\restful\restful-backend-starter-master\restful-backend-starter-master
+> concurrently -n gateway,auth,users -c blue,green,yellow "pnpm dev:gateway" "pnpm dev:auth" "pnpm dev:users"
+
+[gateway] 
+[gateway] > restufl-backend@ dev:gateway C:\Users\ad\Documents\restful\restful-backend-starter-master\restful-backend-starter-master
+[gateway] > tsx watch apps/api-gateway/src/main.ts
+[gateway] 
+[auth] 
+[auth] > restufl-backend@ dev:auth C:\Users\ad\Documents\restful\restful-backend-starter-master\restful-backend-starter-master
+[auth] > tsx watch apps/auth-service/src/main.ts
+[auth] 
+[users] 
+[users] > restufl-backend@ dev:users C:\Users\ad\Documents\restful\restful-backend-starter-master\restful-backend-starter-master
+[users] > tsx watch apps/users-service/src/main.ts
+[users] 
+[users]  ELIFECYCLE  Command failed with exit code 4294967295.

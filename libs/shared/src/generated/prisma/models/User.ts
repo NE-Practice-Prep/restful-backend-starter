@@ -38,6 +38,10 @@ export type UserMinAggregateOutputType = {
   emailVerified: boolean | null
   emailVerificationCode: string | null
   emailVerificationExpiresAt: Date | null
+  passwordResetCode: string | null
+  passwordResetExpiresAt: Date | null
+  passwordResetToken: string | null
+  passwordResetTokenExpiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +60,10 @@ export type UserMaxAggregateOutputType = {
   emailVerified: boolean | null
   emailVerificationCode: string | null
   emailVerificationExpiresAt: Date | null
+  passwordResetCode: string | null
+  passwordResetExpiresAt: Date | null
+  passwordResetToken: string | null
+  passwordResetTokenExpiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +82,10 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   emailVerificationCode: number
   emailVerificationExpiresAt: number
+  passwordResetCode: number
+  passwordResetExpiresAt: number
+  passwordResetToken: number
+  passwordResetTokenExpiresAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -94,6 +106,10 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   emailVerificationCode?: true
   emailVerificationExpiresAt?: true
+  passwordResetCode?: true
+  passwordResetExpiresAt?: true
+  passwordResetToken?: true
+  passwordResetTokenExpiresAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +128,10 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   emailVerificationCode?: true
   emailVerificationExpiresAt?: true
+  passwordResetCode?: true
+  passwordResetExpiresAt?: true
+  passwordResetToken?: true
+  passwordResetTokenExpiresAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +150,10 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   emailVerificationCode?: true
   emailVerificationExpiresAt?: true
+  passwordResetCode?: true
+  passwordResetExpiresAt?: true
+  passwordResetToken?: true
+  passwordResetTokenExpiresAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -221,6 +245,10 @@ export type UserGroupByOutputType = {
   emailVerified: boolean
   emailVerificationCode: string | null
   emailVerificationExpiresAt: Date | null
+  passwordResetCode: string | null
+  passwordResetExpiresAt: Date | null
+  passwordResetToken: string | null
+  passwordResetTokenExpiresAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -260,6 +288,10 @@ export type UserWhereInput = {
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   emailVerificationCode?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerificationExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordResetCode?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetTokenExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
@@ -278,6 +310,10 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrder
   emailVerificationCode?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -299,6 +335,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   emailVerificationCode?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerificationExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordResetCode?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetTokenExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }, "id" | "email">
@@ -317,6 +357,10 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrder
   emailVerificationCode?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -341,6 +385,10 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   emailVerificationCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   emailVerificationExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  passwordResetCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  passwordResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordResetTokenExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -359,6 +407,10 @@ export type UserCreateInput = {
   emailVerified?: boolean
   emailVerificationCode?: string | null
   emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  passwordResetToken?: string | null
+  passwordResetTokenExpiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -377,6 +429,10 @@ export type UserUncheckedCreateInput = {
   emailVerified?: boolean
   emailVerificationCode?: string | null
   emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  passwordResetToken?: string | null
+  passwordResetTokenExpiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -395,6 +451,10 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -413,6 +473,10 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -431,6 +495,10 @@ export type UserCreateManyInput = {
   emailVerified?: boolean
   emailVerificationCode?: string | null
   emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  passwordResetToken?: string | null
+  passwordResetTokenExpiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -449,6 +517,10 @@ export type UserUpdateManyMutationInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -467,6 +539,10 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -485,6 +561,10 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   emailVerificationCode?: Prisma.SortOrder
   emailVerificationExpiresAt?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetTokenExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -503,6 +583,10 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   emailVerificationCode?: Prisma.SortOrder
   emailVerificationExpiresAt?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetTokenExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -521,6 +605,10 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   emailVerificationCode?: Prisma.SortOrder
   emailVerificationExpiresAt?: Prisma.SortOrder
+  passwordResetCode?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetTokenExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -569,6 +657,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   emailVerificationCode?: boolean
   emailVerificationExpiresAt?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpiresAt?: boolean
+  passwordResetToken?: boolean
+  passwordResetTokenExpiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -587,6 +679,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   emailVerificationCode?: boolean
   emailVerificationExpiresAt?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpiresAt?: boolean
+  passwordResetToken?: boolean
+  passwordResetTokenExpiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -605,6 +701,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   emailVerificationCode?: boolean
   emailVerificationExpiresAt?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpiresAt?: boolean
+  passwordResetToken?: boolean
+  passwordResetTokenExpiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -623,11 +723,15 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   emailVerificationCode?: boolean
   emailVerificationExpiresAt?: boolean
+  passwordResetCode?: boolean
+  passwordResetExpiresAt?: boolean
+  passwordResetToken?: boolean
+  passwordResetTokenExpiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "role" | "status" | "phone" | "location" | "bio" | "avatarUrl" | "emailVerified" | "emailVerificationCode" | "emailVerificationExpiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "role" | "status" | "phone" | "location" | "bio" | "avatarUrl" | "emailVerified" | "emailVerificationCode" | "emailVerificationExpiresAt" | "passwordResetCode" | "passwordResetExpiresAt" | "passwordResetToken" | "passwordResetTokenExpiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
@@ -646,6 +750,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerified: boolean
     emailVerificationCode: string | null
     emailVerificationExpiresAt: Date | null
+    passwordResetCode: string | null
+    passwordResetExpiresAt: Date | null
+    passwordResetToken: string | null
+    passwordResetTokenExpiresAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1084,6 +1192,10 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly emailVerificationCode: Prisma.FieldRef<"User", 'String'>
   readonly emailVerificationExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly passwordResetCode: Prisma.FieldRef<"User", 'String'>
+  readonly passwordResetExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly passwordResetToken: Prisma.FieldRef<"User", 'String'>
+  readonly passwordResetTokenExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

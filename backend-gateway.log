@@ -1,0 +1,34 @@
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +51ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMicroservicesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersGatewayModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthGatewayModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +17ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthGatewayController {/auth}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/register, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/login, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/logout, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/forgot-password, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/verify-reset-password, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/reset-password, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/verify-email, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/resend-verification, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersGatewayController {/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me, PATCH} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/password, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/avatar, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/avatar, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 14496  - [39m06/02/2026, 5:00:41 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
+API Gateway running at http://localhost:3001
+Swagger docs at http://localhost:3001/api

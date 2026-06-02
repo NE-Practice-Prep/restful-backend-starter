@@ -2,8 +2,8 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, Length } from "class-validator";
 
 export class VerifyEmailDto {
-  @ApiProperty({ type: String, example: "1234", minLength: 4, maxLength: 4 })
+  @ApiProperty({ type: String, example: "123456", minLength: 6, maxLength: 6 })
   @IsString()
-  @Length(4, 4)
+  @Length(6, 6)
   code!: string;
 }

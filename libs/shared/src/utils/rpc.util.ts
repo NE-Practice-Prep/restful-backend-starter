@@ -37,21 +37,43 @@ export function toRpcException(error: unknown): RpcException {
   } satisfies RpcErrorPayload);
 }
 
+function isRpcErrorMessage(value: unknown): value is RpcErrorPayload["message"] {
+  return typeof value === "string" || (Array.isArray(value) && value.every((item) => typeof item === "string"));
+}
+
+function getStatusCodePayload(value: unknown): RpcErrorPayload | null {
+  if (typeof value !== "object" || value === null || !("statusCode" in value)) {
+    return null;
+  }
+
+  const payload = value as { statusCode?: unknown; message?: unknown };
+  if (typeof payload.statusCode !== "number") {
+    return null;
+  }
+
+  return {
+    statusCode: payload.statusCode,
+    message: isRpcErrorMessage(payload.message) ? payload.message : "Internal server error",
+  };
+}
+
 function isRpcErrorPayload(value: unknown): value is RpcErrorPayload {
   return (
     typeof value === "object" &&
     value !== null &&
     "statusCode" in value &&
     typeof (value as RpcErrorPayload).statusCode === "number" &&
-    "message" in value
+    "message" in value &&
+    isRpcErrorMessage((value as RpcErrorPayload).message)
   );
 }
 
 export function getRpcErrorPayload(error: unknown): RpcErrorPayload {
   if (error instanceof RpcException) {
     const payload = error.getError();
-    if (isRpcErrorPayload(payload)) {
-      return payload;
+    const rpcPayload = getStatusCodePayload(payload);
+    if (rpcPayload) {
+      return rpcPayload;
     }
     return {
       statusCode: 500,
@@ -61,6 +83,11 @@ export function getRpcErrorPayload(error: unknown): RpcErrorPayload {
 
   if (isRpcErrorPayload(error)) {
     return error;
+  }
+
+  const payload = getStatusCodePayload(error);
+  if (payload) {
+    return payload;
   }
 
   return { statusCode: 500, message: "Internal server error" };

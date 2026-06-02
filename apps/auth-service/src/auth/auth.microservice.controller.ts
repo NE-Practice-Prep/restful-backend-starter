@@ -8,6 +8,9 @@ import type { ChangePasswordDto } from "@shared/dto/change-password.dto";
 import { AuthService } from "./auth.service";
 import type { RegisterDto } from "./dto/register.dto";
 import type { LoginDto } from "./dto/login.dto";
+import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import type { VerifyResetPasswordDto } from "./dto/verify-reset-password.dto";
+import type { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller()
 export class AuthMicroserviceController {
@@ -34,6 +37,33 @@ export class AuthMicroserviceController {
   @MessagePattern(AUTH_PATTERNS.LOGOUT)
   logout() {
     return this.auth.logout();
+  }
+
+  @MessagePattern(AUTH_PATTERNS.FORGOT_PASSWORD)
+  async forgotPassword(@Payload() dto: ForgotPasswordDto) {
+    try {
+      return await this.auth.forgotPassword(dto);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(AUTH_PATTERNS.RESET_PASSWORD)
+  async resetPassword(@Payload() dto: ResetPasswordDto) {
+    try {
+      return await this.auth.resetPassword(dto);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(AUTH_PATTERNS.VERIFY_RESET_PASSWORD)
+  async verifyResetPassword(@Payload() dto: VerifyResetPasswordDto) {
+    try {
+      return await this.auth.verifyResetPassword(dto);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
   }
 
   @MessagePattern(AUTH_PATTERNS.VERIFY_EMAIL)

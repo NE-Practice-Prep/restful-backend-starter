@@ -1,0 +1,6 @@
+[31m[Nest] 2404  - [39m06/02/2026, 5:00:37 PM [31m  ERROR[39m [38;5;3m[Server] [39mInvalidTcpDataReceptionException [Error]: The invalid received message from tcp server
+    at Socket.<anonymous> [90m(C:\Users\ad\Documents\restful\restful-backend-starter-master\restful-backend-starter-master\[39mnode_modules\[4m.pnpm[24m\@nestjs+microservices@11.1._84876abc5c9c98b6e9b7e1112fd27013\node_modules\[4m@nestjs\microservices[24m\server\server-tcp.js:51:34[90m)[39m
+[90m    at Socket.emit (node:events:521:24)[39m
+[90m    at emitErrorNT (node:internal/streams/destroy:170:8)[39m
+[90m    at emitErrorCloseNT (node:internal/streams/destroy:129:3)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)[39m
