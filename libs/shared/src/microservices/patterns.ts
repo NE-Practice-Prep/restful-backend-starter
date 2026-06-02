@@ -5,6 +5,10 @@ export const AUTH_PATTERNS = {
   VERIFY_EMAIL: "auth.verify_email",
   RESEND_VERIFICATION: "auth.resend_verification",
   CHANGE_PASSWORD: "auth.change_password",
+  REQUEST_PASSWORD_RESET: "auth.request_password_reset",
+  VERIFY_PASSWORD_RESET_OTP: "auth.verify_password_reset_otp",
+  RESET_PASSWORD: "auth.reset_password",
+  LIST_NOTIFICATIONS: "auth.list_notifications",
 } as const;
 
 export const USERS_PATTERNS = {

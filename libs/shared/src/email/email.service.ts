@@ -69,4 +69,33 @@ export class EmailService {
       text,
     });
   }
+
+  async sendPasswordResetCode(email: string, code: string): Promise<void> {
+    const subject = "Password reset OTP";
+    const text = `Your password reset code is ${code}. It expires in 15 minutes.`;
+
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      this.logger.warn(`SMTP not configured. Password reset code for ${email}: ${code}`);
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+    await transporter.sendMail({ from, to: email, subject, text });
+  }
+
+  async sendPasswordResetSuccess(email: string): Promise<void> {
+    const subject = "Password changed successfully";
+    const text =
+      "Your password has been changed successfully. If this wasn't you, please contact support immediately.";
+
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      this.logger.warn(`SMTP not configured. Password reset success email for ${email}`);
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+    await transporter.sendMail({ from, to: email, subject, text });
+  }
 }
