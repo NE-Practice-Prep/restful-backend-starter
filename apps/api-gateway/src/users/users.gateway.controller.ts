@@ -50,6 +50,7 @@ import { ListUsersQueryDto, parseListUsersQuery } from "./dto/list-users-query.d
 export class UsersGatewayController {
   constructor(
     @Inject(USERS_SERVICE) private readonly usersClient: ClientProxy,
+    @Inject(MicroserviceProxyService)
     private readonly proxy: MicroserviceProxyService,
   ) {}
 

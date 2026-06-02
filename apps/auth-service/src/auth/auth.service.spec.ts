@@ -1,6 +1,11 @@
 import "reflect-metadata";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { AuthService } from "./auth.service";
@@ -134,12 +139,13 @@ describe("AuthService", () => {
   });
 
   describe("forgotPassword", () => {
-    it("returns ok without revealing that an email is unknown", async () => {
+    it("throws NotFoundException when the email has no account", async () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.forgotPassword({ email: "nobody@example.com" });
+      await expect(service.forgotPassword({ email: "nobody@example.com" })).rejects.toThrow(
+        NotFoundException,
+      );
 
-      expect(result.ok).toBe(true);
       expect(prisma.user.update).not.toHaveBeenCalled();
       expect(email.sendPasswordResetCode).not.toHaveBeenCalled();
     });

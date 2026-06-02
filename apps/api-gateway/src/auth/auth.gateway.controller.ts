@@ -6,6 +6,7 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -32,6 +33,7 @@ import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 export class AuthGatewayController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    @Inject(MicroserviceProxyService)
     private readonly proxy: MicroserviceProxyService,
   ) {}
 
@@ -64,6 +66,7 @@ export class AuthGatewayController {
   @ApiOperation({ summary: "Request password reset instructions" })
   @ApiBody({ type: ForgotPasswordDto })
   @ApiOkResponse({ type: OkResponseDto })
+  @ApiNotFoundResponse({ description: "No account exists for this email. Create an account first." })
   @Post("forgot-password")
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.proxy.send(this.authClient, AUTH_PATTERNS.FORGOT_PASSWORD, dto);

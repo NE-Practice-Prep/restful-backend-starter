@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -30,6 +31,7 @@ const RESET_CODE_EXPIRES_MS = 15 * 60 * 1000;
 const RESET_TOKEN_EXPIRES_MS = 15 * 60 * 1000;
 const GENERIC_RESET_MESSAGE =
   "If an account exists for that email, password reset instructions have been sent";
+const ACCOUNT_NOT_FOUND_MESSAGE = "No account exists for this email. Please create an account first.";
 
 function maybeExposeVerificationCode(code: string, delivered: boolean) {
   if (delivered || process.env.NODE_ENV === "production") {
@@ -114,7 +116,11 @@ export class AuthService {
       select: { id: true, email: true, status: true, emailVerificationCode: true },
     });
 
-    if (!user || user.status === UserStatus.suspended) {
+    if (!user) {
+      throw new NotFoundException(ACCOUNT_NOT_FOUND_MESSAGE);
+    }
+
+    if (user.status === UserStatus.suspended) {
       return { ok: true, message: GENERIC_RESET_MESSAGE };
     }
 

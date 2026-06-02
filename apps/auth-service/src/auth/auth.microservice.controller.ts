@@ -1,4 +1,4 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
 import { AUTH_PATTERNS } from "@shared/microservices/patterns";
@@ -14,7 +14,7 @@ import type { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller()
 export class AuthMicroserviceController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
 
   @MessagePattern(AUTH_PATTERNS.REGISTER)
   async register(@Payload() dto: RegisterDto) {
