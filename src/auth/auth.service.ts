@@ -19,6 +19,9 @@ import type { LoginDto } from "./dto/login.dto";
 import type { JwtPayload } from "./jwt-payload.type";
 import type { AuthenticatedUser } from "./types/authenticated-user.type";
 import type { ChangePasswordDto } from "./dto/change-password.dto";
+import type { RequestPasswordResetDto } from "./dto/request-password-reset.dto";
+import type { VerifyPasswordResetOtpDto } from "./dto/verify-password-reset-otp.dto";
+import type { ResetPasswordDto } from "./dto/reset-password.dto";
 
 const DEFAULT_EXPIRES_SECONDS = 3600;
 const REMEMBER_ME_EXPIRES_SECONDS = 30 * 24 * 3600;
@@ -177,6 +180,120 @@ export class AuthService {
     });
 
     return { ok: true };
+  }
+
+  async requestPasswordReset(dto: RequestPasswordResetDto) {
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true },
+    });
+
+    if (!user) {
+      return { ok: true };
+    }
+
+    const code = this.generateVerificationCode();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetCode: code,
+        passwordResetExpiresAt: expiresAt,
+      },
+    });
+
+    await Promise.all([
+      this.email.sendPasswordResetCode(user.email, code),
+      this.prisma.notification.create({
+        data: {
+          userId: user.id,
+          type: "password_reset_requested",
+          title: "Password reset requested",
+          message:
+            "We sent an OTP code to your email. Use it to verify and reset your password.",
+        },
+      }),
+    ]);
+
+    return { ok: true };
+  }
+
+  async verifyPasswordResetOtp(dto: VerifyPasswordResetOtpDto) {
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        passwordResetCode: true,
+        passwordResetExpiresAt: true,
+      },
+    });
+
+    if (
+      !user?.passwordResetCode ||
+      user.passwordResetCode !== dto.code ||
+      !user.passwordResetExpiresAt ||
+      user.passwordResetExpiresAt < new Date()
+    ) {
+      throw new BadRequestException("Invalid or expired OTP");
+    }
+
+    return { ok: true };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        passwordResetCode: true,
+        passwordResetExpiresAt: true,
+      },
+    });
+
+    if (
+      !user?.passwordResetCode ||
+      user.passwordResetCode !== dto.code ||
+      !user.passwordResetExpiresAt ||
+      user.passwordResetExpiresAt < new Date()
+    ) {
+      throw new BadRequestException("Invalid or expired OTP");
+    }
+
+    const newHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: newHash,
+        passwordResetCode: null,
+        passwordResetExpiresAt: null,
+      },
+    });
+
+    await Promise.all([
+      this.email.sendPasswordResetSuccess(user.email),
+      this.prisma.notification.create({
+        data: {
+          userId: user.id,
+          type: "password_reset_completed",
+          title: "Password changed",
+          message: "Your password has been reset successfully.",
+        },
+      }),
+    ]);
+
+    return { ok: true };
+  }
+
+  async listNotifications(currentUser: AuthenticatedUser) {
+    return this.prisma.notification.findMany({
+      where: { userId: currentUser.sub },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
   }
 
   async buildAuthResponse(user: DbUser, expiresInSeconds: number) {

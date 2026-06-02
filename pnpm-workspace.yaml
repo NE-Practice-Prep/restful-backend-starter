@@ -1,11 +1,6 @@
-allowBuilds:
-  '@nestjs/core': true
-  bcrypt: true
-
 onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@prisma/engines'
-  - '@scarf/scarf'
+  - "@nestjs/core"
+  - "@prisma/engines"
   - bcrypt
   - esbuild
   - prisma
