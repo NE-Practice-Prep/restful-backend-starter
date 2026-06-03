@@ -25,3 +25,61 @@ export const UserStatus = {
 } as const
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const ExtinguisherType = {
+  Water: 'Water',
+  CO2: 'CO2',
+  Foam: 'Foam',
+  DryChemical: 'DryChemical'
+} as const
+
+export type ExtinguisherType = (typeof ExtinguisherType)[keyof typeof ExtinguisherType]
+
+
+export const ExtinguisherSize = {
+  Size1_5lb: 'Size1_5lb',
+  Size5lb: 'Size5lb',
+  Size9lb: 'Size9lb',
+  Size12lb: 'Size12lb'
+} as const
+
+export type ExtinguisherSize = (typeof ExtinguisherSize)[keyof typeof ExtinguisherSize]
+
+
+export const ExtinguisherStatus = {
+  active: 'active',
+  expired: 'expired',
+  maintenance_required: 'maintenance_required',
+  decommissioned: 'decommissioned'
+} as const
+
+export type ExtinguisherStatus = (typeof ExtinguisherStatus)[keyof typeof ExtinguisherStatus]
+
+
+export const InspectionStatus = {
+  scheduled: 'scheduled',
+  completed: 'completed',
+  overdue: 'overdue',
+  cancelled: 'cancelled'
+} as const
+
+export type InspectionStatus = (typeof InspectionStatus)[keyof typeof InspectionStatus]
+
+
+export const NotificationType = {
+  extinguisher_expiring_soon: 'extinguisher_expiring_soon',
+  extinguisher_expired: 'extinguisher_expired',
+  inspection_scheduled: 'inspection_scheduled',
+  inspection_completed: 'inspection_completed'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const InspectionResult = {
+  pass: 'pass',
+  fail: 'fail'
+} as const
+
+export type InspectionResult = (typeof InspectionResult)[keyof typeof InspectionResult]

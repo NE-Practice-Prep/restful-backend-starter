@@ -1,9 +1,10 @@
 import { Role } from "../enums/role.enum";
 
+/** Human-readable TZW role names shown in API and UI */
 const ROLE_LABELS: Record<Role, string> = {
   admin: "Administrator",
-  editor: "Editor",
-  viewer: "Viewer",
+  editor: "Inspector",
+  viewer: "User",
 };
 
 export function getRoleLabel(role: Role): string {

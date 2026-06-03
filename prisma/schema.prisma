@@ -1,3 +1,7 @@
+// TZW Fire Extinguisher Management — database schema
+// One PostgreSQL database shared by ALL microservices (see CODEBASE_GUIDE.md)
+// UserRole: admin = Administrator, editor = Inspector, viewer = User (building occupant)
+
 generator client {
   provider = "prisma-client"
   output   = "../libs/shared/src/generated/prisma"
@@ -9,8 +13,8 @@ datasource db {
 
 enum UserRole {
   admin
-  editor
-  viewer
+  editor // TZW: Inspector
+  viewer // TZW: User
 }
 
 enum UserStatus {
@@ -19,9 +23,73 @@ enum UserStatus {
   suspended
 }
 
+enum ExtinguisherType {
+  Water
+  CO2
+  Foam
+  DryChemical
+}
+
+enum ExtinguisherSize {
+  Size1_5lb
+  Size5lb
+  Size9lb
+  Size12lb
+}
+
+enum ExtinguisherStatus {
+  active
+  expired
+  maintenance_required
+  decommissioned
+}
+
+enum InspectionStatus {
+  scheduled
+  completed
+  overdue
+  cancelled
+}
+
+enum NotificationType {
+  extinguisher_expiring_soon
+  extinguisher_expired
+  inspection_scheduled
+  inspection_completed
+}
+
+enum InspectionResult {
+  pass
+  fail
+}
+
+/// Email delivery ledger (in-app notifications disabled). Prevents duplicate alert emails.
+model Notification {
+  id             String           @id @default(cuid())
+  userId         String
+  eventKey       String
+  extinguisherId String
+  type           NotificationType
+  title          String           @default("")
+  message        String           @default("")
+  readAt         DateTime?
+  emailSentAt    DateTime?
+  createdAt      DateTime         @default(now())
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extinguisher FireExtinguisher @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventKey])
+  @@index([extinguisherId])
+  @@index([emailSentAt])
+  @@index([createdAt])
+}
+
 model User {
   id                          String     @id @default(cuid())
   email                       String     @unique
+  firstName                   String     @default("")
+  lastName                    String     @default("")
   name                        String     @default("")
   passwordHash                String?
   role                        UserRole   @default(viewer)
@@ -39,4 +107,66 @@ model User {
   passwordResetTokenExpiresAt DateTime?
   createdAt                   DateTime   @default(now())
   updatedAt                   DateTime   @updatedAt
+
+  scheduledInspections Inspection[]    @relation("ScheduledBy")
+  maintenanceLogs      MaintenanceLog[]
+  notifications        Notification[]
+}
+
+model FireExtinguisher {
+  id               String             @id @default(cuid())
+  serialNumber     String             @unique
+  location         String
+  type             ExtinguisherType
+  size             ExtinguisherSize
+  installationDate DateTime
+  expiryDate       DateTime
+  status           ExtinguisherStatus @default(active)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  inspections     Inspection[]
+  maintenanceLogs MaintenanceLog[]
+  notifications   Notification[]
+
+  @@index([expiryDate])
+  @@index([status])
+}
+
+model Inspection {
+  id                String           @id @default(cuid())
+  extinguisherId    String
+  scheduledByUserId String
+  scheduledDate     DateTime
+  scheduledTime     String
+  status            InspectionStatus @default(scheduled)
+  result            InspectionResult?
+  issuesFound       String            @default("")
+  recommendations   String            @default("")
+  completedAt       DateTime?
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  extinguisher FireExtinguisher @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+  scheduledBy  User             @relation("ScheduledBy", fields: [scheduledByUserId], references: [id])
+
+  @@index([scheduledDate])
+  @@index([status])
+}
+
+model MaintenanceLog {
+  id               String   @id @default(cuid())
+  extinguisherId   String
+  inspectorUserId  String
+  actionTaken      String
+  maintenanceDate  DateTime
+  issuesIdentified String   @default("")
+  notes            String   @default("")
+  createdAt        DateTime @default(now())
+
+  extinguisher FireExtinguisher @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+  inspector    User             @relation(fields: [inspectorUserId], references: [id])
+
+  @@index([maintenanceDate])
 }

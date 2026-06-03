@@ -1,3 +1,7 @@
+/** Prisma client factory — all microservices share one DATABASE_URL and schema. */
+/**
+ * Creates the Prisma client used by every microservice (same DATABASE_URL / one database).
+ */
 import "dotenv/config";
 
 import { PrismaClient } from "../generated/prisma/client";

@@ -40,7 +40,11 @@ function makePrisma() {
 }
 
 function makeEmail() {
-  return { sendVerificationCode: vi.fn(), sendInvitation: vi.fn() };
+  return {
+    sendVerificationCode: vi.fn(),
+    sendStaffInvitation: vi.fn().mockResolvedValue({ delivered: true }),
+    sendInvitation: vi.fn(),
+  };
 }
 
 describe("UsersService", () => {
@@ -96,6 +100,32 @@ describe("UsersService", () => {
           status: UserStatus.invited,
         }),
       ).rejects.toThrow(ConflictException);
+    });
+
+    it("creates user, sends staff invitation with temporary password", async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      const created = makeDbUser({
+        email: "inspector@company.com",
+        role: Role.editor,
+        emailVerified: true,
+      });
+      prisma.user.create.mockResolvedValue(created);
+
+      const result = await service.create({
+        name: "Jordan Inspector",
+        email: "inspector@company.com",
+        role: Role.editor,
+        status: UserStatus.invited,
+      });
+
+      expect(email.sendStaffInvitation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "inspector@company.com",
+          roleLabel: "Inspector",
+          temporaryPassword: expect.stringMatching(/^.{12}$/),
+        }),
+      );
+      expect(result.email).toBe("inspector@company.com");
     });
   });
 });

@@ -1,3 +1,7 @@
+/**
+ * API Gateway entry point — the only HTTP server the frontend calls (default port 3001).
+ * Validates bodies (ValidationPipe), serves Swagger at /api, enables CORS for Next.js.
+ */
 import "reflect-metadata";
 import "dotenv/config";
 
@@ -24,6 +28,7 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Strip unknown JSON fields and auto-validate DTOs on every route
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -33,8 +38,8 @@ async function bootstrap() {
   );
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle("Restufl API")
-    .setDescription("REST API Gateway for Restufl backend")
+    .setTitle("TZW Fire Extinguisher API")
+    .setDescription("REST API Gateway for TZW fire extinguisher management")
     .setVersion("1.0")
     .addBearerAuth()
     .build();

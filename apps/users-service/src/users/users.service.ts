@@ -9,6 +9,11 @@ import * as bcrypt from "bcrypt";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { randomUUID } from "node:crypto";
+import { getRoleLabel } from "@shared/common/utils/role-labels";
+import {
+  generateTemporaryPassword,
+  shouldExposeDevCredentials,
+} from "@shared/common/utils/temp-password.util";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { Role } from "@shared/common/enums/role.enum";
@@ -91,13 +96,21 @@ export class UsersService {
     return toCurrentUser(user);
   }
 
+  /**
+   * Admin-only (gateway @Roles admin).
+   * 1) Generates a one-time password and hashes it.
+   * 2) Sets emailVerified true (no public signup OTP flow).
+   * 3) Emails sendStaffInvitation with email + temporary password.
+   * Inspectors use /login; they can later use /forgot-password to choose their own password.
+   */
   async create(dto: CreateUserDto) {
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) throw new ConflictException("Email already registered");
 
-    const tempPassword = randomUUID().slice(0, 12);
-    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    const temporaryPassword = generateTemporaryPassword();
+    const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
+    // Admin-provisioned accounts (inspectors, etc.) skip public signup verification
     const user = await this.prisma.user.create({
       data: {
         email: dto.email.trim(),
@@ -107,16 +120,25 @@ export class UsersService {
         phone: dto.phone?.trim() || null,
         location: dto.location?.trim() || null,
         passwordHash,
-        emailVerified: dto.status === UserStatus.active,
+        emailVerified: true,
       },
       select: this.workspaceUserSelect,
     });
 
-    if (dto.status === UserStatus.invited) {
-      await this.email.sendInvitation(user.email, user.name);
-    }
+    const { delivered } = await this.email.sendStaffInvitation({
+      email: user.email,
+      name: user.name,
+      roleLabel: getRoleLabel(dto.role),
+      temporaryPassword,
+    });
 
-    return toWorkspaceUser(user);
+    return {
+      ...toWorkspaceUser(user),
+      invitationEmailSent: delivered,
+      ...(shouldExposeDevCredentials(delivered)
+        ? { devTemporaryPassword: temporaryPassword }
+        : {}),
+    };
   }
 
   async updateById(id: string, dto: UpdateUserDto) {

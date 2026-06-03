@@ -1,3 +1,11 @@
+/**
+ * Auth microservice — no public HTTP. Listens on TCP (default 3002) for patterns like auth.login.
+ * The API Gateway is the only HTTP entry; it forwards login/register here via MicroserviceProxyService.
+ */
+/**
+ * Auth microservice — TCP only (no public HTTP). Listens for patterns like "auth.login".
+ * Start before or with the gateway; gateway connects to AUTH_SERVICE_PORT (default 3002).
+ */
 import "reflect-metadata";
 import "dotenv/config";
 

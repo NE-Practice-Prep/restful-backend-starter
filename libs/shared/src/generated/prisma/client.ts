@@ -31,8 +31,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Notifications
+ * const notifications = await prisma.notification.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,7 +42,27 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
+ * Model Notification
+ * Email delivery ledger (in-app notifications disabled). Prevents duplicate alert emails.
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model User
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model FireExtinguisher
+ * 
+ */
+export type FireExtinguisher = Prisma.FireExtinguisherModel
+/**
+ * Model Inspection
+ * 
+ */
+export type Inspection = Prisma.InspectionModel
+/**
+ * Model MaintenanceLog
+ * 
+ */
+export type MaintenanceLog = Prisma.MaintenanceLogModel

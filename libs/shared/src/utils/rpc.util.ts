@@ -1,3 +1,7 @@
+/**
+ * Microservices speak TCP, not HTTP. These helpers turn service errors into RpcException
+ * and turn RpcException back into HTTP status codes at the gateway.
+ */
 import { HttpException } from "@nestjs/common";
 import { RpcException } from "@nestjs/microservices";
 
@@ -6,6 +10,7 @@ export type RpcErrorPayload = {
   message: string | string[];
 };
 
+/** Wrap HttpException (from services) so the gateway can forward status + message */
 export function toRpcException(error: unknown): RpcException {
   if (error instanceof RpcException) {
     return error;

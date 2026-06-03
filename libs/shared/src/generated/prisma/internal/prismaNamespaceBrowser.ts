@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  Notification: 'Notification',
+  User: 'User',
+  FireExtinguisher: 'FireExtinguisher',
+  Inspection: 'Inspection',
+  MaintenanceLog: 'MaintenanceLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -70,9 +74,27 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  eventKey: 'eventKey',
+  extinguisherId: 'extinguisherId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  readAt: 'readAt',
+  emailSentAt: 'emailSentAt',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
   name: 'name',
   passwordHash: 'passwordHash',
   role: 'role',
@@ -93,6 +115,55 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const FireExtinguisherScalarFieldEnum = {
+  id: 'id',
+  serialNumber: 'serialNumber',
+  location: 'location',
+  type: 'type',
+  size: 'size',
+  installationDate: 'installationDate',
+  expiryDate: 'expiryDate',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FireExtinguisherScalarFieldEnum = (typeof FireExtinguisherScalarFieldEnum)[keyof typeof FireExtinguisherScalarFieldEnum]
+
+
+export const InspectionScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  scheduledByUserId: 'scheduledByUserId',
+  scheduledDate: 'scheduledDate',
+  scheduledTime: 'scheduledTime',
+  status: 'status',
+  result: 'result',
+  issuesFound: 'issuesFound',
+  recommendations: 'recommendations',
+  completedAt: 'completedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InspectionScalarFieldEnum = (typeof InspectionScalarFieldEnum)[keyof typeof InspectionScalarFieldEnum]
+
+
+export const MaintenanceLogScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  inspectorUserId: 'inspectorUserId',
+  actionTaken: 'actionTaken',
+  maintenanceDate: 'maintenanceDate',
+  issuesIdentified: 'issuesIdentified',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type MaintenanceLogScalarFieldEnum = (typeof MaintenanceLogScalarFieldEnum)[keyof typeof MaintenanceLogScalarFieldEnum]
 
 
 export const SortOrder = {

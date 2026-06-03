@@ -1,7 +1,17 @@
+/**
+ * Registers TCP clients so gateway controllers can talk to auth/users/extinguishers/etc.
+ * Each service runs on its own port (3002–3006) — see .env or defaults in options below.
+ */
 import { Global, Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 
-import { AUTH_SERVICE, USERS_SERVICE } from "./microservices.constants";
+import {
+  AUTH_SERVICE,
+  EXTINGUISHERS_SERVICE,
+  INSPECTIONS_SERVICE,
+  REPORTS_SERVICE,
+  USERS_SERVICE,
+} from "./microservices.constants";
 import { MicroserviceProxyService } from "./microservice-proxy.service";
 
 @Global()
@@ -22,6 +32,30 @@ import { MicroserviceProxyService } from "./microservice-proxy.service";
         options: {
           host: (process.env.USERS_SERVICE_HOST ?? "127.0.0.1").trim(),
           port: Number((process.env.USERS_SERVICE_PORT ?? "3003").trim()),
+        },
+      },
+      {
+        name: EXTINGUISHERS_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: (process.env.EXTINGUISHERS_SERVICE_HOST ?? "127.0.0.1").trim(),
+          port: Number((process.env.EXTINGUISHERS_SERVICE_PORT ?? "3004").trim()),
+        },
+      },
+      {
+        name: INSPECTIONS_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: (process.env.INSPECTIONS_SERVICE_HOST ?? "127.0.0.1").trim(),
+          port: Number((process.env.INSPECTIONS_SERVICE_PORT ?? "3005").trim()),
+        },
+      },
+      {
+        name: REPORTS_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: (process.env.REPORTS_SERVICE_HOST ?? "127.0.0.1").trim(),
+          port: Number((process.env.REPORTS_SERVICE_PORT ?? "3006").trim()),
         },
       },
     ]),

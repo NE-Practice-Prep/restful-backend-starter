@@ -28,6 +28,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { AuthTokenResponseDto } from "./dto/auth-token-response.dto";
 import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 
+/** Public HTTP routes under /auth — each method forwards to auth-service via TCP */
 @ApiTags("auth")
 @Controller("auth")
 export class AuthGatewayController {
@@ -37,7 +38,11 @@ export class AuthGatewayController {
     private readonly proxy: MicroserviceProxyService,
   ) {}
 
-  @ApiOperation({ summary: "Register a new account" })
+  @ApiOperation({
+    summary: "Register a new User account (viewer only)",
+    description:
+      "Public signup. Does not accept a role field. Inspectors and administrators are created by an admin via POST /users.",
+  })
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({ type: AuthTokenResponseDto })
   @ApiConflictResponse({ description: "Email already registered" })

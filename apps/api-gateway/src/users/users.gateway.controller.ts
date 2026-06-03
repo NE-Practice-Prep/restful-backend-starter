@@ -176,4 +176,21 @@ export class UsersGatewayController {
   delete(@Param("id") id: string) {
     return this.proxy.send(this.usersClient, USERS_PATTERNS.DELETE, { id });
   }
+
+  @ApiOperation({
+    summary: "Run extinguisher expiry email scan (admin)",
+    description:
+      "Sends email alerts for units expiring within 30 days or already expired. In-app notifications are disabled.",
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Post("admin/run-expiry-check")
+  runExpiryEmailCheck() {
+    return this.proxy.send(
+      this.usersClient,
+      USERS_PATTERNS.NOTIFICATIONS_RUN_EXPIRY_CHECK,
+      {},
+    );
+  }
 }

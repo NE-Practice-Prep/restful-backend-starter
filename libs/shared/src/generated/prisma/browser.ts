@@ -18,7 +18,27 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model Notification
+ * Email delivery ledger (in-app notifications disabled). Prevents duplicate alert emails.
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model User
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model FireExtinguisher
+ * 
+ */
+export type FireExtinguisher = Prisma.FireExtinguisherModel
+/**
+ * Model Inspection
+ * 
+ */
+export type Inspection = Prisma.InspectionModel
+/**
+ * Model MaintenanceLog
+ * 
+ */
+export type MaintenanceLog = Prisma.MaintenanceLogModel

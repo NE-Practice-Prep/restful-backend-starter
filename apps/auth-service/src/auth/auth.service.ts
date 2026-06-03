@@ -1,3 +1,11 @@
+/**
+ * Authentication business logic: register (public, viewer only), login (JWT), email verify,
+ * forgot/reset password. Called from AuthMicroserviceController via TCP — not from HTTP directly.
+ */
+/**
+ * Auth business logic: register (public, viewer only), login (JWT), email verify, password reset.
+ * Called only from auth-service TCP handlers — not from HTTP directly.
+ */
 import {
   BadRequestException,
   ConflictException,
@@ -13,6 +21,7 @@ import * as bcrypt from "bcrypt";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { Role } from "@shared/common/enums/role.enum";
+import { PUBLIC_SIGNUP_ROLE } from "@shared/auth/role-policy";
 import { UserStatus } from "@shared/common/enums/user-status.enum";
 import { EmailService } from "@shared/email/email.service";
 import { toCurrentUser, type DbUser } from "@shared/common/mappers/user.mapper";
@@ -23,6 +32,7 @@ import type { LoginDto } from "./dto/login.dto";
 import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import type { VerifyResetPasswordDto } from "./dto/verify-reset-password.dto";
 import type { ResetPasswordDto } from "./dto/reset-password.dto";
+import { buildDisplayName } from "@shared/common/utils/user-name.util";
 import type { JwtPayload } from "./jwt-payload.type";
 
 const DEFAULT_EXPIRES_SECONDS = 3600;
@@ -59,12 +69,15 @@ export class AuthService {
     const verificationCode = this.generateVerificationCode();
     const verificationExpires = new Date(Date.now() + 15 * 60 * 1000);
 
+    // Public signup never accepts a role field — inspectors/admins are added by admin only
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
-        name: dto.fullName.trim(),
+        firstName: dto.firstName.trim(),
+        lastName: dto.lastName.trim(),
+        name: buildDisplayName(dto.firstName, dto.lastName),
         passwordHash,
-        role: Role.viewer,
+        role: PUBLIC_SIGNUP_ROLE,
         status: UserStatus.invited,
         emailVerified: false,
         emailVerificationCode: verificationCode,
@@ -98,6 +111,14 @@ export class AuthService {
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
       throw new UnauthorizedException("Invalid credentials");
+    }
+
+    if (user.status === UserStatus.invited) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { status: UserStatus.active },
+      });
+      user.status = UserStatus.active;
     }
 
     const expiresIn = dto.rememberMe ? REMEMBER_ME_EXPIRES_SECONDS : DEFAULT_EXPIRES_SECONDS;
@@ -137,12 +158,12 @@ export class AuthService {
       },
     });
 
-    await this.email.sendPasswordResetCode(user.email, resetCode);
+    const { delivered } = await this.email.sendPasswordResetCode(user.email, resetCode);
 
     return {
       ok: true,
       message: GENERIC_RESET_MESSAGE,
-      ...(this.shouldExposeDevCodes() ? { devResetCode: resetCode } : {}),
+      ...(this.shouldExposeDevCodes() && !delivered ? { devResetCode: resetCode } : {}),
     };
   }
 

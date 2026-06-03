@@ -384,7 +384,11 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
-  User: 'User'
+  Notification: 'Notification',
+  User: 'User',
+  FireExtinguisher: 'FireExtinguisher',
+  Inspection: 'Inspection',
+  MaintenanceLog: 'MaintenanceLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -400,10 +404,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user"
+    modelProps: "notification" | "user" | "fireExtinguisher" | "inspection" | "maintenanceLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    Notification: {
+      payload: Prisma.$NotificationPayload<ExtArgs>
+      fields: Prisma.NotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.NotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findMany: {
+          args: Prisma.NotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        create: {
+          args: Prisma.NotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        createMany: {
+          args: Prisma.NotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        delete: {
+          args: Prisma.NotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        update: {
+          args: Prisma.NotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.NotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotification>
+        }
+        groupBy: {
+          args: Prisma.NotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -478,6 +556,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FireExtinguisher: {
+      payload: Prisma.$FireExtinguisherPayload<ExtArgs>
+      fields: Prisma.FireExtinguisherFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FireExtinguisherFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FireExtinguisherFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        findFirst: {
+          args: Prisma.FireExtinguisherFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FireExtinguisherFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        findMany: {
+          args: Prisma.FireExtinguisherFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>[]
+        }
+        create: {
+          args: Prisma.FireExtinguisherCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        createMany: {
+          args: Prisma.FireExtinguisherCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FireExtinguisherCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>[]
+        }
+        delete: {
+          args: Prisma.FireExtinguisherDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        update: {
+          args: Prisma.FireExtinguisherUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        deleteMany: {
+          args: Prisma.FireExtinguisherDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FireExtinguisherUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FireExtinguisherUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>[]
+        }
+        upsert: {
+          args: Prisma.FireExtinguisherUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FireExtinguisherPayload>
+        }
+        aggregate: {
+          args: Prisma.FireExtinguisherAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFireExtinguisher>
+        }
+        groupBy: {
+          args: Prisma.FireExtinguisherGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FireExtinguisherGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FireExtinguisherCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FireExtinguisherCountAggregateOutputType> | number
+        }
+      }
+    }
+    Inspection: {
+      payload: Prisma.$InspectionPayload<ExtArgs>
+      fields: Prisma.InspectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InspectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InspectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        findFirst: {
+          args: Prisma.InspectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InspectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        findMany: {
+          args: Prisma.InspectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>[]
+        }
+        create: {
+          args: Prisma.InspectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        createMany: {
+          args: Prisma.InspectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InspectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>[]
+        }
+        delete: {
+          args: Prisma.InspectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        update: {
+          args: Prisma.InspectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.InspectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InspectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InspectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.InspectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InspectionPayload>
+        }
+        aggregate: {
+          args: Prisma.InspectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInspection>
+        }
+        groupBy: {
+          args: Prisma.InspectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InspectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InspectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InspectionCountAggregateOutputType> | number
+        }
+      }
+    }
+    MaintenanceLog: {
+      payload: Prisma.$MaintenanceLogPayload<ExtArgs>
+      fields: Prisma.MaintenanceLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MaintenanceLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MaintenanceLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        findFirst: {
+          args: Prisma.MaintenanceLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MaintenanceLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        findMany: {
+          args: Prisma.MaintenanceLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>[]
+        }
+        create: {
+          args: Prisma.MaintenanceLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        createMany: {
+          args: Prisma.MaintenanceLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MaintenanceLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>[]
+        }
+        delete: {
+          args: Prisma.MaintenanceLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        update: {
+          args: Prisma.MaintenanceLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.MaintenanceLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MaintenanceLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MaintenanceLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.MaintenanceLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceLogPayload>
+        }
+        aggregate: {
+          args: Prisma.MaintenanceLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMaintenanceLog>
+        }
+        groupBy: {
+          args: Prisma.MaintenanceLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MaintenanceLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -517,9 +817,27 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  eventKey: 'eventKey',
+  extinguisherId: 'extinguisherId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  readAt: 'readAt',
+  emailSentAt: 'emailSentAt',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
   name: 'name',
   passwordHash: 'passwordHash',
   role: 'role',
@@ -540,6 +858,55 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const FireExtinguisherScalarFieldEnum = {
+  id: 'id',
+  serialNumber: 'serialNumber',
+  location: 'location',
+  type: 'type',
+  size: 'size',
+  installationDate: 'installationDate',
+  expiryDate: 'expiryDate',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FireExtinguisherScalarFieldEnum = (typeof FireExtinguisherScalarFieldEnum)[keyof typeof FireExtinguisherScalarFieldEnum]
+
+
+export const InspectionScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  scheduledByUserId: 'scheduledByUserId',
+  scheduledDate: 'scheduledDate',
+  scheduledTime: 'scheduledTime',
+  status: 'status',
+  result: 'result',
+  issuesFound: 'issuesFound',
+  recommendations: 'recommendations',
+  completedAt: 'completedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InspectionScalarFieldEnum = (typeof InspectionScalarFieldEnum)[keyof typeof InspectionScalarFieldEnum]
+
+
+export const MaintenanceLogScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  inspectorUserId: 'inspectorUserId',
+  actionTaken: 'actionTaken',
+  maintenanceDate: 'maintenanceDate',
+  issuesIdentified: 'issuesIdentified',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type MaintenanceLogScalarFieldEnum = (typeof MaintenanceLogScalarFieldEnum)[keyof typeof MaintenanceLogScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -587,6 +954,34 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'NotificationType'
+ */
+export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationType[]'
+ */
+export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
  * Reference to a field of type 'UserRole'
  */
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
@@ -622,16 +1017,72 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'DateTime'
+ * Reference to a field of type 'ExtinguisherType'
  */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+export type EnumExtinguisherTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherType'>
     
 
 
 /**
- * Reference to a field of type 'DateTime[]'
+ * Reference to a field of type 'ExtinguisherType[]'
  */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+export type ListEnumExtinguisherTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ExtinguisherSize'
+ */
+export type EnumExtinguisherSizeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherSize'>
+    
+
+
+/**
+ * Reference to a field of type 'ExtinguisherSize[]'
+ */
+export type ListEnumExtinguisherSizeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherSize[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ExtinguisherStatus'
+ */
+export type EnumExtinguisherStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ExtinguisherStatus[]'
+ */
+export type ListEnumExtinguisherStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExtinguisherStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'InspectionStatus'
+ */
+export type EnumInspectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InspectionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'InspectionStatus[]'
+ */
+export type ListEnumInspectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InspectionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'InspectionResult'
+ */
+export type EnumInspectionResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InspectionResult'>
+    
+
+
+/**
+ * Reference to a field of type 'InspectionResult[]'
+ */
+export type ListEnumInspectionResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InspectionResult[]'>
     
 
 
@@ -758,7 +1209,11 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  notification?: Prisma.NotificationOmit
   user?: Prisma.UserOmit
+  fireExtinguisher?: Prisma.FireExtinguisherOmit
+  inspection?: Prisma.InspectionOmit
+  maintenanceLog?: Prisma.MaintenanceLogOmit
 }
 
 /* Types for Logging */

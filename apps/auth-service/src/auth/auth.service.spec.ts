@@ -34,7 +34,7 @@ function makeJwt() {
 function makeEmail() {
   return {
     sendVerificationCode: vi.fn().mockResolvedValue({ delivered: true }),
-    sendPasswordResetCode: vi.fn(),
+    sendPasswordResetCode: vi.fn().mockResolvedValue({ delivered: true }),
     sendInvitation: vi.fn(),
   };
 }
@@ -85,7 +85,8 @@ describe("AuthService", () => {
 
       await expect(
         service.register({
-          fullName: "Alice",
+          firstName: "Alice",
+          lastName: "Smith",
           email: "alice@example.com",
           password: "password123",
           acceptTerms: true,
@@ -102,12 +103,18 @@ describe("AuthService", () => {
       jwt.signAsync.mockResolvedValue("jwt-token");
 
       const result = await service.register({
-        fullName: "Bob",
+        firstName: "Bob",
+        lastName: "Jones",
         email: "bob@example.com",
         password: "password123",
         acceptTerms: true,
       });
 
+      expect(prisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ role: Role.viewer }),
+        }),
+      );
       expect(result.accessToken).toBe("jwt-token");
       expect(result.emailVerified).toBe(false);
       expect(email.sendVerificationCode).toHaveBeenCalledWith(
@@ -163,7 +170,7 @@ describe("AuthService", () => {
       const updateData = prisma.user.update.mock.calls[0]?.[0]?.data;
 
       expect(result.ok).toBe(true);
-      expect(result.devResetCode).toMatch(/^\d{6}$/);
+      expect(result.devResetCode).toBeUndefined();
       expect(updateData.passwordResetCode).toMatch(/^\d{6}$/);
       expect(updateData.passwordResetCode).not.toBe("123456");
       expect(updateData.passwordResetExpiresAt).toBeInstanceOf(Date);
@@ -173,6 +180,18 @@ describe("AuthService", () => {
         "alice@example.com",
         updateData.passwordResetCode,
       );
+    });
+
+    it("returns devResetCode when SMTP delivery fails", async () => {
+      email.sendPasswordResetCode.mockResolvedValueOnce({ delivered: false });
+      prisma.user.findUnique.mockResolvedValue(
+        makeDbUser({ email: "inspector@tzw.local" }),
+      );
+      prisma.user.update.mockResolvedValue(makeDbUser());
+
+      const result = await service.forgotPassword({ email: "inspector@tzw.local" });
+
+      expect(result.devResetCode).toMatch(/^\d{6}$/);
     });
   });
 
