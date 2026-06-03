@@ -1,5 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Equals, IsBoolean, IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Equals, IsBoolean, IsEmail, IsString } from "class-validator";
+
+import { IsStrongPassword } from "@shared/common/validators/is-strong-password.decorator";
 
 export class RegisterDto {
   @ApiProperty({ type: String, example: "John Doe" })
@@ -10,9 +12,14 @@ export class RegisterDto {
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ type: String, example: "securePass123", minLength: 8 })
+  @ApiProperty({
+    type: String,
+    example: "SecurePass1!",
+    description:
+      "At least 8 characters with uppercase, lowercase, number, and special character",
+  })
   @IsString()
-  @MinLength(8)
+  @IsStrongPassword()
   password!: string;
 
   @ApiProperty({ type: Boolean, example: true })

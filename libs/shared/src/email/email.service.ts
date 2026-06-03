@@ -84,6 +84,30 @@ export class EmailService {
     await transporter.sendMail({ from, to: email, subject, text });
   }
 
+  /**
+   * Sends a generic notification email. Intended for future use when
+   * in-app notifications should also be delivered by email.
+   */
+  async sendNotificationEmail(
+    email: string,
+    subject: string,
+    message: string,
+  ): Promise<void> {
+    const transporter = this.getTransporter();
+    const text = message.trim();
+
+    if (!transporter) {
+      this.logger.warn(
+        `SMTP not configured. Notification email for ${email} — subject: ${subject}`,
+      );
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+    await transporter.sendMail({ from, to: email, subject, text });
+    this.logger.log(`Notification email sent to ${email}: ${subject}`);
+  }
+
   async sendPasswordResetSuccess(email: string): Promise<void> {
     const subject = "Password changed successfully";
     const text =

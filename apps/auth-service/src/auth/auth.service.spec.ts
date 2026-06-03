@@ -1,6 +1,11 @@
-import "reflect-metadata";
+﻿import "reflect-metadata";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { AuthService } from "./auth.service";
@@ -27,7 +32,12 @@ function makeJwt() {
 }
 
 function makeEmail() {
-  return { sendVerificationCode: vi.fn(), sendInvitation: vi.fn() };
+  return {
+    sendVerificationCode: vi.fn(),
+    sendInvitation: vi.fn(),
+    sendPasswordResetCode: vi.fn(),
+    sendPasswordResetSuccess: vi.fn(),
+  };
 }
 
 const BASE_DATE = new Date("2026-01-01T00:00:00Z");
@@ -72,7 +82,7 @@ describe("AuthService", () => {
         service.register({
           fullName: "Alice",
           email: "alice@example.com",
-          password: "password123",
+          password: "Password1!",
           acceptTerms: true,
         }),
       ).rejects.toThrow(ConflictException);
@@ -89,7 +99,7 @@ describe("AuthService", () => {
       const result = await service.register({
         fullName: "Bob",
         email: "bob@example.com",
-        password: "password123",
+        password: "Password1!",
         acceptTerms: true,
       });
 
@@ -104,7 +114,7 @@ describe("AuthService", () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.login({ email: "nobody@example.com", password: "password123" }),
+        service.login({ email: "nobody@example.com", password: "Password1!" }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -114,7 +124,7 @@ describe("AuthService", () => {
       mockBcryptCompare.mockResolvedValue(true);
       jwt.signAsync.mockResolvedValue("jwt-token");
 
-      const result = await service.login({ email: "alice@example.com", password: "password123" });
+      const result = await service.login({ email: "alice@example.com", password: "Password1!" });
 
       expect(result.accessToken).toBe("jwt-token");
     });
@@ -125,16 +135,59 @@ describe("AuthService", () => {
 
     it("updates password hash and returns { ok: true } on success", async () => {
       prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: "old_hash" });
-      mockBcryptCompare.mockResolvedValue(true);
+      mockBcryptCompare.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
       mockBcryptHash.mockResolvedValue("new_hash");
       prisma.user.update.mockResolvedValue(makeDbUser());
 
       const result = await service.changePassword(currentUser, {
-        currentPassword: "old_pass1",
-        newPassword: "new_pass23",
+        currentPassword: "OldPass1!",
+        newPassword: "NewPass2!",
       });
 
       expect(result).toEqual({ ok: true });
+    });
+
+    it("rejects when new password matches current password", async () => {
+      prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: "old_hash" });
+      mockBcryptCompare.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+      await expect(
+        service.changePassword(currentUser, {
+          currentPassword: "SamePass1!",
+          newPassword: "SamePass1!",
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe("verifyPasswordResetOtp", () => {
+    it("throws NotFoundException when user does not exist", async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.verifyPasswordResetOtp({ email: "missing@example.com", code: "1234" }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("rejects reusing the current password", async () => {
+      prisma.user.findUnique.mockResolvedValue({
+        id: "user-1",
+        email: "alice@example.com",
+        passwordHash: "existing_hash",
+        passwordResetCode: "1234",
+        passwordResetExpiresAt: new Date(Date.now() + 60_000),
+      });
+      mockBcryptCompare.mockResolvedValue(true);
+
+      await expect(
+        service.resetPassword({
+          email: "alice@example.com",
+          code: "1234",
+          newPassword: "SamePass1!",
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

@@ -8,7 +8,13 @@ export const AUTH_PATTERNS = {
   REQUEST_PASSWORD_RESET: "auth.request_password_reset",
   VERIFY_PASSWORD_RESET_OTP: "auth.verify_password_reset_otp",
   RESET_PASSWORD: "auth.reset_password",
-  LIST_NOTIFICATIONS: "auth.list_notifications",
+  RESEND_PASSWORD_RESET: "auth.resend_password_reset",
+} as const;
+
+export const NOTIFICATIONS_PATTERNS = {
+  LIST: "notifications.list",
+  MARK_READ: "notifications.mark_read",
+  MARK_UNREAD: "notifications.mark_unread",
 } as const;
 
 export const USERS_PATTERNS = {

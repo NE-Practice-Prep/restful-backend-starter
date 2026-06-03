@@ -6,6 +6,7 @@ import { toRpcException } from "@shared/utils/rpc.util";
 import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
 import type { ChangePasswordDto } from "@shared/dto/change-password.dto";
 import type { RequestPasswordResetDto } from "@shared/dto/request-password-reset.dto";
+import type { ResendPasswordResetDto } from "@shared/dto/resend-password-reset.dto";
 import type { VerifyPasswordResetOtpDto } from "@shared/dto/verify-password-reset-otp.dto";
 import type { ResetPasswordDto } from "@shared/dto/reset-password.dto";
 import { AuthService } from "./auth.service";
@@ -75,6 +76,15 @@ export class AuthMicroserviceController {
     }
   }
 
+  @MessagePattern(AUTH_PATTERNS.RESEND_PASSWORD_RESET)
+  async resendPasswordReset(@Payload() dto: ResendPasswordResetDto) {
+    try {
+      return await this.auth.resendPasswordReset(dto);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
   @MessagePattern(AUTH_PATTERNS.VERIFY_PASSWORD_RESET_OTP)
   async verifyPasswordResetOtp(@Payload() dto: VerifyPasswordResetOtpDto) {
     try {
@@ -88,15 +98,6 @@ export class AuthMicroserviceController {
   async resetPassword(@Payload() dto: ResetPasswordDto) {
     try {
       return await this.auth.resetPassword(dto);
-    } catch (e: unknown) {
-      throw toRpcException(e);
-    }
-  }
-
-  @MessagePattern(AUTH_PATTERNS.LIST_NOTIFICATIONS)
-  async listNotifications(@Payload() data: { user: AuthenticatedUser }) {
-    try {
-      return await this.auth.listNotifications(data.user);
     } catch (e: unknown) {
       throw toRpcException(e);
     }
