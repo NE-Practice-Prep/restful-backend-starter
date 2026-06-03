@@ -12,8 +12,9 @@ function makeDbUser(overrides: Record<string, unknown> = {}) {
   return {
     id: "user-1",
     email: "alice@example.com",
-    name: "Alice",
-    role: Role.viewer,
+    firstName: "Alice",
+    lastName: "Example",
+    role: Role.user,
     status: UserStatus.active,
     phone: null,
     location: null,
@@ -90,9 +91,10 @@ describe("UsersService", () => {
 
       await expect(
         service.create({
-          name: "Bob",
+          firstName: "Bob",
+          lastName: "Example",
           email: "alice@example.com",
-          role: Role.viewer,
+          role: Role.user,
           status: UserStatus.invited,
         }),
       ).rejects.toThrow(ConflictException);

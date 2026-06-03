@@ -1,0 +1,67 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import type { ClientProxy } from "@nestjs/microservices";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from "@nestjs/swagger";
+
+import { FIRE_PATTERNS } from "@shared/microservices/patterns";
+import { Role } from "@shared/common/enums/role.enum";
+import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
+import { FIRE_SERVICE } from "../clients/microservices.constants";
+import { MicroserviceProxyService } from "../clients/microservice-proxy.service";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { CheckComplianceDto } from "./dto/check-compliance.dto";
+
+@ApiTags("compliance")
+@Controller("compliance")
+export class ComplianceGatewayController {
+  constructor(
+    @Inject(FIRE_SERVICE) private readonly fireClient: ClientProxy,
+    @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
+  ) {}
+
+  @ApiOperation({ summary: "Record compliance check for an extinguisher" })
+  @ApiBearerAuth()
+  @ApiBody({ type: CheckComplianceDto })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin, Role.inspector)
+  @Post("check")
+  check(@CurrentUser() user: AuthenticatedUser, @Body() dto: CheckComplianceDto) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_CHECK, {
+      checkedById: user.sub,
+      dto,
+    });
+  }
+
+  @ApiOperation({ summary: "List compliance audit records" })
+  @ApiBearerAuth()
+  @ApiQuery({ name: "extinguisherId", required: false })
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  list(@Query("extinguisherId") extinguisherId?: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_LIST, { extinguisherId });
+  }
+
+  @ApiOperation({ summary: "Real-time compliance dashboard summary" })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get("summary")
+  summary() {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_SUMMARY, {});
+  }
+}

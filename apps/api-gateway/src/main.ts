@@ -58,9 +58,9 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`API Gateway running at http://localhost:${port}`);
   console.log(`Swagger docs at http://localhost:${port}/api`);
+  console.log(`OpenAPI docs at http://localhost:${port}/api-json`);
+  console.log(`YAML docs at http://localhost:${port}/api-yaml`);
+
 }
 
-bootstrap().catch((error) => {
-  console.error("Failed to start API gateway", error);
-  process.exit(1);
-});
+bootstrap().catch((error) => console.error("Failed to start API gateway", error));

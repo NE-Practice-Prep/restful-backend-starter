@@ -51,3 +51,33 @@ export type User = Prisma.UserModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model Site
+ * 
+ */
+export type Site = Prisma.SiteModel
+/**
+ * Model FireExtinguisher
+ * 
+ */
+export type FireExtinguisher = Prisma.FireExtinguisherModel
+/**
+ * Model Inspection
+ * 
+ */
+export type Inspection = Prisma.InspectionModel
+/**
+ * Model MaintenanceRecord
+ * 
+ */
+export type MaintenanceRecord = Prisma.MaintenanceRecordModel
+/**
+ * Model ComplianceRecord
+ * 
+ */
+export type ComplianceRecord = Prisma.ComplianceRecordModel
+/**
+ * Model Report
+ * 
+ */
+export type Report = Prisma.ReportModel

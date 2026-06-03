@@ -8,13 +8,19 @@ export class PublicUserDto {
   @ApiProperty({ type: String, example: "clxyz123abc456def789" })
   id!: string;
 
+  @ApiProperty({ type: String, example: "Jane" })
+  firstName!: string;
+
+  @ApiProperty({ type: String, example: "Cooper" })
+  lastName!: string;
+
   @ApiProperty({ type: String, example: "Jane Cooper" })
-  name!: string;
+  fullName!: string;
 
   @ApiProperty({ type: String, example: "user@example.com" })
   email!: string;
 
-  @ApiProperty({ enum: ROLE_VALUES, example: "viewer" })
+  @ApiProperty({ enum: ROLE_VALUES, example: "user" })
   role!: Role;
 
   @ApiProperty({ enum: STATUS_VALUES, example: "active" })
@@ -31,8 +37,14 @@ export class PublicUserDto {
 }
 
 export class CurrentUserResponseDto {
+  @ApiProperty({ type: String, example: "Jane" })
+  firstName!: string;
+
+  @ApiProperty({ type: String, example: "Cooper" })
+  lastName!: string;
+
   @ApiProperty({ type: String, example: "Jane Cooper" })
-  name!: string;
+  fullName!: string;
 
   @ApiProperty({ type: String, example: "user@example.com" })
   email!: string;

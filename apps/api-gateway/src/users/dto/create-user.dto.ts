@@ -6,15 +6,19 @@ import { UserStatus } from "@shared/common/enums/user-status.enum";
 import { ROLE_VALUES, STATUS_VALUES } from "@shared/common/enums/role.swagger";
 
 export class CreateUserDto {
-  @ApiProperty({ type: String, example: "Jane Cooper" })
+  @ApiProperty({ type: String, example: "Jane" })
   @IsString()
-  name!: string;
+  firstName!: string;
+
+  @ApiProperty({ type: String, example: "Cooper" })
+  @IsString()
+  lastName!: string;
 
   @ApiProperty({ type: String, example: "newuser@example.com" })
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ enum: ROLE_VALUES, example: "viewer" })
+  @ApiProperty({ enum: ROLE_VALUES, example: "user" })
   @IsEnum(Role)
   role!: Role;
 

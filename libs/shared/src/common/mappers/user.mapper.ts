@@ -1,11 +1,13 @@
 import { Role } from "../enums/role.enum";
 import { UserStatus } from "../enums/user-status.enum";
+import { formatUserFullName } from "../utils/user-name.util";
 import { getRoleLabel } from "../utils/role-labels";
 
 export type DbUser = {
   id: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   role: Role;
   status: UserStatus;
   phone: string | null;
@@ -18,7 +20,9 @@ export type DbUser = {
 
 export type WorkspaceUserDto = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
   email: string;
   role: Role;
   status: UserStatus;
@@ -28,7 +32,9 @@ export type WorkspaceUserDto = {
 };
 
 export type CurrentUserDto = {
-  name: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
   email: string;
   avatar: string;
   role: string;
@@ -42,7 +48,9 @@ const DEFAULT_AVATAR = "";
 export function toWorkspaceUser(user: DbUser): WorkspaceUserDto {
   return {
     id: user.id,
-    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: formatUserFullName(user.firstName, user.lastName),
     email: user.email,
     role: user.role,
     status: user.status,
@@ -54,7 +62,9 @@ export function toWorkspaceUser(user: DbUser): WorkspaceUserDto {
 
 export function toCurrentUser(user: DbUser): CurrentUserDto {
   return {
-    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: formatUserFullName(user.firstName, user.lastName),
     email: user.email,
     avatar: user.avatarUrl ?? DEFAULT_AVATAR,
     role: getRoleLabel(user.role),

@@ -15,6 +15,7 @@ import { Role } from "@shared/common/enums/role.enum";
 import { UserStatus } from "@shared/common/enums/user-status.enum";
 import { EmailService } from "@shared/email/email.service";
 import { toCurrentUser, toWorkspaceUser } from "@shared/common/mappers/user.mapper";
+import { formatUserFullName } from "@shared/common/utils/user-name.util";
 import type { ChangePasswordDto } from "@shared/dto/change-password.dto";
 import type { CreateUserDto } from "./dto/create-user.dto";
 import type { UpdateMeDto } from "./dto/update-me.dto";
@@ -38,7 +39,8 @@ export class UsersService {
       ...(params.q
         ? {
             OR: [
-              { name: { contains: params.q, mode: "insensitive" as const } },
+              { firstName: { contains: params.q, mode: "insensitive" as const } },
+              { lastName: { contains: params.q, mode: "insensitive" as const } },
               { email: { contains: params.q, mode: "insensitive" as const } },
             ],
           }
@@ -101,7 +103,8 @@ export class UsersService {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email.trim(),
-        name: dto.name.trim(),
+        firstName: dto.firstName.trim(),
+        lastName: dto.lastName.trim(),
         role: dto.role,
         status: dto.status,
         phone: dto.phone?.trim() || null,
@@ -113,7 +116,10 @@ export class UsersService {
     });
 
     if (dto.status === UserStatus.invited) {
-      await this.email.sendInvitation(user.email, user.name);
+      await this.email.sendInvitation(
+        user.email,
+        formatUserFullName(user.firstName, user.lastName),
+      );
     }
 
     return toWorkspaceUser(user);
@@ -132,7 +138,8 @@ export class UsersService {
     const user = await this.prisma.user.update({
       where: { id },
       data: {
-        name: dto.name?.trim(),
+        firstName: dto.firstName?.trim(),
+        lastName: dto.lastName?.trim(),
         email: dto.email?.trim(),
         role: dto.role,
         status: dto.status,
@@ -162,7 +169,8 @@ export class UsersService {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: {
-        name: dto.name?.trim(),
+        firstName: dto.firstName?.trim(),
+        lastName: dto.lastName?.trim(),
         email: dto.email?.trim(),
         bio: dto.bio,
         location: dto.location?.trim(),
@@ -244,7 +252,8 @@ export class UsersService {
     return {
       id: true,
       email: true,
-      name: true,
+      firstName: true,
+      lastName: true,
       role: true,
       status: true,
       phone: true,

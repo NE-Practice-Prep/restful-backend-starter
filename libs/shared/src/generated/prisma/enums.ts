@@ -11,8 +11,8 @@
 
 export const UserRole = {
   admin: 'admin',
-  editor: 'editor',
-  viewer: 'viewer'
+  inspector: 'inspector',
+  user: 'user'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
@@ -25,3 +25,100 @@ export const UserStatus = {
 } as const
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const ExtinguisherStatus = {
+  in_service: 'in_service',
+  needs_inspection: 'needs_inspection',
+  needs_maintenance: 'needs_maintenance',
+  out_of_service: 'out_of_service',
+  decommissioned: 'decommissioned'
+} as const
+
+export type ExtinguisherStatus = (typeof ExtinguisherStatus)[keyof typeof ExtinguisherStatus]
+
+
+export const InspectionStatus = {
+  scheduled: 'scheduled',
+  in_progress: 'in_progress',
+  completed: 'completed',
+  cancelled: 'cancelled',
+  overdue: 'overdue'
+} as const
+
+export type InspectionStatus = (typeof InspectionStatus)[keyof typeof InspectionStatus]
+
+
+export const InspectionResult = {
+  pass: 'pass',
+  fail: 'fail',
+  conditional: 'conditional',
+  pending: 'pending'
+} as const
+
+export type InspectionResult = (typeof InspectionResult)[keyof typeof InspectionResult]
+
+
+export const MaintenanceType = {
+  inspection_followup: 'inspection_followup',
+  refill: 'refill',
+  recharge: 'recharge',
+  repair: 'repair',
+  replacement: 'replacement',
+  hydrostatic_test: 'hydrostatic_test',
+  annual_service: 'annual_service',
+  other: 'other'
+} as const
+
+export type MaintenanceType = (typeof MaintenanceType)[keyof typeof MaintenanceType]
+
+
+export const ExtinguisherType = {
+  water: 'water',
+  co2: 'co2',
+  foam: 'foam',
+  dry_chemical: 'dry_chemical'
+} as const
+
+export type ExtinguisherType = (typeof ExtinguisherType)[keyof typeof ExtinguisherType]
+
+
+export const ExtinguisherSize = {
+  lbs_2_5: 'lbs_2_5',
+  lbs_5: 'lbs_5',
+  lbs_9: 'lbs_9',
+  lbs_12: 'lbs_12'
+} as const
+
+export type ExtinguisherSize = (typeof ExtinguisherSize)[keyof typeof ExtinguisherSize]
+
+
+export const ComplianceStatus = {
+  compliant: 'compliant',
+  non_compliant: 'non_compliant',
+  expiring_soon: 'expiring_soon',
+  unknown: 'unknown'
+} as const
+
+export type ComplianceStatus = (typeof ComplianceStatus)[keyof typeof ComplianceStatus]
+
+
+export const ReportType = {
+  extinguisher_inventory: 'extinguisher_inventory',
+  inspection_summary: 'inspection_summary',
+  maintenance_log: 'maintenance_log',
+  compliance_overview: 'compliance_overview',
+  custom: 'custom'
+} as const
+
+export type ReportType = (typeof ReportType)[keyof typeof ReportType]
+
+
+export const ReportStatus = {
+  pending: 'pending',
+  generating: 'generating',
+  ready: 'ready',
+  failed: 'failed'
+} as const
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]

@@ -6,17 +6,22 @@ import { UserStatus } from "@shared/common/enums/user-status.enum";
 import { ROLE_VALUES, STATUS_VALUES } from "@shared/common/enums/role.swagger";
 
 export class UpdateUserDto {
-  @ApiPropertyOptional({ type: String, example: "Jane Cooper" })
+  @ApiPropertyOptional({ type: String, example: "Jane" })
   @IsOptional()
   @IsString()
-  name?: string;
+  firstName?: string;
+
+  @ApiPropertyOptional({ type: String, example: "Cooper" })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
 
   @ApiPropertyOptional({ type: String, example: "updated@example.com" })
   @IsOptional()
   @IsEmail()
   email?: string;
 
-  @ApiPropertyOptional({ enum: ROLE_VALUES, example: "editor" })
+  @ApiPropertyOptional({ enum: ROLE_VALUES, example: "inspector" })
   @IsOptional()
   @IsEnum(Role)
   role?: Role;

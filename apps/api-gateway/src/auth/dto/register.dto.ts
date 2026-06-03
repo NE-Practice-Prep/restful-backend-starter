@@ -4,9 +4,13 @@ import { Equals, IsBoolean, IsEmail, IsString } from "class-validator";
 import { IsStrongPassword } from "@shared/common/validators/is-strong-password.decorator";
 
 export class RegisterDto {
-  @ApiProperty({ type: String, example: "John Doe" })
+  @ApiProperty({ type: String, example: "John" })
   @IsString()
-  fullName!: string;
+  firstName!: string;
+
+  @ApiProperty({ type: String, example: "Doe" })
+  @IsString()
+  lastName!: string;
 
   @ApiProperty({ type: String, example: "user@example.com" })
   @IsEmail()

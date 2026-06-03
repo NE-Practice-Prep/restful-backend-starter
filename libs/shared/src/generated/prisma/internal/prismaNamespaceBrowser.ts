@@ -52,7 +52,13 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  Site: 'Site',
+  FireExtinguisher: 'FireExtinguisher',
+  Inspection: 'Inspection',
+  MaintenanceRecord: 'MaintenanceRecord',
+  ComplianceRecord: 'ComplianceRecord',
+  Report: 'Report'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -74,7 +80,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
-  name: 'name',
+  firstName: 'firstName',
+  lastName: 'lastName',
   passwordHash: 'passwordHash',
   role: 'role',
   status: 'status',
@@ -107,12 +114,146 @@ export const NotificationScalarFieldEnum = {
 export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+export const SiteScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postalCode: 'postalCode',
+  country: 'country',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SiteScalarFieldEnum = (typeof SiteScalarFieldEnum)[keyof typeof SiteScalarFieldEnum]
+
+
+export const FireExtinguisherScalarFieldEnum = {
+  id: 'id',
+  assetTag: 'assetTag',
+  serialNumber: 'serialNumber',
+  location: 'location',
+  type: 'type',
+  size: 'size',
+  extinguisherClass: 'extinguisherClass',
+  manufacturer: 'manufacturer',
+  model: 'model',
+  capacityKg: 'capacityKg',
+  siteId: 'siteId',
+  building: 'building',
+  floor: 'floor',
+  room: 'room',
+  mountingLocation: 'mountingLocation',
+  status: 'status',
+  complianceStatus: 'complianceStatus',
+  manufacturedAt: 'manufacturedAt',
+  installedAt: 'installedAt',
+  expiresAt: 'expiresAt',
+  lastInspectionAt: 'lastInspectionAt',
+  nextInspectionDue: 'nextInspectionDue',
+  lastMaintenanceAt: 'lastMaintenanceAt',
+  nextMaintenanceDue: 'nextMaintenanceDue',
+  pressurePsi: 'pressurePsi',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FireExtinguisherScalarFieldEnum = (typeof FireExtinguisherScalarFieldEnum)[keyof typeof FireExtinguisherScalarFieldEnum]
+
+
+export const InspectionScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  inspectorId: 'inspectorId',
+  requestedById: 'requestedById',
+  scheduledAt: 'scheduledAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  status: 'status',
+  result: 'result',
+  pressureOk: 'pressureOk',
+  sealIntact: 'sealIntact',
+  gaugeReadable: 'gaugeReadable',
+  accessible: 'accessible',
+  findings: 'findings',
+  correctiveAction: 'correctiveAction',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InspectionScalarFieldEnum = (typeof InspectionScalarFieldEnum)[keyof typeof InspectionScalarFieldEnum]
+
+
+export const MaintenanceRecordScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  inspectionId: 'inspectionId',
+  performedById: 'performedById',
+  type: 'type',
+  description: 'description',
+  conditionsNoted: 'conditionsNoted',
+  performedAt: 'performedAt',
+  nextDueAt: 'nextDueAt',
+  partsReplaced: 'partsReplaced',
+  cost: 'cost',
+  statusAfter: 'statusAfter',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MaintenanceRecordScalarFieldEnum = (typeof MaintenanceRecordScalarFieldEnum)[keyof typeof MaintenanceRecordScalarFieldEnum]
+
+
+export const ComplianceRecordScalarFieldEnum = {
+  id: 'id',
+  extinguisherId: 'extinguisherId',
+  checkedById: 'checkedById',
+  status: 'status',
+  regulationRef: 'regulationRef',
+  notes: 'notes',
+  dueAt: 'dueAt',
+  checkedAt: 'checkedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ComplianceRecordScalarFieldEnum = (typeof ComplianceRecordScalarFieldEnum)[keyof typeof ComplianceRecordScalarFieldEnum]
+
+
+export const ReportScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  parameters: 'parameters',
+  status: 'status',
+  generatedById: 'generatedById',
+  fileUrl: 'fileUrl',
+  rowCount: 'rowCount',
+  errorMessage: 'errorMessage',
+  requestedAt: 'requestedAt',
+  completedAt: 'completedAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -129,4 +270,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

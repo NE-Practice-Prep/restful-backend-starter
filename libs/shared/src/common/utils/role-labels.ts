@@ -2,9 +2,8 @@ import { Role } from "../enums/role.enum";
 
 const ROLE_LABELS: Record<Role, string> = {
   admin: "Administrator",
-  editor: "Editor",
-  viewer: "Viewer",
-  customer: "Customer",
+  inspector: "Inspector",
+  user: "User",
 };
 
 export function getRoleLabel(role: Role): string {

@@ -10,6 +10,6 @@ export class AuthenticatedUserDto {
   @ApiProperty({ type: String, example: "user@example.com" })
   email!: string;
 
-  @ApiProperty({ enum: ROLE_VALUES, example: "viewer" })
+  @ApiProperty({ enum: ROLE_VALUES, example: "user" })
   role!: Role;
 }

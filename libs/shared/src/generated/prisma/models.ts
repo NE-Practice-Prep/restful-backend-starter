@@ -10,4 +10,10 @@
  */
 export type * from './models/User'
 export type * from './models/Notification'
+export type * from './models/Site'
+export type * from './models/FireExtinguisher'
+export type * from './models/Inspection'
+export type * from './models/MaintenanceRecord'
+export type * from './models/ComplianceRecord'
+export type * from './models/Report'
 export type * from './commonInputTypes'

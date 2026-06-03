@@ -11,6 +11,6 @@ export default defineConfig({
     globals: true,
     environment: "node",
     setupFiles: ["reflect-metadata"],
-    include: ["apps/**/*.spec.ts"],
+    include: ["apps/**/*.spec.ts", "libs/**/*.spec.ts"],
   },
 });

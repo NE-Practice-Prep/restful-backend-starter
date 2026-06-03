@@ -7,10 +7,12 @@ datasource db {
   provider = "postgresql"
 }
 
+// --- Access control ---
+
 enum UserRole {
   admin
-  editor
-  viewer
+  inspector
+  user
 }
 
 enum UserStatus {
@@ -19,12 +21,87 @@ enum UserStatus {
   suspended
 }
 
+// --- Fire extinguisher domain ---
+
+enum ExtinguisherStatus {
+  in_service
+  needs_inspection
+  needs_maintenance
+  out_of_service
+  decommissioned
+}
+
+enum InspectionStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+  overdue
+}
+
+enum InspectionResult {
+  pass
+  fail
+  conditional
+  pending
+}
+
+enum MaintenanceType {
+  inspection_followup
+  refill
+  recharge
+  repair
+  replacement
+  hydrostatic_test
+  annual_service
+  other
+}
+
+enum ExtinguisherType {
+  water
+  co2
+  foam
+  dry_chemical
+}
+
+enum ExtinguisherSize {
+  lbs_2_5
+  lbs_5
+  lbs_9
+  lbs_12
+}
+
+enum ComplianceStatus {
+  compliant
+  non_compliant
+  expiring_soon
+  unknown
+}
+
+enum ReportType {
+  extinguisher_inventory
+  inspection_summary
+  maintenance_log
+  compliance_overview
+  custom
+}
+
+enum ReportStatus {
+  pending
+  generating
+  ready
+  failed
+}
+
+// --- Identity ---
+
 model User {
   id                         String     @id @default(cuid())
   email                      String     @unique
-  name                       String     @default("")
+  firstName                  String     @default("")
+  lastName                   String     @default("")
   passwordHash               String?
-  role                       UserRole   @default(viewer)
+  role                       UserRole   @default(user)
   status                     UserStatus @default(invited)
   phone                      String?
   location                   String?
@@ -37,7 +114,13 @@ model User {
   passwordResetExpiresAt     DateTime?
   createdAt                  DateTime   @default(now())
   updatedAt                  DateTime   @updatedAt
-  notifications              Notification[]
+
+  notifications          Notification[]
+  inspectionsConducted Inspection[]        @relation("InspectionsConducted")
+  inspectionsRequested   Inspection[]        @relation("InspectionsRequested")
+  maintenancePerformed     MaintenanceRecord[] @relation("MaintenancePerformed")
+  complianceChecks         ComplianceRecord[]  @relation("ComplianceChecks")
+  reportsGenerated         Report[]            @relation("ReportsGenerated")
 }
 
 model Notification {
@@ -52,4 +135,165 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+// --- Facilities & assets ---
+
+model Site {
+  id         String   @id @default(cuid())
+  name       String
+  code       String?  @unique
+  address    String?
+  city       String?
+  state      String?
+  postalCode String?
+  country    String   @default("")
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  extinguishers FireExtinguisher[]
+
+  @@index([isActive])
+}
+
+model FireExtinguisher {
+  id                 String             @id @default(cuid())
+  assetTag           String             @unique
+  serialNumber       String             @unique
+  location           String
+  type               ExtinguisherType
+  size               ExtinguisherSize
+  extinguisherClass  String             @default("")
+  manufacturer       String?
+  model              String?
+  capacityKg         Decimal?           @db.Decimal(8, 2)
+  siteId             String?
+  building           String?
+  floor              String?
+  room               String?
+  mountingLocation   String?
+  status             ExtinguisherStatus @default(in_service)
+  complianceStatus   ComplianceStatus   @default(unknown)
+  manufacturedAt     DateTime?
+  installedAt        DateTime
+  expiresAt          DateTime
+  lastInspectionAt   DateTime?
+  nextInspectionDue  DateTime?
+  lastMaintenanceAt  DateTime?
+  nextMaintenanceDue DateTime?
+  pressurePsi        Decimal?           @db.Decimal(6, 2)
+  notes              String             @default("")
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  site               Site?               @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  inspections        Inspection[]
+  maintenanceRecords MaintenanceRecord[]
+  complianceRecords  ComplianceRecord[]
+
+  @@index([siteId, status])
+  @@index([complianceStatus])
+  @@index([nextInspectionDue])
+  @@index([status])
+}
+
+// --- Inspections (schedule, conduct, log results) ---
+
+model Inspection {
+  id               String           @id @default(cuid())
+  extinguisherId   String
+  inspectorId      String?
+  requestedById    String?
+  scheduledAt      DateTime
+  startedAt        DateTime?
+  completedAt      DateTime?
+  status           InspectionStatus @default(scheduled)
+  result           InspectionResult @default(pending)
+  pressureOk       Boolean?
+  sealIntact       Boolean?
+  gaugeReadable    Boolean?
+  accessible       Boolean?
+  findings         String           @default("")
+  correctiveAction String           @default("")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  extinguisher       FireExtinguisher    @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+  inspector          User?               @relation("InspectionsConducted", fields: [inspectorId], references: [id], onDelete: SetNull)
+  requestedBy        User?               @relation("InspectionsRequested", fields: [requestedById], references: [id], onDelete: SetNull)
+  maintenanceRecords MaintenanceRecord[]
+
+  @@index([extinguisherId, scheduledAt])
+  @@index([inspectorId, status])
+  @@index([status, scheduledAt])
+}
+
+// --- Maintenance actions ---
+
+model MaintenanceRecord {
+  id             String             @id @default(cuid())
+  extinguisherId String
+  inspectionId   String?
+  performedById  String
+  type           MaintenanceType
+  description       String
+  conditionsNoted   String             @default("")
+  performedAt       DateTime           @default(now())
+  nextDueAt         DateTime?
+  partsReplaced     String             @default("")
+  cost           Decimal?           @db.Decimal(10, 2)
+  statusAfter    ExtinguisherStatus?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  extinguisher FireExtinguisher @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+  inspection   Inspection?      @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+  performedBy  User             @relation("MaintenancePerformed", fields: [performedById], references: [id], onDelete: Restrict)
+
+  @@index([extinguisherId, performedAt])
+  @@index([performedById])
+  @@index([type])
+}
+
+// --- Compliance audit trail ---
+
+model ComplianceRecord {
+  id             String           @id @default(cuid())
+  extinguisherId String
+  checkedById    String
+  status         ComplianceStatus
+  regulationRef  String           @default("")
+  notes          String           @default("")
+  dueAt          DateTime?
+  checkedAt      DateTime         @default(now())
+  createdAt      DateTime         @default(now())
+
+  extinguisher FireExtinguisher @relation(fields: [extinguisherId], references: [id], onDelete: Cascade)
+  checkedBy    User             @relation("ComplianceChecks", fields: [checkedById], references: [id], onDelete: Restrict)
+
+  @@index([extinguisherId, checkedAt])
+  @@index([status])
+}
+
+// --- Report generation (real-time / async snapshots) ---
+
+model Report {
+  id            String       @id @default(cuid())
+  type          ReportType
+  title         String
+  parameters    Json         @default("{}")
+  status        ReportStatus @default(pending)
+  generatedById String
+  fileUrl       String?
+  rowCount      Int?
+  errorMessage  String?
+  requestedAt   DateTime     @default(now())
+  completedAt   DateTime?
+  expiresAt     DateTime?
+
+  generatedBy User @relation("ReportsGenerated", fields: [generatedById], references: [id], onDelete: Cascade)
+
+  @@index([generatedById, requestedAt])
+  @@index([type, status])
 }

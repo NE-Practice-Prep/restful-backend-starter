@@ -2,6 +2,8 @@ import { createPrismaClient } from "../src/lib/prisma";
 import * as bcrypt from "bcrypt";
 import { Role } from "../src/common/enums/role.enum";
 import { UserStatus } from "../src/common/enums/user-status.enum";
+import { ExtinguisherType } from "../src/common/enums/extinguisher-type.enum";
+import { ExtinguisherSize } from "../src/common/enums/extinguisher-size.enum";
 
 const prisma = createPrismaClient();
 
@@ -12,7 +14,8 @@ async function main() {
     prisma.user.upsert({
       where: { email: "admin@example.com" },
       update: {
-        name: "Alex Morgan",
+        firstName: "Alex",
+        lastName: "Morgan",
         passwordHash,
         role: Role.admin,
         status: UserStatus.active,
@@ -23,7 +26,8 @@ async function main() {
       },
       create: {
         email: "admin@example.com",
-        name: "Alex Morgan",
+        firstName: "Alex",
+        lastName: "Morgan",
         passwordHash,
         role: Role.admin,
         status: UserStatus.active,
@@ -36,7 +40,8 @@ async function main() {
     prisma.user.upsert({
       where: { email: "olivia.martin@corelogic.io" },
       update: {
-        name: "Olivia Martin",
+        firstName: "Olivia",
+        lastName: "Martin",
         passwordHash,
         role: Role.admin,
         status: UserStatus.active,
@@ -46,7 +51,8 @@ async function main() {
       },
       create: {
         email: "olivia.martin@corelogic.io",
-        name: "Olivia Martin",
+        firstName: "Olivia",
+        lastName: "Martin",
         passwordHash,
         role: Role.admin,
         status: UserStatus.active,
@@ -58,9 +64,10 @@ async function main() {
     prisma.user.upsert({
       where: { email: "jackson.lee@corelogic.io" },
       update: {
-        name: "Jackson Lee",
+        firstName: "Jackson",
+        lastName: "Lee",
         passwordHash,
-        role: Role.editor,
+        role: Role.inspector,
         status: UserStatus.active,
         emailVerified: true,
         phone: "+1 (212) 555-0188",
@@ -68,9 +75,10 @@ async function main() {
       },
       create: {
         email: "jackson.lee@corelogic.io",
-        name: "Jackson Lee",
+        firstName: "Jackson",
+        lastName: "Lee",
         passwordHash,
-        role: Role.editor,
+        role: Role.inspector,
         status: UserStatus.active,
         emailVerified: true,
         phone: "+1 (212) 555-0188",
@@ -80,9 +88,10 @@ async function main() {
     prisma.user.upsert({
       where: { email: "william.kim@corelogic.io" },
       update: {
-        name: "William Kim",
+        firstName: "William",
+        lastName: "Kim",
         passwordHash,
-        role: Role.viewer,
+        role: Role.user,
         status: UserStatus.active,
         emailVerified: true,
         phone: "+44 20 7946 0991",
@@ -90,9 +99,10 @@ async function main() {
       },
       create: {
         email: "william.kim@corelogic.io",
-        name: "William Kim",
+        firstName: "William",
+        lastName: "Kim",
         passwordHash,
-        role: Role.viewer,
+        role: Role.user,
         status: UserStatus.active,
         emailVerified: true,
         phone: "+44 20 7946 0991",
@@ -101,7 +111,69 @@ async function main() {
     }),
   ]);
 
-  console.log(`Seeded ${users.length} users.`);
+  const site = await prisma.site.upsert({
+    where: { code: "HQ" },
+    update: { name: "Headquarters" },
+    create: {
+      name: "Headquarters",
+      code: "HQ",
+      address: "100 Market Street",
+      city: "San Francisco",
+      state: "CA",
+      country: "US",
+    },
+  });
+
+  const installedAt = new Date("2024-01-15");
+  const expiresAt = new Date("2029-01-15");
+
+  await prisma.fireExtinguisher.upsert({
+    where: { serialNumber: "FE-2024-00142" },
+    update: {
+      location: "Building A — 2nd floor, east stairwell",
+      type: ExtinguisherType.co2,
+      size: ExtinguisherSize.lbs_5,
+      installedAt,
+      expiresAt,
+      siteId: site.id,
+    },
+    create: {
+      assetTag: "FE-2024-00142",
+      serialNumber: "FE-2024-00142",
+      location: "Building A — 2nd floor, east stairwell",
+      type: ExtinguisherType.co2,
+      size: ExtinguisherSize.lbs_5,
+      extinguisherClass: ExtinguisherType.co2,
+      installedAt,
+      expiresAt,
+      siteId: site.id,
+    },
+  });
+
+  await prisma.fireExtinguisher.upsert({
+    where: { serialNumber: "FE-2024-00208" },
+    update: {
+      location: "Warehouse — loading bay 3",
+      type: ExtinguisherType.dry_chemical,
+      size: ExtinguisherSize.lbs_9,
+      installedAt,
+      expiresAt,
+      siteId: site.id,
+    },
+    create: {
+      assetTag: "FE-2024-00208",
+      serialNumber: "FE-2024-00208",
+      location: "Warehouse — loading bay 3",
+      type: ExtinguisherType.dry_chemical,
+      size: ExtinguisherSize.lbs_9,
+      extinguisherClass: ExtinguisherType.dry_chemical,
+      installedAt,
+      expiresAt,
+      siteId: site.id,
+    },
+  });
+
+  console.log(`Seeded ${users.length} users and sample fire extinguishers.`);
   console.log("Admin login: admin@example.com / password123");
 }
 

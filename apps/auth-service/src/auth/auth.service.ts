@@ -54,9 +54,10 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
-        name: dto.fullName.trim(),
+        firstName: dto.firstName.trim(),
+        lastName: dto.lastName.trim(),
         passwordHash,
-        role: Role.viewer,
+        role: Role.user,
         status: UserStatus.invited,
         emailVerified: false,
         emailVerificationCode: verificationCode,
@@ -394,7 +395,8 @@ export class AuthService {
     return {
       id: true,
       email: true,
-      name: true,
+      firstName: true,
+      lastName: true,
       role: true,
       status: true,
       phone: true,

@@ -29,3 +29,25 @@ export const USERS_PATTERNS = {
   UPLOAD_AVATAR: "users.upload_avatar",
   REMOVE_AVATAR: "users.remove_avatar",
 } as const;
+
+export const FIRE_PATTERNS = {
+  EXTINGUISHER_REGISTER: "fire.extinguisher.register",
+  EXTINGUISHER_LIST: "fire.extinguisher.list",
+  EXTINGUISHER_VIEW: "fire.extinguisher.view",
+  EXTINGUISHER_UPDATE: "fire.extinguisher.update",
+  EXTINGUISHER_REMOVE: "fire.extinguisher.remove",
+  INSPECTION_SCHEDULE: "fire.inspection.schedule",
+  INSPECTION_LIST: "fire.inspection.list",
+  INSPECTION_VIEW: "fire.inspection.view",
+  INSPECTION_COMPLETE: "fire.inspection.complete",
+  INSPECTION_UPDATE: "fire.inspection.update",
+  MAINTENANCE_LOG: "fire.maintenance.log",
+  MAINTENANCE_LIST: "fire.maintenance.list",
+  MAINTENANCE_VIEW: "fire.maintenance.view",
+  COMPLIANCE_CHECK: "fire.compliance.check",
+  COMPLIANCE_LIST: "fire.compliance.list",
+  COMPLIANCE_SUMMARY: "fire.compliance.summary",
+  REPORT_GENERATE: "fire.report.generate",
+  REPORT_LIST: "fire.report.list",
+  REPORT_VIEW: "fire.report.view",
+} as const;

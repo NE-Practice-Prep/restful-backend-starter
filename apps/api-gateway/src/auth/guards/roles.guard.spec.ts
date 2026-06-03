@@ -32,7 +32,7 @@ describe("RolesGuard", () => {
   it("allows access when no roles are required", () => {
     vi.mocked(reflector.getAllAndOverride).mockReturnValue(undefined);
 
-    expect(guard.canActivate(makeContext(Role.viewer))).toBe(true);
+    expect(guard.canActivate(makeContext(Role.user))).toBe(true);
   });
 
   it("allows access when the user has the required role", () => {
@@ -44,7 +44,7 @@ describe("RolesGuard", () => {
   it("denies access when the user lacks the required role", () => {
     vi.mocked(reflector.getAllAndOverride).mockReturnValue([Role.admin]);
 
-    expect(guard.canActivate(makeContext(Role.viewer))).toBe(false);
+    expect(guard.canActivate(makeContext(Role.user))).toBe(false);
   });
 
   it("denies access when no user is present on the request", () => {
@@ -61,7 +61,7 @@ describe("RolesGuard", () => {
     const context = {
       getHandler: vi.fn().mockReturnValue(handler),
       getClass: vi.fn().mockReturnValue(klass),
-      switchToHttp: vi.fn().mockReturnValue({ getRequest: vi.fn().mockReturnValue({ user: { role: Role.viewer } }) }),
+      switchToHttp: vi.fn().mockReturnValue({ getRequest: vi.fn().mockReturnValue({ user: { role: Role.user } }) }),
     } as unknown as ExecutionContext;
 
     guard.canActivate(context);

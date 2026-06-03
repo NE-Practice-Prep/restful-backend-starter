@@ -46,9 +46,10 @@ function makeDbUser(overrides: Record<string, unknown> = {}) {
   return {
     id: "user-1",
     email: "alice@example.com",
-    name: "Alice",
+    firstName: "Alice",
+    lastName: "Example",
     passwordHash: "hashed_pw",
-    role: Role.viewer,
+    role: Role.user,
     status: UserStatus.active,
     phone: null,
     location: null,
@@ -80,7 +81,8 @@ describe("AuthService", () => {
 
       await expect(
         service.register({
-          fullName: "Alice",
+          firstName: "Alice",
+          lastName: "Example",
           email: "alice@example.com",
           password: "Password1!",
           acceptTerms: true,
@@ -97,7 +99,8 @@ describe("AuthService", () => {
       jwt.signAsync.mockResolvedValue("jwt-token");
 
       const result = await service.register({
-        fullName: "Bob",
+        firstName: "Bob",
+        lastName: "Example",
         email: "bob@example.com",
         password: "Password1!",
         acceptTerms: true,
@@ -131,7 +134,7 @@ describe("AuthService", () => {
   });
 
   describe("changePassword", () => {
-    const currentUser = { sub: "user-1", email: "alice@example.com", role: Role.viewer };
+    const currentUser = { sub: "user-1", email: "alice@example.com", role: Role.user };
 
     it("updates password hash and returns { ok: true } on success", async () => {
       prisma.user.findUnique.mockResolvedValue({ id: "user-1", passwordHash: "old_hash" });

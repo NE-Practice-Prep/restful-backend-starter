@@ -11,7 +11,7 @@ export class ListUsersQueryDto {
   @IsString()
   q?: string;
 
-  @ApiPropertyOptional({ enum: ["admin", "editor", "viewer", "all"] })
+  @ApiPropertyOptional({ enum: ["admin", "inspector", "user", "all"] })
   @IsOptional()
   @IsString()
   role?: string;
