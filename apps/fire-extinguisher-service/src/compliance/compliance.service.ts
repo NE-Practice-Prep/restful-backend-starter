@@ -1,14 +1,26 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
+import { Role } from "@shared/common/enums/role.enum";
 import { PrismaService } from "@shared/prisma/prisma.service";
+import { EmailService } from "@shared/email/email.service";
 import { toPublicCompliance } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { deriveComplianceStatus } from "@shared/common/utils/compliance.util";
 import { coerceOptionalDate } from "@shared/common/utils/date.util";
+import {
+  extinguisherLabel,
+  notifyExtinguisherAssignee,
+} from "@shared/fire/notifications.helper";
 import type { CheckComplianceDto } from "./dto/check-compliance.dto";
+
+type ScopedAccess = { requestedByUserId: string; requestedByRole: string };
+type ListParams = { extinguisherId?: string } & ScopedAccess;
 
 @Injectable()
 export class ComplianceService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
   async check(checkedById: string, dto: CheckComplianceDto) {
     const extinguisher = await this.prisma.fireExtinguisher.findUnique({
@@ -37,12 +49,33 @@ export class ComplianceService {
       }),
     ]);
 
+    const label = extinguisherLabel(extinguisher.serialNumber, extinguisher.location);
+    const notesText = dto.notes?.trim() ? ` Notes: ${dto.notes.trim()}.` : "";
+
+    await notifyExtinguisherAssignee(
+      this.prisma,
+      dto.extinguisherId,
+      {
+        type: "compliance_checked",
+        title: "Compliance check for your extinguisher",
+        message: `A compliance check was performed on your assigned extinguisher (${label}). Status: ${status}.${notesText}`,
+      },
+      this.email,
+      { excludeUserIds: [checkedById] },
+    );
+
     return toPublicCompliance(record);
   }
 
-  async view(id: string) {
-    const row = await this.prisma.complianceRecord.findUnique({
-      where: { id },
+  async view(id: string, access?: ScopedAccess) {
+    const isRegularUser = access?.requestedByRole === Role.user;
+    const row = await this.prisma.complianceRecord.findFirst({
+      where: {
+        id,
+        ...(isRegularUser && access
+          ? { extinguisher: { assignedToId: access.requestedByUserId } }
+          : {}),
+      },
       include: this.complianceInclude,
     });
     if (!row) throw new NotFoundException("Compliance record not found");
@@ -55,9 +88,15 @@ export class ComplianceService {
     return { ok: true };
   }
 
-  async list(extinguisherId?: string) {
+  async list(params: ListParams) {
+    const isRegularUser = params.requestedByRole === Role.user;
     const rows = await this.prisma.complianceRecord.findMany({
-      where: extinguisherId ? { extinguisherId } : undefined,
+      where: {
+        ...(isRegularUser
+          ? { extinguisher: { assignedToId: params.requestedByUserId } }
+          : {}),
+        ...(params.extinguisherId ? { extinguisherId: params.extinguisherId } : {}),
+      },
       include: this.complianceInclude,
       orderBy: { checkedAt: "desc" },
       take: 100,

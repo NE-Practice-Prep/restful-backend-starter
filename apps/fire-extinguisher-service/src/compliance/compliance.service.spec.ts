@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NotFoundException } from "@nestjs/common";
 
+import { Role } from "@shared/common/enums/role.enum";
 import { ComplianceStatus } from "@shared/generated/prisma/enums";
 import { ComplianceService } from "./compliance.service";
 import {
@@ -20,7 +21,7 @@ describe("ComplianceService", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-01T12:00:00Z"));
     prisma = makeFirePrisma();
-    service = new ComplianceService(prisma as never);
+    service = new ComplianceService(prisma as never, { sendNotificationEmail: vi.fn() } as never);
   });
 
   describe("check", () => {
@@ -54,12 +55,31 @@ describe("ComplianceService", () => {
   });
 
   describe("list", () => {
+    const adminScope = { requestedByUserId: "admin-1", requestedByRole: Role.admin };
+
     it("returns compliance history", async () => {
       prisma.complianceRecord.findMany.mockResolvedValue([makeComplianceRecord()]);
 
-      const result = await service.list("ext-1");
+      const result = await service.list({ extinguisherId: "ext-1", ...adminScope });
 
       expect(result.data).toHaveLength(1);
+    });
+
+    it("scopes list to assigned extinguishers for regular users", async () => {
+      prisma.complianceRecord.findMany.mockResolvedValue([]);
+
+      await service.list({
+        requestedByUserId: "user-1",
+        requestedByRole: Role.user,
+      });
+
+      expect(prisma.complianceRecord.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            extinguisher: { assignedToId: "user-1" },
+          }),
+        }),
+      );
     });
   });
 

@@ -62,13 +62,23 @@ export class ComplianceGatewayController {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_SUMMARY, {});
   }
 
-  @ApiOperation({ summary: "List compliance audit records" })
+  @ApiOperation({
+    summary:
+      "List compliance audit records — admins/inspectors see all, users see only their assigned extinguishers",
+  })
   @ApiBearerAuth()
   @ApiQuery({ name: "extinguisherId", required: false })
   @UseGuards(JwtAuthGuard)
   @Get()
-  list(@Query("extinguisherId") extinguisherId?: string) {
-    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_LIST, { extinguisherId });
+  list(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query("extinguisherId") extinguisherId?: string,
+  ) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_LIST, {
+      extinguisherId,
+      requestedByUserId: user.sub,
+      requestedByRole: user.role,
+    });
   }
 
   @ApiOperation({ summary: "View compliance record details" })
@@ -76,8 +86,12 @@ export class ComplianceGatewayController {
   @ApiParam({ name: "id" })
   @UseGuards(JwtAuthGuard)
   @Get(":id")
-  view(@Param("id") id: string) {
-    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_VIEW, { id });
+  view(@CurrentUser() user: AuthenticatedUser, @Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_VIEW, {
+      id,
+      requestedByUserId: user.sub,
+      requestedByRole: user.role,
+    });
   }
 
   @ApiOperation({ summary: "Delete compliance record" })

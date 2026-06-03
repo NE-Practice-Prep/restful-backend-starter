@@ -65,16 +65,18 @@ export class InspectionsGatewayController {
     });
   }
 
-  @ApiOperation({ summary: "List inspections" })
+  @ApiOperation({
+    summary: "List inspections — admins/inspectors see all, users see only their assigned extinguishers",
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  list(@Query() query: ListInspectionsQueryDto) {
-    return this.proxy.send(
-      this.fireClient,
-      FIRE_PATTERNS.INSPECTION_LIST,
-      parseListInspectionsQuery(query),
-    );
+  list(@CurrentUser() user: AuthenticatedUser, @Query() query: ListInspectionsQueryDto) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.INSPECTION_LIST, {
+      ...parseListInspectionsQuery(query),
+      requestedByUserId: user.sub,
+      requestedByRole: user.role,
+    });
   }
 
   @ApiOperation({ summary: "View inspection" })
@@ -82,8 +84,12 @@ export class InspectionsGatewayController {
   @ApiParam({ name: "id" })
   @UseGuards(JwtAuthGuard)
   @Get(":id")
-  view(@Param("id") id: string) {
-    return this.proxy.send(this.fireClient, FIRE_PATTERNS.INSPECTION_VIEW, { id });
+  view(@CurrentUser() user: AuthenticatedUser, @Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.INSPECTION_VIEW, {
+      id,
+      requestedByUserId: user.sub,
+      requestedByRole: user.role,
+    });
   }
 
   @ApiOperation({ summary: "Log inspection results" })

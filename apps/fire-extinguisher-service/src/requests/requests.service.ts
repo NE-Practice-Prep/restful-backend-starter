@@ -7,15 +7,23 @@ import {
 } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
+import { EmailService } from "@shared/email/email.service";
 import { RequestStatus } from "@shared/generated/prisma/enums";
-import { notifyPersonnel } from "@shared/fire/notifications.helper";
+import {
+  extinguisherLabel,
+  notifyExtinguisherAssignee,
+  notifyPersonnel,
+} from "@shared/fire/notifications.helper";
 import { Role } from "@shared/common/enums/role.enum";
 import type { CreateRequestDto } from "./dto/create-request.dto";
 import type { ReviewRequestDto } from "./dto/review-request.dto";
 
 @Injectable()
 export class RequestsService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
   async create(requestedById: string, dto: CreateRequestDto) {
     if (dto.extinguisherId) {
@@ -38,13 +46,49 @@ export class RequestsService {
       include: this.requestInclude,
     });
 
-    await notifyPersonnel(this.prisma, {
-      type: "extinguisher_request",
-      title: "New extinguisher request",
-      message: `A new extinguisher request has been submitted and requires review.`,
-      roles: [Role.admin],
-      userIds: [],
-    });
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "extinguisher_request",
+        title: "New extinguisher request",
+        message: `A new extinguisher request has been submitted and requires review.`,
+        roles: [Role.admin],
+        userIds: [],
+      },
+      this.email,
+    );
+
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "extinguisher_request_submitted",
+        title: "Your extinguisher request was submitted",
+        message: `Your extinguisher request has been submitted and is pending review.`,
+        roles: [],
+        userIds: [requestedById],
+      },
+      this.email,
+    );
+
+    if (dto.extinguisherId) {
+      const ext = await this.prisma.fireExtinguisher.findUnique({
+        where: { id: dto.extinguisherId },
+        select: { serialNumber: true, location: true },
+      });
+      if (ext) {
+        await notifyExtinguisherAssignee(
+          this.prisma,
+          dto.extinguisherId,
+          {
+            type: "extinguisher_request_submitted",
+            title: "Request submitted for your extinguisher",
+            message: `A request has been submitted regarding your assigned extinguisher (${extinguisherLabel(ext.serialNumber, ext.location)}). It is pending review.`,
+          },
+          this.email,
+          { excludeUserIds: [requestedById] },
+        );
+      }
+    }
 
     return this.toPublicRequest(row);
   }
@@ -128,13 +172,31 @@ export class RequestsService {
       include: this.requestInclude,
     });
 
-    await notifyPersonnel(this.prisma, {
-      type: "request_approved",
-      title: "Extinguisher request approved",
-      message: `Your extinguisher request has been approved.`,
-      roles: [],
-      userIds: [row.requestedById],
-    });
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "request_approved",
+        title: "Extinguisher request approved",
+        message: `Your extinguisher request has been approved.${dto.reviewNotes ? ` Notes: ${dto.reviewNotes}` : ""}`,
+        roles: [],
+        userIds: [row.requestedById],
+      },
+      this.email,
+    );
+
+    if (row.extinguisherId) {
+      await notifyExtinguisherAssignee(
+        this.prisma,
+        row.extinguisherId,
+        {
+          type: "request_approved",
+          title: "Extinguisher request approved",
+          message: `A request related to your assigned extinguisher has been approved.${dto.reviewNotes ? ` Notes: ${dto.reviewNotes}` : ""}`,
+        },
+        this.email,
+        { excludeUserIds: [row.requestedById] },
+      );
+    }
 
     return this.toPublicRequest(updated);
   }
@@ -157,13 +219,31 @@ export class RequestsService {
       include: this.requestInclude,
     });
 
-    await notifyPersonnel(this.prisma, {
-      type: "request_rejected",
-      title: "Extinguisher request rejected",
-      message: `Your extinguisher request has been rejected.${dto.reviewNotes ? ` Reason: ${dto.reviewNotes}` : ""}`,
-      roles: [],
-      userIds: [row.requestedById],
-    });
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "request_rejected",
+        title: "Extinguisher request rejected",
+        message: `Your extinguisher request has been rejected.${dto.reviewNotes ? ` Reason: ${dto.reviewNotes}` : ""}`,
+        roles: [],
+        userIds: [row.requestedById],
+      },
+      this.email,
+    );
+
+    if (row.extinguisherId) {
+      await notifyExtinguisherAssignee(
+        this.prisma,
+        row.extinguisherId,
+        {
+          type: "request_rejected",
+          title: "Extinguisher request rejected",
+          message: `A request related to your assigned extinguisher has been rejected.${dto.reviewNotes ? ` Reason: ${dto.reviewNotes}` : ""}`,
+        },
+        this.email,
+        { excludeUserIds: [row.requestedById] },
+      );
+    }
 
     return this.toPublicRequest(updated);
   }

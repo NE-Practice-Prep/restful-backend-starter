@@ -110,7 +110,12 @@ export class FireMicroserviceController {
   }
 
   @MessagePattern(FIRE_PATTERNS.INSPECTION_LIST)
-  async listInspections(@Payload() params: ReturnType<typeof parseListInspectionsQuery>) {
+  async listInspections(
+    @Payload() params: ReturnType<typeof parseListInspectionsQuery> & {
+      requestedByUserId: string;
+      requestedByRole: string;
+    },
+  ) {
     try {
       return await this.inspections.list(params);
     } catch (e: unknown) {
@@ -119,9 +124,14 @@ export class FireMicroserviceController {
   }
 
   @MessagePattern(FIRE_PATTERNS.INSPECTION_VIEW)
-  async viewInspection(@Payload() data: { id: string }) {
+  async viewInspection(
+    @Payload() data: { id: string; requestedByUserId: string; requestedByRole: string },
+  ) {
     try {
-      return await this.inspections.view(data.id);
+      return await this.inspections.view(data.id, {
+        requestedByUserId: data.requestedByUserId,
+        requestedByRole: data.requestedByRole,
+      });
     } catch (e: unknown) {
       throw toRpcException(e);
     }
@@ -211,18 +221,29 @@ export class FireMicroserviceController {
   }
 
   @MessagePattern(FIRE_PATTERNS.COMPLIANCE_LIST)
-  async listCompliance(@Payload() data: { extinguisherId?: string }) {
+  async listCompliance(
+    @Payload() data: {
+      extinguisherId?: string;
+      requestedByUserId: string;
+      requestedByRole: string;
+    },
+  ) {
     try {
-      return await this.compliance.list(data.extinguisherId);
+      return await this.compliance.list(data);
     } catch (e: unknown) {
       throw toRpcException(e);
     }
   }
 
   @MessagePattern(FIRE_PATTERNS.COMPLIANCE_VIEW)
-  async viewCompliance(@Payload() data: { id: string }) {
+  async viewCompliance(
+    @Payload() data: { id: string; requestedByUserId: string; requestedByRole: string },
+  ) {
     try {
-      return await this.compliance.view(data.id);
+      return await this.compliance.view(data.id, {
+        requestedByUserId: data.requestedByUserId,
+        requestedByRole: data.requestedByRole,
+      });
     } catch (e: unknown) {
       throw toRpcException(e);
     }

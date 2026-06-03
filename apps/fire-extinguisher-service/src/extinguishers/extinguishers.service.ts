@@ -7,10 +7,15 @@ import {
 } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
+import { EmailService } from "@shared/email/email.service";
 import { toPublicExtinguisher } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { deriveComplianceStatus } from "@shared/common/utils/compliance.util";
 import { coerceToDate } from "@shared/common/utils/date.util";
 import { Role } from "@shared/common/enums/role.enum";
+import {
+  extinguisherLabel,
+  notifyPersonnel,
+} from "@shared/fire/notifications.helper";
 import type { RegisterExtinguisherDto } from "./dto/register-extinguisher.dto";
 import type { UpdateExtinguisherDto } from "./dto/update-extinguisher.dto";
 import type { parseListExtinguishersQuery } from "./dto/list-extinguishers-query.dto";
@@ -22,7 +27,10 @@ type ScopedListParams = ListParams & { requestedByUserId: string; requestedByRol
 export class ExtinguishersService {
   private readonly logger = new Logger(ExtinguishersService.name);
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
   async register(dto: RegisterExtinguisherDto) {
     this.logger.log(
@@ -190,6 +198,30 @@ export class ExtinguishersService {
       });
 
       this.logger.log(`update: updated extinguisher id=${id}`);
+
+      if (existing!.assignedToId) {
+        const label = extinguisherLabel(row.serialNumber, row.location);
+        const changes: string[] = [];
+        if (dto.location !== undefined) changes.push(`location updated to "${row.location}"`);
+        if (dto.status !== undefined) changes.push(`status updated to "${row.status}"`);
+        if (dto.expiresAt !== undefined) {
+          changes.push(`compliance status is now "${row.complianceStatus}"`);
+        }
+        if (changes.length > 0) {
+          await notifyPersonnel(
+            this.prisma,
+            {
+              type: "extinguisher_updated",
+              title: "Your assigned extinguisher was updated",
+              message: `Your assigned extinguisher (${label}) was updated: ${changes.join("; ")}.`,
+              roles: [],
+              userIds: [existing!.assignedToId],
+            },
+            this.email,
+          );
+        }
+      }
+
       return toPublicExtinguisher(row);
     } catch (error: unknown) {
       this.logger.error(
@@ -213,17 +245,52 @@ export class ExtinguishersService {
       include: { site: true },
     });
     this.logger.log(`assign: extinguisher id=${id} assigned to userId=${userId}`);
+
+    const label = extinguisherLabel(row.serialNumber, row.location);
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "extinguisher_assigned",
+        title: "Fire extinguisher assigned to you",
+        message: `You have been assigned fire extinguisher ${label}. You will receive email updates when inspections, maintenance, compliance checks, or requests affect this extinguisher.`,
+        roles: [],
+        userIds: [userId],
+      },
+      this.email,
+    );
+
     return toPublicExtinguisher(row);
   }
 
   async unassign(id: string) {
-    await this.view(id);
+    const existing = await this.prisma.fireExtinguisher.findUnique({
+      where: { id },
+      select: { assignedToId: true, serialNumber: true, location: true },
+    });
+    if (!existing) throw new NotFoundException("Fire extinguisher not found");
+
     const row = await this.prisma.fireExtinguisher.update({
       where: { id },
       data: { assignedToId: null },
       include: { site: true },
     });
     this.logger.log(`unassign: extinguisher id=${id} unassigned`);
+
+    if (existing.assignedToId) {
+      const label = extinguisherLabel(existing.serialNumber, existing.location);
+      await notifyPersonnel(
+        this.prisma,
+        {
+          type: "extinguisher_unassigned",
+          title: "Fire extinguisher unassigned",
+          message: `You are no longer assigned to fire extinguisher ${label}.`,
+          roles: [],
+          userIds: [existing.assignedToId],
+        },
+        this.email,
+      );
+    }
+
     return toPublicExtinguisher(row);
   }
 

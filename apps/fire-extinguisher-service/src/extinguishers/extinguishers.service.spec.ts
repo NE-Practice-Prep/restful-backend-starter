@@ -30,7 +30,7 @@ describe("ExtinguishersService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     prisma = makeFirePrisma();
-    service = new ExtinguishersService(prisma as never);
+    service = new ExtinguishersService(prisma as never, { sendNotificationEmail: vi.fn() } as never);
   });
 
   describe("register", () => {

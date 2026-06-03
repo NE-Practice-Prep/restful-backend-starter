@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 
+import { Role } from "@shared/common/enums/role.enum";
 import { InspectionResult } from "@shared/generated/prisma/enums";
 import { notifyPersonnel } from "@shared/fire/notifications.helper";
 import { InspectionsService } from "./inspections.service";
@@ -15,6 +16,8 @@ import {
 
 vi.mock("@shared/fire/notifications.helper", () => ({
   notifyPersonnel: vi.fn(),
+  notifyExtinguisherAssignee: vi.fn(),
+  extinguisherLabel: (serial: string, location: string) => `${serial} at ${location}`,
 }));
 
 describe("InspectionsService", () => {
@@ -26,7 +29,7 @@ describe("InspectionsService", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-01T12:00:00Z"));
     prisma = makeFirePrisma();
-    service = new InspectionsService(prisma as never);
+    service = new InspectionsService(prisma as never, { sendNotificationEmail: vi.fn() } as never);
   });
 
   afterEach(() => {
@@ -131,6 +134,8 @@ describe("InspectionsService", () => {
   });
 
   describe("list", () => {
+    const adminScope = { requestedByUserId: "admin-1", requestedByRole: Role.admin };
+
     it("returns paginated inspections", async () => {
       prisma.inspection.count.mockResolvedValue(2);
       prisma.inspection.findMany.mockResolvedValue([
@@ -138,10 +143,65 @@ describe("InspectionsService", () => {
         makeInspection({ id: "insp-2" }),
       ]);
 
-      const result = await service.list({ page: 1, limit: 10 });
+      const result = await service.list({
+        page: 1,
+        limit: 10,
+        extinguisherId: undefined,
+        status: undefined,
+        ...adminScope,
+      });
 
       expect(result.data).toHaveLength(2);
       expect(result.meta.total).toBe(2);
+    });
+
+    it("scopes list to assigned extinguishers for regular users", async () => {
+      prisma.inspection.count.mockResolvedValue(0);
+      prisma.inspection.findMany.mockResolvedValue([]);
+
+      await service.list({
+        page: 1,
+        limit: 10,
+        extinguisherId: undefined,
+        status: undefined,
+        requestedByUserId: "user-1",
+        requestedByRole: Role.user,
+      });
+
+      expect(prisma.inspection.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            extinguisher: { assignedToId: "user-1" },
+          }),
+        }),
+      );
+    });
+  });
+
+  describe("view", () => {
+    it("returns inspection for admin without assignment filter", async () => {
+      prisma.inspection.findFirst.mockResolvedValue(makeInspection());
+
+      const result = await service.view("insp-1", {
+        requestedByUserId: "admin-1",
+        requestedByRole: Role.admin,
+      });
+
+      expect(result.id).toBe("insp-1");
+      expect(prisma.inspection.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "insp-1" } }),
+      );
+    });
+
+    it("hides inspections for unassigned extinguishers from regular users", async () => {
+      prisma.inspection.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.view("insp-1", {
+          requestedByUserId: "user-1",
+          requestedByRole: Role.user,
+        }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -6,10 +6,15 @@ import {
 } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
+import { EmailService } from "@shared/email/email.service";
 import { Role } from "@shared/common/enums/role.enum";
 import { toPublicInspection } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { coerceOptionalDate, coerceToDate } from "@shared/common/utils/date.util";
-import { notifyPersonnel } from "@shared/fire/notifications.helper";
+import {
+  extinguisherLabel,
+  notifyExtinguisherAssignee,
+  notifyPersonnel,
+} from "@shared/fire/notifications.helper";
 import {
   ExtinguisherStatus,
   InspectionResult,
@@ -23,10 +28,15 @@ import type {
 import type { parseListInspectionsQuery } from "./dto/list-inspections-query.dto";
 
 type ListParams = ReturnType<typeof parseListInspectionsQuery>;
+type ScopedListParams = ListParams & { requestedByUserId: string; requestedByRole: string };
+type ScopedAccess = { requestedByUserId: string; requestedByRole: string };
 
 @Injectable()
 export class InspectionsService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
   async schedule(
     dto: ScheduleInspectionDto,
@@ -66,21 +76,42 @@ export class InspectionsService {
       },
     });
 
+    const label = extinguisherLabel(extinguisher.serialNumber, extinguisher.location);
     const notifyIds = dto.inspectorId ? [dto.inspectorId, requestedById] : [requestedById];
 
-    await notifyPersonnel(this.prisma, {
-      type: "inspection_scheduled",
-      title: "Inspection scheduled",
-      message: `Inspection for extinguisher ${extinguisher.serialNumber} at ${extinguisher.location} is scheduled for ${scheduledAt.toISOString()}.`,
-      roles: [Role.admin, Role.inspector],
-      userIds: notifyIds,
-    });
+    await notifyPersonnel(
+      this.prisma,
+      {
+        type: "inspection_scheduled",
+        title: "Inspection scheduled",
+        message: `Inspection for extinguisher ${label} is scheduled for ${scheduledAt.toISOString()}.`,
+        roles: [Role.admin, Role.inspector],
+        userIds: notifyIds,
+      },
+      this.email,
+    );
+
+    await notifyExtinguisherAssignee(
+      this.prisma,
+      dto.extinguisherId,
+      {
+        type: "inspection_scheduled",
+        title: "Inspection scheduled for your extinguisher",
+        message: `An inspection has been scheduled for your assigned extinguisher (${label}) on ${scheduledAt.toISOString()}.`,
+      },
+      this.email,
+      { excludeUserIds: notifyIds },
+    );
 
     return toPublicInspection(row);
   }
 
-  async list(params: ListParams) {
+  async list(params: ScopedListParams) {
+    const isRegularUser = params.requestedByRole === Role.user;
     const where = {
+      ...(isRegularUser
+        ? { extinguisher: { assignedToId: params.requestedByUserId } }
+        : {}),
       ...(params.extinguisherId ? { extinguisherId: params.extinguisherId } : {}),
       ...(params.status ? { status: params.status } : {}),
     };
@@ -108,9 +139,15 @@ export class InspectionsService {
     };
   }
 
-  async view(id: string) {
-    const row = await this.prisma.inspection.findUnique({
-      where: { id },
+  async view(id: string, access?: ScopedAccess) {
+    const isRegularUser = access?.requestedByRole === Role.user;
+    const row = await this.prisma.inspection.findFirst({
+      where: {
+        id,
+        ...(isRegularUser && access
+          ? { extinguisher: { assignedToId: access.requestedByUserId } }
+          : {}),
+      },
       include: this.inspectionInclude,
     });
     if (!row) throw new NotFoundException("Inspection not found");
@@ -157,6 +194,27 @@ export class InspectionsService {
         },
       }),
     ]);
+
+    const label = extinguisherLabel(
+      inspection.extinguisher.serialNumber,
+      inspection.extinguisher.location,
+    );
+    const resultText =
+      dto.result === InspectionResult.fail ? "failed" : "passed";
+    const findingsText = dto.findings?.trim()
+      ? ` Findings: ${dto.findings.trim()}.`
+      : "";
+
+    await notifyExtinguisherAssignee(
+      this.prisma,
+      inspection.extinguisherId,
+      {
+        type: "inspection_completed",
+        title: "Inspection completed for your extinguisher",
+        message: `The inspection for your assigned extinguisher (${label}) has been completed with result: ${resultText}.${findingsText}`,
+      },
+      this.email,
+    );
 
     return toPublicInspection(row);
   }

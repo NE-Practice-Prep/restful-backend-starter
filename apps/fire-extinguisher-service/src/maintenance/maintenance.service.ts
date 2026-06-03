@@ -1,8 +1,13 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
+import { EmailService } from "@shared/email/email.service";
 import { toPublicMaintenance } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { coerceOptionalDate } from "@shared/common/utils/date.util";
+import {
+  extinguisherLabel,
+  notifyExtinguisherAssignee,
+} from "@shared/fire/notifications.helper";
 import { ExtinguisherStatus } from "@shared/generated/prisma/enums";
 import type { LogMaintenanceDto } from "./dto/log-maintenance.dto";
 import type { UpdateMaintenanceDto } from "./dto/update-maintenance.dto";
@@ -12,7 +17,10 @@ type ListParams = ReturnType<typeof parseListMaintenanceQuery>;
 
 @Injectable()
 export class MaintenanceService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(EmailService) private readonly email: EmailService,
+  ) {}
 
   async log(performedById: string, dto: LogMaintenanceDto) {
     const extinguisher = await this.prisma.fireExtinguisher.findUnique({
@@ -57,6 +65,19 @@ export class MaintenanceService {
         },
       }),
     ]);
+
+    const label = extinguisherLabel(extinguisher.serialNumber, extinguisher.location);
+    await notifyExtinguisherAssignee(
+      this.prisma,
+      dto.extinguisherId,
+      {
+        type: "maintenance_logged",
+        title: "Maintenance performed on your extinguisher",
+        message: `Maintenance (${dto.type}) was performed on your assigned extinguisher (${label}). Description: ${dto.description.trim()}. Status after maintenance: ${statusAfter}.`,
+      },
+      this.email,
+      { excludeUserIds: [performedById] },
+    );
 
     return toPublicMaintenance(row);
   }

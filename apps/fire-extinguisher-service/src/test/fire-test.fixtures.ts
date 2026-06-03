@@ -186,10 +186,12 @@ export function makeFirePrisma() {
     site: { findUnique: vi.fn() },
     inspection: {
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
     maintenanceRecord: {
       findUnique: vi.fn(),
@@ -199,7 +201,10 @@ export function makeFirePrisma() {
     },
     complianceRecord: {
       findMany: vi.fn(),
+      findFirst: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
+      delete: vi.fn(),
     },
     report: {
       findUnique: vi.fn(),

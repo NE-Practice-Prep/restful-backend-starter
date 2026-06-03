@@ -24,7 +24,7 @@ describe("MaintenanceService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     prisma = makeFirePrisma();
-    service = new MaintenanceService(prisma as never);
+    service = new MaintenanceService(prisma as never, { sendNotificationEmail: vi.fn() } as never);
   });
 
   describe("log", () => {
