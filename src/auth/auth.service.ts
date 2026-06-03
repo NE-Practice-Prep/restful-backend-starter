@@ -4,6 +4,8 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -20,14 +22,17 @@ import type { JwtPayload } from "./jwt-payload.type";
 import type { AuthenticatedUser } from "./types/authenticated-user.type";
 import type { ChangePasswordDto } from "./dto/change-password.dto";
 import type { RequestPasswordResetDto } from "./dto/request-password-reset.dto";
+import type { ResendPasswordResetDto } from "./dto/resend-password-reset.dto";
 import type { VerifyPasswordResetOtpDto } from "./dto/verify-password-reset-otp.dto";
 import type { ResetPasswordDto } from "./dto/reset-password.dto";
-
 const DEFAULT_EXPIRES_SECONDS = 3600;
 const REMEMBER_ME_EXPIRES_SECONDS = 30 * 24 * 3600;
+const PASSWORD_RESET_OTP_TTL_MS = 15 * 60 * 1000;
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(JwtService) private readonly jwt: JwtService,
@@ -35,14 +40,16 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
+    this.logger.log(`Registration attempt for ${dto.email}`);
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) {
+      this.logger.warn(`Registration rejected — email already registered: ${dto.email}`);
       throw new ConflictException("Email already registered");
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const verificationCode = this.generateVerificationCode();
-    const verificationExpires = new Date(Date.now() + 15 * 60 * 1000);
+    const verificationExpires = new Date(Date.now() + PASSWORD_RESET_OTP_TTL_MS);
 
     const user = await this.prisma.user.create({
       data: {
@@ -59,39 +66,47 @@ export class AuthService {
     });
 
     await this.email.sendVerificationCode(user.email, verificationCode);
+    this.logger.log(`User registered: ${user.id} (${user.email})`);
 
     return this.buildAuthResponse(user, DEFAULT_EXPIRES_SECONDS);
   }
 
   async login(dto: LoginDto) {
+    this.logger.log(`Login attempt for ${dto.email}`);
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
       select: { ...this.profileSelect, passwordHash: true },
     });
 
     if (!user || !user.passwordHash) {
+      this.logger.warn(`Login failed — invalid credentials: ${dto.email}`);
       throw new UnauthorizedException("Invalid credentials");
     }
 
     if (user.status === UserStatus.suspended) {
+      this.logger.warn(`Login blocked — account suspended: ${dto.email}`);
       throw new ForbiddenException("Account suspended");
     }
 
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
+      this.logger.warn(`Login failed — invalid credentials: ${dto.email}`);
       throw new UnauthorizedException("Invalid credentials");
     }
 
     const expiresIn = dto.rememberMe ? REMEMBER_ME_EXPIRES_SECONDS : DEFAULT_EXPIRES_SECONDS;
     const { passwordHash: _, ...profile } = user;
+    this.logger.log(`Login successful: ${user.id} (${user.email})`);
     return this.buildAuthResponse(profile, expiresIn);
   }
 
   async logout() {
+    this.logger.debug("Logout requested");
     return { ok: true };
   }
 
   async verifyEmail(currentUser: AuthenticatedUser, code: string) {
+    this.logger.log(`Email verification attempt for user ${currentUser.sub}`);
     const user = await this.prisma.user.findUnique({
       where: { id: currentUser.sub },
       select: {
@@ -104,6 +119,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
 
     if (user.emailVerified) {
+      this.logger.debug(`Email already verified for user ${currentUser.sub}`);
       return { ok: true, emailVerified: true };
     }
 
@@ -113,6 +129,7 @@ export class AuthService {
       !user.emailVerificationExpiresAt ||
       user.emailVerificationExpiresAt < new Date()
     ) {
+      this.logger.warn(`Invalid or expired verification code for user ${currentUser.sub}`);
       throw new BadRequestException("Invalid or expired verification code");
     }
 
@@ -127,6 +144,7 @@ export class AuthService {
       select: this.profileSelect,
     });
 
+    this.logger.log(`Email verified for user ${currentUser.sub}`);
     return {
       ok: true,
       emailVerified: true,
@@ -135,6 +153,7 @@ export class AuthService {
   }
 
   async resendVerification(currentUser: AuthenticatedUser) {
+    this.logger.log(`Resend verification requested for user ${currentUser.sub}`);
     const user = await this.prisma.user.findUnique({
       where: { id: currentUser.sub },
       select: { email: true, emailVerified: true },
@@ -146,7 +165,7 @@ export class AuthService {
     }
 
     const verificationCode = this.generateVerificationCode();
-    const verificationExpires = new Date(Date.now() + 15 * 60 * 1000);
+    const verificationExpires = new Date(Date.now() + PASSWORD_RESET_OTP_TTL_MS);
 
     await this.prisma.user.update({
       where: { id: currentUser.sub },
@@ -157,11 +176,13 @@ export class AuthService {
     });
 
     await this.email.sendVerificationCode(user.email, verificationCode);
+    this.logger.log(`Verification code resent to ${user.email}`);
 
     return { ok: true };
   }
 
   async changePassword(currentUser: AuthenticatedUser, dto: ChangePasswordDto) {
+    this.logger.log(`Change password requested for user ${currentUser.sub}`);
     const user = await this.prisma.user.findUnique({
       where: { id: currentUser.sub },
       select: { id: true, passwordHash: true },
@@ -170,7 +191,15 @@ export class AuthService {
     if (!user || !user.passwordHash) throw new UnauthorizedException();
 
     const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!ok) throw new UnauthorizedException("Current password is incorrect");
+    if (!ok) {
+      this.logger.warn(`Change password failed — wrong current password: ${currentUser.sub}`);
+      throw new UnauthorizedException("Current password is incorrect");
+    }
+
+    const sameAsCurrent = await bcrypt.compare(dto.newPassword, user.passwordHash);
+    if (sameAsCurrent) {
+      throw new BadRequestException("New password must be different from your current password");
+    }
 
     const newHash = await bcrypt.hash(dto.newPassword, 10);
 
@@ -179,49 +208,47 @@ export class AuthService {
       data: { passwordHash: newHash },
     });
 
+    this.logger.log(`Password changed for user ${currentUser.sub}`);
     return { ok: true };
   }
 
   async requestPasswordReset(dto: RequestPasswordResetDto) {
     const email = dto.email.trim().toLowerCase();
+    this.logger.log(`Password reset requested for ${email}`);
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: { id: true, email: true },
     });
 
     if (!user) {
+      this.logger.debug(`Password reset skipped — no account for ${email}`);
       return { ok: true };
     }
 
-    const code = this.generateVerificationCode();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    await this.issuePasswordResetOtp(user.id, user.email);
+    return { ok: true };
+  }
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        passwordResetCode: code,
-        passwordResetExpiresAt: expiresAt,
-      },
+  async resendPasswordReset(dto: ResendPasswordResetDto) {
+    const email = dto.email.trim().toLowerCase();
+    this.logger.log(`Password reset OTP resend requested for ${email}`);
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true },
     });
 
-    await Promise.all([
-      this.email.sendPasswordResetCode(user.email, code),
-      this.prisma.notification.create({
-        data: {
-          userId: user.id,
-          type: "password_reset_requested",
-          title: "Password reset requested",
-          message:
-            "We sent an OTP code to your email. Use it to verify and reset your password.",
-        },
-      }),
-    ]);
+    if (!user) {
+      this.logger.debug(`Password reset resend skipped — no account for ${email}`);
+      return { ok: true };
+    }
 
+    await this.issuePasswordResetOtp(user.id, user.email);
     return { ok: true };
   }
 
   async verifyPasswordResetOtp(dto: VerifyPasswordResetOtpDto) {
     const email = dto.email.trim().toLowerCase();
+    this.logger.log(`Password reset OTP verification for ${email}`);
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
@@ -230,37 +257,61 @@ export class AuthService {
       },
     });
 
+    if (!user) {
+      this.logger.warn(`Password reset OTP verification — user not found: ${email}`);
+      throw new NotFoundException("No account found for this email");
+    }
+
     if (
-      !user?.passwordResetCode ||
+      !user.passwordResetCode ||
       user.passwordResetCode !== dto.code ||
       !user.passwordResetExpiresAt ||
       user.passwordResetExpiresAt < new Date()
     ) {
+      this.logger.warn(`Invalid or expired password reset OTP for ${email}`);
       throw new BadRequestException("Invalid or expired OTP");
     }
 
+    this.logger.log(`Password reset OTP verified for ${email}`);
     return { ok: true };
   }
 
   async resetPassword(dto: ResetPasswordDto) {
     const email = dto.email.trim().toLowerCase();
+    this.logger.log(`Password reset completion for ${email}`);
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
         email: true,
+        passwordHash: true,
         passwordResetCode: true,
         passwordResetExpiresAt: true,
       },
     });
 
+    if (!user) {
+      this.logger.warn(`Password reset — user not found: ${email}`);
+      throw new NotFoundException("No account found for this email");
+    }
+
     if (
-      !user?.passwordResetCode ||
+      !user.passwordResetCode ||
       user.passwordResetCode !== dto.code ||
       !user.passwordResetExpiresAt ||
       user.passwordResetExpiresAt < new Date()
     ) {
+      this.logger.warn(`Password reset failed — invalid or expired OTP for ${email}`);
       throw new BadRequestException("Invalid or expired OTP");
+    }
+
+    if (user.passwordHash) {
+      const sameAsCurrent = await bcrypt.compare(dto.newPassword, user.passwordHash);
+      if (sameAsCurrent) {
+        throw new BadRequestException(
+          "New password must be different from your current password",
+        );
+      }
     }
 
     const newHash = await bcrypt.hash(dto.newPassword, 10);
@@ -285,15 +336,8 @@ export class AuthService {
       }),
     ]);
 
+    this.logger.log(`Password reset completed for user ${user.id}`);
     return { ok: true };
-  }
-
-  async listNotifications(currentUser: AuthenticatedUser) {
-    return this.prisma.notification.findMany({
-      where: { userId: currentUser.sub },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    });
   }
 
   async buildAuthResponse(user: DbUser, expiresInSeconds: number) {
@@ -312,6 +356,34 @@ export class AuthService {
       user: toCurrentUser(user),
       emailVerified: user.emailVerified,
     };
+  }
+
+  private async issuePasswordResetOtp(userId: string, email: string) {
+    const code = this.generateVerificationCode();
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_OTP_TTL_MS);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordResetCode: code,
+        passwordResetExpiresAt: expiresAt,
+      },
+    });
+
+    await Promise.all([
+      this.email.sendPasswordResetCode(email, code),
+      this.prisma.notification.create({
+        data: {
+          userId,
+          type: "password_reset_requested",
+          title: "Password reset requested",
+          message:
+            "We sent an OTP code to your email. Use it to verify and reset your password.",
+        },
+      }),
+    ]);
+
+    this.logger.log(`Password reset OTP issued for ${email}`);
   }
 
   private generateVerificationCode(): string {
