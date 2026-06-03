@@ -26,6 +26,22 @@ type ComplianceRow = ComplianceRecord & {
   checkedBy?: Pick<User, "id" | "email" | "firstName" | "lastName"> | null;
 };
 
+export function toPublicSite(row: Site) {
+  return {
+    id: row.id,
+    name: row.name,
+    code: row.code,
+    address: row.address,
+    city: row.city,
+    state: row.state,
+    postalCode: row.postalCode,
+    country: row.country,
+    isActive: row.isActive,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
 export function toPublicExtinguisher(row: ExtinguisherRow) {
   return {
     id: row.id,

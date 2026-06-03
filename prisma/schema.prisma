@@ -93,6 +93,13 @@ enum ReportStatus {
   failed
 }
 
+enum RequestStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}
+
 // --- Identity ---
 
 model User {
@@ -115,12 +122,15 @@ model User {
   createdAt                  DateTime   @default(now())
   updatedAt                  DateTime   @updatedAt
 
-  notifications          Notification[]
-  inspectionsConducted Inspection[]        @relation("InspectionsConducted")
-  inspectionsRequested   Inspection[]        @relation("InspectionsRequested")
-  maintenancePerformed     MaintenanceRecord[] @relation("MaintenancePerformed")
-  complianceChecks         ComplianceRecord[]  @relation("ComplianceChecks")
-  reportsGenerated         Report[]            @relation("ReportsGenerated")
+  notifications             Notification[]
+  inspectionsConducted      Inspection[]           @relation("InspectionsConducted")
+  inspectionsRequested      Inspection[]           @relation("InspectionsRequested")
+  maintenancePerformed      MaintenanceRecord[]    @relation("MaintenancePerformed")
+  complianceChecks          ComplianceRecord[]     @relation("ComplianceChecks")
+  reportsGenerated          Report[]               @relation("ReportsGenerated")
+  assignedExtinguishers     FireExtinguisher[]     @relation("AssignedExtinguishers")
+  extinguisherRequests      ExtinguisherRequest[]  @relation("RequestedBy")
+  reviewedRequests          ExtinguisherRequest[]  @relation("ReviewedBy")
 }
 
 model Notification {
@@ -169,6 +179,7 @@ model FireExtinguisher {
   model              String?
   capacityKg         Decimal?           @db.Decimal(8, 2)
   siteId             String?
+  assignedToId       String?
   building           String?
   floor              String?
   room               String?
@@ -188,11 +199,14 @@ model FireExtinguisher {
   updatedAt          DateTime           @updatedAt
 
   site               Site?               @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  assignedTo         User?               @relation("AssignedExtinguishers", fields: [assignedToId], references: [id], onDelete: SetNull)
   inspections        Inspection[]
   maintenanceRecords MaintenanceRecord[]
   complianceRecords  ComplianceRecord[]
+  requests           ExtinguisherRequest[]
 
   @@index([siteId, status])
+  @@index([assignedToId])
   @@index([complianceStatus])
   @@index([nextInspectionDue])
   @@index([status])
@@ -296,4 +310,30 @@ model Report {
 
   @@index([generatedById, requestedAt])
   @@index([type, status])
+}
+
+// --- Extinguisher request / assignment workflow ---
+
+model ExtinguisherRequest {
+  id               String          @id @default(cuid())
+  requestedById    String
+  extinguisherId   String?
+  quantity         Int             @default(1)
+  type             ExtinguisherType?
+  size             ExtinguisherSize?
+  notes            String          @default("")
+  status           RequestStatus   @default(pending)
+  reviewedById     String?
+  reviewedAt       DateTime?
+  reviewNotes      String          @default("")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  requestedBy    User              @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
+  reviewedBy     User?             @relation("ReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  extinguisher   FireExtinguisher? @relation(fields: [extinguisherId], references: [id], onDelete: SetNull)
+
+  @@index([requestedById, createdAt])
+  @@index([status])
+  @@index([extinguisherId])
 }

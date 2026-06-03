@@ -3,6 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { toPublicCompliance } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { deriveComplianceStatus } from "@shared/common/utils/compliance.util";
+import { coerceOptionalDate } from "@shared/common/utils/date.util";
 import type { CheckComplianceDto } from "./dto/check-compliance.dto";
 
 @Injectable()
@@ -26,7 +27,7 @@ export class ComplianceService {
           status,
           regulationRef: dto.regulationRef?.trim() ?? "",
           notes: dto.notes?.trim() ?? "",
-          dueAt: dto.dueAt ?? extinguisher.expiresAt,
+          dueAt: coerceOptionalDate(dto.dueAt, "dueAt") ?? extinguisher.expiresAt,
         },
         include: this.complianceInclude,
       }),
@@ -37,6 +38,21 @@ export class ComplianceService {
     ]);
 
     return toPublicCompliance(record);
+  }
+
+  async view(id: string) {
+    const row = await this.prisma.complianceRecord.findUnique({
+      where: { id },
+      include: this.complianceInclude,
+    });
+    if (!row) throw new NotFoundException("Compliance record not found");
+    return toPublicCompliance(row);
+  }
+
+  async remove(id: string) {
+    await this.view(id);
+    await this.prisma.complianceRecord.delete({ where: { id } });
+    return { ok: true };
   }
 
   async list(extinguisherId?: string) {

@@ -48,6 +48,7 @@ export type FireExtinguisherMinAggregateOutputType = {
   model: string | null
   capacityKg: runtime.Decimal | null
   siteId: string | null
+  assignedToId: string | null
   building: string | null
   floor: string | null
   room: string | null
@@ -79,6 +80,7 @@ export type FireExtinguisherMaxAggregateOutputType = {
   model: string | null
   capacityKg: runtime.Decimal | null
   siteId: string | null
+  assignedToId: string | null
   building: string | null
   floor: string | null
   room: string | null
@@ -110,6 +112,7 @@ export type FireExtinguisherCountAggregateOutputType = {
   model: number
   capacityKg: number
   siteId: number
+  assignedToId: number
   building: number
   floor: number
   room: number
@@ -153,6 +156,7 @@ export type FireExtinguisherMinAggregateInputType = {
   model?: true
   capacityKg?: true
   siteId?: true
+  assignedToId?: true
   building?: true
   floor?: true
   room?: true
@@ -184,6 +188,7 @@ export type FireExtinguisherMaxAggregateInputType = {
   model?: true
   capacityKg?: true
   siteId?: true
+  assignedToId?: true
   building?: true
   floor?: true
   room?: true
@@ -215,6 +220,7 @@ export type FireExtinguisherCountAggregateInputType = {
   model?: true
   capacityKg?: true
   siteId?: true
+  assignedToId?: true
   building?: true
   floor?: true
   room?: true
@@ -333,6 +339,7 @@ export type FireExtinguisherGroupByOutputType = {
   model: string | null
   capacityKg: runtime.Decimal | null
   siteId: string | null
+  assignedToId: string | null
   building: string | null
   floor: string | null
   room: string | null
@@ -387,6 +394,7 @@ export type FireExtinguisherWhereInput = {
   model?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   capacityKg?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  assignedToId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   building?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   floor?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   room?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
@@ -405,9 +413,11 @@ export type FireExtinguisherWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
   site?: Prisma.XOR<Prisma.SiteNullableScalarRelationFilter, Prisma.SiteWhereInput> | null
+  assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   inspections?: Prisma.InspectionListRelationFilter
   maintenanceRecords?: Prisma.MaintenanceRecordListRelationFilter
   complianceRecords?: Prisma.ComplianceRecordListRelationFilter
+  requests?: Prisma.ExtinguisherRequestListRelationFilter
 }
 
 export type FireExtinguisherOrderByWithRelationInput = {
@@ -422,6 +432,7 @@ export type FireExtinguisherOrderByWithRelationInput = {
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   capacityKg?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
+  assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
   building?: Prisma.SortOrderInput | Prisma.SortOrder
   floor?: Prisma.SortOrderInput | Prisma.SortOrder
   room?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -440,9 +451,11 @@ export type FireExtinguisherOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   site?: Prisma.SiteOrderByWithRelationInput
+  assignedTo?: Prisma.UserOrderByWithRelationInput
   inspections?: Prisma.InspectionOrderByRelationAggregateInput
   maintenanceRecords?: Prisma.MaintenanceRecordOrderByRelationAggregateInput
   complianceRecords?: Prisma.ComplianceRecordOrderByRelationAggregateInput
+  requests?: Prisma.ExtinguisherRequestOrderByRelationAggregateInput
 }
 
 export type FireExtinguisherWhereUniqueInput = Prisma.AtLeast<{
@@ -460,6 +473,7 @@ export type FireExtinguisherWhereUniqueInput = Prisma.AtLeast<{
   model?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   capacityKg?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  assignedToId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   building?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   floor?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
   room?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
@@ -478,9 +492,11 @@ export type FireExtinguisherWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
   site?: Prisma.XOR<Prisma.SiteNullableScalarRelationFilter, Prisma.SiteWhereInput> | null
+  assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   inspections?: Prisma.InspectionListRelationFilter
   maintenanceRecords?: Prisma.MaintenanceRecordListRelationFilter
   complianceRecords?: Prisma.ComplianceRecordListRelationFilter
+  requests?: Prisma.ExtinguisherRequestListRelationFilter
 }, "id" | "assetTag" | "serialNumber">
 
 export type FireExtinguisherOrderByWithAggregationInput = {
@@ -495,6 +511,7 @@ export type FireExtinguisherOrderByWithAggregationInput = {
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   capacityKg?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
+  assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
   building?: Prisma.SortOrderInput | Prisma.SortOrder
   floor?: Prisma.SortOrderInput | Prisma.SortOrder
   room?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -534,6 +551,7 @@ export type FireExtinguisherScalarWhereWithAggregatesInput = {
   model?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
   capacityKg?: Prisma.DecimalNullableWithAggregatesFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
+  assignedToId?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
   building?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
   floor?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
   room?: Prisma.StringNullableWithAggregatesFilter<"FireExtinguisher"> | string | null
@@ -582,9 +600,11 @@ export type FireExtinguisherCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
   inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUncheckedCreateInput = {
@@ -599,6 +619,7 @@ export type FireExtinguisherUncheckedCreateInput = {
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -619,6 +640,7 @@ export type FireExtinguisherUncheckedCreateInput = {
   inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUpdateInput = {
@@ -650,9 +672,11 @@ export type FireExtinguisherUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
   inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateInput = {
@@ -667,6 +691,7 @@ export type FireExtinguisherUncheckedUpdateInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -687,6 +712,7 @@ export type FireExtinguisherUncheckedUpdateInput = {
   inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherCreateManyInput = {
@@ -701,6 +727,7 @@ export type FireExtinguisherCreateManyInput = {
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -762,6 +789,7 @@ export type FireExtinguisherUncheckedUpdateManyInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -803,6 +831,7 @@ export type FireExtinguisherCountOrderByAggregateInput = {
   model?: Prisma.SortOrder
   capacityKg?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
+  assignedToId?: Prisma.SortOrder
   building?: Prisma.SortOrder
   floor?: Prisma.SortOrder
   room?: Prisma.SortOrder
@@ -839,6 +868,7 @@ export type FireExtinguisherMaxOrderByAggregateInput = {
   model?: Prisma.SortOrder
   capacityKg?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
+  assignedToId?: Prisma.SortOrder
   building?: Prisma.SortOrder
   floor?: Prisma.SortOrder
   room?: Prisma.SortOrder
@@ -870,6 +900,7 @@ export type FireExtinguisherMinOrderByAggregateInput = {
   model?: Prisma.SortOrder
   capacityKg?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
+  assignedToId?: Prisma.SortOrder
   building?: Prisma.SortOrder
   floor?: Prisma.SortOrder
   room?: Prisma.SortOrder
@@ -897,6 +928,53 @@ export type FireExtinguisherSumOrderByAggregateInput = {
 export type FireExtinguisherScalarRelationFilter = {
   is?: Prisma.FireExtinguisherWhereInput
   isNot?: Prisma.FireExtinguisherWhereInput
+}
+
+export type FireExtinguisherNullableScalarRelationFilter = {
+  is?: Prisma.FireExtinguisherWhereInput | null
+  isNot?: Prisma.FireExtinguisherWhereInput | null
+}
+
+export type FireExtinguisherCreateNestedManyWithoutAssignedToInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput> | Prisma.FireExtinguisherCreateWithoutAssignedToInput[] | Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput[]
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput | Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput[]
+  createMany?: Prisma.FireExtinguisherCreateManyAssignedToInputEnvelope
+  connect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+}
+
+export type FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput> | Prisma.FireExtinguisherCreateWithoutAssignedToInput[] | Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput[]
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput | Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput[]
+  createMany?: Prisma.FireExtinguisherCreateManyAssignedToInputEnvelope
+  connect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+}
+
+export type FireExtinguisherUpdateManyWithoutAssignedToNestedInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput> | Prisma.FireExtinguisherCreateWithoutAssignedToInput[] | Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput[]
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput | Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput[]
+  upsert?: Prisma.FireExtinguisherUpsertWithWhereUniqueWithoutAssignedToInput | Prisma.FireExtinguisherUpsertWithWhereUniqueWithoutAssignedToInput[]
+  createMany?: Prisma.FireExtinguisherCreateManyAssignedToInputEnvelope
+  set?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  disconnect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  delete?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  connect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  update?: Prisma.FireExtinguisherUpdateWithWhereUniqueWithoutAssignedToInput | Prisma.FireExtinguisherUpdateWithWhereUniqueWithoutAssignedToInput[]
+  updateMany?: Prisma.FireExtinguisherUpdateManyWithWhereWithoutAssignedToInput | Prisma.FireExtinguisherUpdateManyWithWhereWithoutAssignedToInput[]
+  deleteMany?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
+}
+
+export type FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput> | Prisma.FireExtinguisherCreateWithoutAssignedToInput[] | Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput[]
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput | Prisma.FireExtinguisherCreateOrConnectWithoutAssignedToInput[]
+  upsert?: Prisma.FireExtinguisherUpsertWithWhereUniqueWithoutAssignedToInput | Prisma.FireExtinguisherUpsertWithWhereUniqueWithoutAssignedToInput[]
+  createMany?: Prisma.FireExtinguisherCreateManyAssignedToInputEnvelope
+  set?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  disconnect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  delete?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  connect?: Prisma.FireExtinguisherWhereUniqueInput | Prisma.FireExtinguisherWhereUniqueInput[]
+  update?: Prisma.FireExtinguisherUpdateWithWhereUniqueWithoutAssignedToInput | Prisma.FireExtinguisherUpdateWithWhereUniqueWithoutAssignedToInput[]
+  updateMany?: Prisma.FireExtinguisherUpdateManyWithWhereWithoutAssignedToInput | Prisma.FireExtinguisherUpdateManyWithWhereWithoutAssignedToInput[]
+  deleteMany?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
 }
 
 export type FireExtinguisherCreateNestedManyWithoutSiteInput = {
@@ -1007,6 +1085,153 @@ export type FireExtinguisherUpdateOneRequiredWithoutComplianceRecordsNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.FireExtinguisherUpdateToOneWithWhereWithoutComplianceRecordsInput, Prisma.FireExtinguisherUpdateWithoutComplianceRecordsInput>, Prisma.FireExtinguisherUncheckedUpdateWithoutComplianceRecordsInput>
 }
 
+export type FireExtinguisherCreateNestedOneWithoutRequestsInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedCreateWithoutRequestsInput>
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutRequestsInput
+  connect?: Prisma.FireExtinguisherWhereUniqueInput
+}
+
+export type FireExtinguisherUpdateOneWithoutRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedCreateWithoutRequestsInput>
+  connectOrCreate?: Prisma.FireExtinguisherCreateOrConnectWithoutRequestsInput
+  upsert?: Prisma.FireExtinguisherUpsertWithoutRequestsInput
+  disconnect?: Prisma.FireExtinguisherWhereInput | boolean
+  delete?: Prisma.FireExtinguisherWhereInput | boolean
+  connect?: Prisma.FireExtinguisherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FireExtinguisherUpdateToOneWithWhereWithoutRequestsInput, Prisma.FireExtinguisherUpdateWithoutRequestsInput>, Prisma.FireExtinguisherUncheckedUpdateWithoutRequestsInput>
+}
+
+export type FireExtinguisherCreateWithoutAssignedToInput = {
+  id?: string
+  assetTag: string
+  serialNumber: string
+  location: string
+  type: $Enums.ExtinguisherType
+  size: $Enums.ExtinguisherSize
+  extinguisherClass?: string
+  manufacturer?: string | null
+  model?: string | null
+  capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  building?: string | null
+  floor?: string | null
+  room?: string | null
+  mountingLocation?: string | null
+  status?: $Enums.ExtinguisherStatus
+  complianceStatus?: $Enums.ComplianceStatus
+  manufacturedAt?: Date | string | null
+  installedAt: Date | string
+  expiresAt: Date | string
+  lastInspectionAt?: Date | string | null
+  nextInspectionDue?: Date | string | null
+  lastMaintenanceAt?: Date | string | null
+  nextMaintenanceDue?: Date | string | null
+  pressurePsi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
+  maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
+  complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
+}
+
+export type FireExtinguisherUncheckedCreateWithoutAssignedToInput = {
+  id?: string
+  assetTag: string
+  serialNumber: string
+  location: string
+  type: $Enums.ExtinguisherType
+  size: $Enums.ExtinguisherSize
+  extinguisherClass?: string
+  manufacturer?: string | null
+  model?: string | null
+  capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: string | null
+  building?: string | null
+  floor?: string | null
+  room?: string | null
+  mountingLocation?: string | null
+  status?: $Enums.ExtinguisherStatus
+  complianceStatus?: $Enums.ComplianceStatus
+  manufacturedAt?: Date | string | null
+  installedAt: Date | string
+  expiresAt: Date | string
+  lastInspectionAt?: Date | string | null
+  nextInspectionDue?: Date | string | null
+  lastMaintenanceAt?: Date | string | null
+  nextMaintenanceDue?: Date | string | null
+  pressurePsi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
+}
+
+export type FireExtinguisherCreateOrConnectWithoutAssignedToInput = {
+  where: Prisma.FireExtinguisherWhereUniqueInput
+  create: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput>
+}
+
+export type FireExtinguisherCreateManyAssignedToInputEnvelope = {
+  data: Prisma.FireExtinguisherCreateManyAssignedToInput | Prisma.FireExtinguisherCreateManyAssignedToInput[]
+  skipDuplicates?: boolean
+}
+
+export type FireExtinguisherUpsertWithWhereUniqueWithoutAssignedToInput = {
+  where: Prisma.FireExtinguisherWhereUniqueInput
+  update: Prisma.XOR<Prisma.FireExtinguisherUpdateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedUpdateWithoutAssignedToInput>
+  create: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedCreateWithoutAssignedToInput>
+}
+
+export type FireExtinguisherUpdateWithWhereUniqueWithoutAssignedToInput = {
+  where: Prisma.FireExtinguisherWhereUniqueInput
+  data: Prisma.XOR<Prisma.FireExtinguisherUpdateWithoutAssignedToInput, Prisma.FireExtinguisherUncheckedUpdateWithoutAssignedToInput>
+}
+
+export type FireExtinguisherUpdateManyWithWhereWithoutAssignedToInput = {
+  where: Prisma.FireExtinguisherScalarWhereInput
+  data: Prisma.XOR<Prisma.FireExtinguisherUpdateManyMutationInput, Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToInput>
+}
+
+export type FireExtinguisherScalarWhereInput = {
+  AND?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
+  OR?: Prisma.FireExtinguisherScalarWhereInput[]
+  NOT?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
+  id?: Prisma.StringFilter<"FireExtinguisher"> | string
+  assetTag?: Prisma.StringFilter<"FireExtinguisher"> | string
+  serialNumber?: Prisma.StringFilter<"FireExtinguisher"> | string
+  location?: Prisma.StringFilter<"FireExtinguisher"> | string
+  type?: Prisma.EnumExtinguisherTypeFilter<"FireExtinguisher"> | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFilter<"FireExtinguisher"> | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFilter<"FireExtinguisher"> | string
+  manufacturer?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  model?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  capacityKg?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  assignedToId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  building?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  floor?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  room?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  mountingLocation?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
+  status?: Prisma.EnumExtinguisherStatusFilter<"FireExtinguisher"> | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFilter<"FireExtinguisher"> | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
+  installedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
+  expiresAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
+  lastInspectionAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
+  nextInspectionDue?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
+  lastMaintenanceAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
+  nextMaintenanceDue?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
+  pressurePsi?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFilter<"FireExtinguisher"> | string
+  createdAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
+}
+
 export type FireExtinguisherCreateWithoutSiteInput = {
   id?: string
   assetTag: string
@@ -1035,9 +1260,11 @@ export type FireExtinguisherCreateWithoutSiteInput = {
   notes?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
   inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUncheckedCreateWithoutSiteInput = {
@@ -1051,6 +1278,7 @@ export type FireExtinguisherUncheckedCreateWithoutSiteInput = {
   manufacturer?: string | null
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -1071,6 +1299,7 @@ export type FireExtinguisherUncheckedCreateWithoutSiteInput = {
   inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherCreateOrConnectWithoutSiteInput = {
@@ -1097,40 +1326,6 @@ export type FireExtinguisherUpdateWithWhereUniqueWithoutSiteInput = {
 export type FireExtinguisherUpdateManyWithWhereWithoutSiteInput = {
   where: Prisma.FireExtinguisherScalarWhereInput
   data: Prisma.XOR<Prisma.FireExtinguisherUpdateManyMutationInput, Prisma.FireExtinguisherUncheckedUpdateManyWithoutSiteInput>
-}
-
-export type FireExtinguisherScalarWhereInput = {
-  AND?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
-  OR?: Prisma.FireExtinguisherScalarWhereInput[]
-  NOT?: Prisma.FireExtinguisherScalarWhereInput | Prisma.FireExtinguisherScalarWhereInput[]
-  id?: Prisma.StringFilter<"FireExtinguisher"> | string
-  assetTag?: Prisma.StringFilter<"FireExtinguisher"> | string
-  serialNumber?: Prisma.StringFilter<"FireExtinguisher"> | string
-  location?: Prisma.StringFilter<"FireExtinguisher"> | string
-  type?: Prisma.EnumExtinguisherTypeFilter<"FireExtinguisher"> | $Enums.ExtinguisherType
-  size?: Prisma.EnumExtinguisherSizeFilter<"FireExtinguisher"> | $Enums.ExtinguisherSize
-  extinguisherClass?: Prisma.StringFilter<"FireExtinguisher"> | string
-  manufacturer?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  model?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  capacityKg?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  siteId?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  building?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  floor?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  room?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  mountingLocation?: Prisma.StringNullableFilter<"FireExtinguisher"> | string | null
-  status?: Prisma.EnumExtinguisherStatusFilter<"FireExtinguisher"> | $Enums.ExtinguisherStatus
-  complianceStatus?: Prisma.EnumComplianceStatusFilter<"FireExtinguisher"> | $Enums.ComplianceStatus
-  manufacturedAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
-  installedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
-  expiresAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
-  lastInspectionAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
-  nextInspectionDue?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
-  lastMaintenanceAt?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
-  nextMaintenanceDue?: Prisma.DateTimeNullableFilter<"FireExtinguisher"> | Date | string | null
-  pressurePsi?: Prisma.DecimalNullableFilter<"FireExtinguisher"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  notes?: Prisma.StringFilter<"FireExtinguisher"> | string
-  createdAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"FireExtinguisher"> | Date | string
 }
 
 export type FireExtinguisherCreateWithoutInspectionsInput = {
@@ -1162,8 +1357,10 @@ export type FireExtinguisherCreateWithoutInspectionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
   maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUncheckedCreateWithoutInspectionsInput = {
@@ -1178,6 +1375,7 @@ export type FireExtinguisherUncheckedCreateWithoutInspectionsInput = {
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -1197,6 +1395,7 @@ export type FireExtinguisherUncheckedCreateWithoutInspectionsInput = {
   updatedAt?: Date | string
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherCreateOrConnectWithoutInspectionsInput = {
@@ -1244,8 +1443,10 @@ export type FireExtinguisherUpdateWithoutInspectionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateWithoutInspectionsInput = {
@@ -1260,6 +1461,7 @@ export type FireExtinguisherUncheckedUpdateWithoutInspectionsInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1279,6 +1481,7 @@ export type FireExtinguisherUncheckedUpdateWithoutInspectionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherCreateWithoutMaintenanceRecordsInput = {
@@ -1310,8 +1513,10 @@ export type FireExtinguisherCreateWithoutMaintenanceRecordsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
   inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUncheckedCreateWithoutMaintenanceRecordsInput = {
@@ -1326,6 +1531,7 @@ export type FireExtinguisherUncheckedCreateWithoutMaintenanceRecordsInput = {
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -1345,6 +1551,7 @@ export type FireExtinguisherUncheckedCreateWithoutMaintenanceRecordsInput = {
   updatedAt?: Date | string
   inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherCreateOrConnectWithoutMaintenanceRecordsInput = {
@@ -1392,8 +1599,10 @@ export type FireExtinguisherUpdateWithoutMaintenanceRecordsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
   inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateWithoutMaintenanceRecordsInput = {
@@ -1408,6 +1617,7 @@ export type FireExtinguisherUncheckedUpdateWithoutMaintenanceRecordsInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1427,6 +1637,7 @@ export type FireExtinguisherUncheckedUpdateWithoutMaintenanceRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherCreateWithoutComplianceRecordsInput = {
@@ -1458,8 +1669,10 @@ export type FireExtinguisherCreateWithoutComplianceRecordsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
   inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherUncheckedCreateWithoutComplianceRecordsInput = {
@@ -1474,6 +1687,7 @@ export type FireExtinguisherUncheckedCreateWithoutComplianceRecordsInput = {
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   siteId?: string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -1493,6 +1707,7 @@ export type FireExtinguisherUncheckedCreateWithoutComplianceRecordsInput = {
   updatedAt?: Date | string
   inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  requests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutExtinguisherInput
 }
 
 export type FireExtinguisherCreateOrConnectWithoutComplianceRecordsInput = {
@@ -1540,11 +1755,270 @@ export type FireExtinguisherUpdateWithoutComplianceRecordsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
   inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateWithoutComplianceRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assetTag?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumExtinguisherTypeFieldUpdateOperationsInput | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFieldUpdateOperationsInput | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFieldUpdateOperationsInput | string
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mountingLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumExtinguisherStatusFieldUpdateOperationsInput | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  installedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastInspectionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextInspectionDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMaintenanceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextMaintenanceDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pressurePsi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
+}
+
+export type FireExtinguisherCreateWithoutRequestsInput = {
+  id?: string
+  assetTag: string
+  serialNumber: string
+  location: string
+  type: $Enums.ExtinguisherType
+  size: $Enums.ExtinguisherSize
+  extinguisherClass?: string
+  manufacturer?: string | null
+  model?: string | null
+  capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  building?: string | null
+  floor?: string | null
+  room?: string | null
+  mountingLocation?: string | null
+  status?: $Enums.ExtinguisherStatus
+  complianceStatus?: $Enums.ComplianceStatus
+  manufacturedAt?: Date | string | null
+  installedAt: Date | string
+  expiresAt: Date | string
+  lastInspectionAt?: Date | string | null
+  nextInspectionDue?: Date | string | null
+  lastMaintenanceAt?: Date | string | null
+  nextMaintenanceDue?: Date | string | null
+  pressurePsi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  site?: Prisma.SiteCreateNestedOneWithoutExtinguishersInput
+  assignedTo?: Prisma.UserCreateNestedOneWithoutAssignedExtinguishersInput
+  inspections?: Prisma.InspectionCreateNestedManyWithoutExtinguisherInput
+  maintenanceRecords?: Prisma.MaintenanceRecordCreateNestedManyWithoutExtinguisherInput
+  complianceRecords?: Prisma.ComplianceRecordCreateNestedManyWithoutExtinguisherInput
+}
+
+export type FireExtinguisherUncheckedCreateWithoutRequestsInput = {
+  id?: string
+  assetTag: string
+  serialNumber: string
+  location: string
+  type: $Enums.ExtinguisherType
+  size: $Enums.ExtinguisherSize
+  extinguisherClass?: string
+  manufacturer?: string | null
+  model?: string | null
+  capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: string | null
+  assignedToId?: string | null
+  building?: string | null
+  floor?: string | null
+  room?: string | null
+  mountingLocation?: string | null
+  status?: $Enums.ExtinguisherStatus
+  complianceStatus?: $Enums.ComplianceStatus
+  manufacturedAt?: Date | string | null
+  installedAt: Date | string
+  expiresAt: Date | string
+  lastInspectionAt?: Date | string | null
+  nextInspectionDue?: Date | string | null
+  lastMaintenanceAt?: Date | string | null
+  nextMaintenanceDue?: Date | string | null
+  pressurePsi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  inspections?: Prisma.InspectionUncheckedCreateNestedManyWithoutExtinguisherInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+  complianceRecords?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutExtinguisherInput
+}
+
+export type FireExtinguisherCreateOrConnectWithoutRequestsInput = {
+  where: Prisma.FireExtinguisherWhereUniqueInput
+  create: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedCreateWithoutRequestsInput>
+}
+
+export type FireExtinguisherUpsertWithoutRequestsInput = {
+  update: Prisma.XOR<Prisma.FireExtinguisherUpdateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedUpdateWithoutRequestsInput>
+  create: Prisma.XOR<Prisma.FireExtinguisherCreateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedCreateWithoutRequestsInput>
+  where?: Prisma.FireExtinguisherWhereInput
+}
+
+export type FireExtinguisherUpdateToOneWithWhereWithoutRequestsInput = {
+  where?: Prisma.FireExtinguisherWhereInput
+  data: Prisma.XOR<Prisma.FireExtinguisherUpdateWithoutRequestsInput, Prisma.FireExtinguisherUncheckedUpdateWithoutRequestsInput>
+}
+
+export type FireExtinguisherUpdateWithoutRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assetTag?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumExtinguisherTypeFieldUpdateOperationsInput | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFieldUpdateOperationsInput | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFieldUpdateOperationsInput | string
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mountingLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumExtinguisherStatusFieldUpdateOperationsInput | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  installedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastInspectionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextInspectionDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMaintenanceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextMaintenanceDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pressurePsi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
+  inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
+  complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+}
+
+export type FireExtinguisherUncheckedUpdateWithoutRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assetTag?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumExtinguisherTypeFieldUpdateOperationsInput | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFieldUpdateOperationsInput | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFieldUpdateOperationsInput | string
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mountingLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumExtinguisherStatusFieldUpdateOperationsInput | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  installedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastInspectionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextInspectionDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMaintenanceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextMaintenanceDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pressurePsi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+}
+
+export type FireExtinguisherCreateManyAssignedToInput = {
+  id?: string
+  assetTag: string
+  serialNumber: string
+  location: string
+  type: $Enums.ExtinguisherType
+  size: $Enums.ExtinguisherSize
+  extinguisherClass?: string
+  manufacturer?: string | null
+  model?: string | null
+  capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: string | null
+  building?: string | null
+  floor?: string | null
+  room?: string | null
+  mountingLocation?: string | null
+  status?: $Enums.ExtinguisherStatus
+  complianceStatus?: $Enums.ComplianceStatus
+  manufacturedAt?: Date | string | null
+  installedAt: Date | string
+  expiresAt: Date | string
+  lastInspectionAt?: Date | string | null
+  nextInspectionDue?: Date | string | null
+  lastMaintenanceAt?: Date | string | null
+  nextMaintenanceDue?: Date | string | null
+  pressurePsi?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type FireExtinguisherUpdateWithoutAssignedToInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assetTag?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumExtinguisherTypeFieldUpdateOperationsInput | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFieldUpdateOperationsInput | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFieldUpdateOperationsInput | string
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mountingLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumExtinguisherStatusFieldUpdateOperationsInput | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  installedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastInspectionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextInspectionDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMaintenanceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextMaintenanceDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pressurePsi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  site?: Prisma.SiteUpdateOneWithoutExtinguishersNestedInput
+  inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
+  maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
+  complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
+}
+
+export type FireExtinguisherUncheckedUpdateWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   assetTag?: Prisma.StringFieldUpdateOperationsInput | string
   serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1575,6 +2049,39 @@ export type FireExtinguisherUncheckedUpdateWithoutComplianceRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
+}
+
+export type FireExtinguisherUncheckedUpdateManyWithoutAssignedToInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assetTag?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumExtinguisherTypeFieldUpdateOperationsInput | $Enums.ExtinguisherType
+  size?: Prisma.EnumExtinguisherSizeFieldUpdateOperationsInput | $Enums.ExtinguisherSize
+  extinguisherClass?: Prisma.StringFieldUpdateOperationsInput | string
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mountingLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumExtinguisherStatusFieldUpdateOperationsInput | $Enums.ExtinguisherStatus
+  complianceStatus?: Prisma.EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+  manufacturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  installedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastInspectionAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextInspectionDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMaintenanceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextMaintenanceDue?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pressurePsi?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FireExtinguisherCreateManySiteInput = {
@@ -1588,6 +2095,7 @@ export type FireExtinguisherCreateManySiteInput = {
   manufacturer?: string | null
   model?: string | null
   capacityKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  assignedToId?: string | null
   building?: string | null
   floor?: string | null
   room?: string | null
@@ -1635,9 +2143,11 @@ export type FireExtinguisherUpdateWithoutSiteInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.UserUpdateOneWithoutAssignedExtinguishersNestedInput
   inspections?: Prisma.InspectionUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateWithoutSiteInput = {
@@ -1651,6 +2161,7 @@ export type FireExtinguisherUncheckedUpdateWithoutSiteInput = {
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1671,6 +2182,7 @@ export type FireExtinguisherUncheckedUpdateWithoutSiteInput = {
   inspections?: Prisma.InspectionUncheckedUpdateManyWithoutExtinguisherNestedInput
   maintenanceRecords?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
   complianceRecords?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutExtinguisherNestedInput
+  requests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutExtinguisherNestedInput
 }
 
 export type FireExtinguisherUncheckedUpdateManyWithoutSiteInput = {
@@ -1684,6 +2196,7 @@ export type FireExtinguisherUncheckedUpdateManyWithoutSiteInput = {
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacityKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   building?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   floor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1712,12 +2225,14 @@ export type FireExtinguisherCountOutputType = {
   inspections: number
   maintenanceRecords: number
   complianceRecords: number
+  requests: number
 }
 
 export type FireExtinguisherCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inspections?: boolean | FireExtinguisherCountOutputTypeCountInspectionsArgs
   maintenanceRecords?: boolean | FireExtinguisherCountOutputTypeCountMaintenanceRecordsArgs
   complianceRecords?: boolean | FireExtinguisherCountOutputTypeCountComplianceRecordsArgs
+  requests?: boolean | FireExtinguisherCountOutputTypeCountRequestsArgs
 }
 
 /**
@@ -1751,6 +2266,13 @@ export type FireExtinguisherCountOutputTypeCountComplianceRecordsArgs<ExtArgs ex
   where?: Prisma.ComplianceRecordWhereInput
 }
 
+/**
+ * FireExtinguisherCountOutputType without action
+ */
+export type FireExtinguisherCountOutputTypeCountRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExtinguisherRequestWhereInput
+}
+
 
 export type FireExtinguisherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1764,6 +2286,7 @@ export type FireExtinguisherSelect<ExtArgs extends runtime.Types.Extensions.Inte
   model?: boolean
   capacityKg?: boolean
   siteId?: boolean
+  assignedToId?: boolean
   building?: boolean
   floor?: boolean
   room?: boolean
@@ -1782,9 +2305,11 @@ export type FireExtinguisherSelect<ExtArgs extends runtime.Types.Extensions.Inte
   createdAt?: boolean
   updatedAt?: boolean
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
   inspections?: boolean | Prisma.FireExtinguisher$inspectionsArgs<ExtArgs>
   maintenanceRecords?: boolean | Prisma.FireExtinguisher$maintenanceRecordsArgs<ExtArgs>
   complianceRecords?: boolean | Prisma.FireExtinguisher$complianceRecordsArgs<ExtArgs>
+  requests?: boolean | Prisma.FireExtinguisher$requestsArgs<ExtArgs>
   _count?: boolean | Prisma.FireExtinguisherCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["fireExtinguisher"]>
 
@@ -1800,6 +2325,7 @@ export type FireExtinguisherSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   model?: boolean
   capacityKg?: boolean
   siteId?: boolean
+  assignedToId?: boolean
   building?: boolean
   floor?: boolean
   room?: boolean
@@ -1818,6 +2344,7 @@ export type FireExtinguisherSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   createdAt?: boolean
   updatedAt?: boolean
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
 }, ExtArgs["result"]["fireExtinguisher"]>
 
 export type FireExtinguisherSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1832,6 +2359,7 @@ export type FireExtinguisherSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   model?: boolean
   capacityKg?: boolean
   siteId?: boolean
+  assignedToId?: boolean
   building?: boolean
   floor?: boolean
   room?: boolean
@@ -1850,6 +2378,7 @@ export type FireExtinguisherSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   createdAt?: boolean
   updatedAt?: boolean
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
 }, ExtArgs["result"]["fireExtinguisher"]>
 
 export type FireExtinguisherSelectScalar = {
@@ -1864,6 +2393,7 @@ export type FireExtinguisherSelectScalar = {
   model?: boolean
   capacityKg?: boolean
   siteId?: boolean
+  assignedToId?: boolean
   building?: boolean
   floor?: boolean
   room?: boolean
@@ -1883,28 +2413,34 @@ export type FireExtinguisherSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FireExtinguisherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "assetTag" | "serialNumber" | "location" | "type" | "size" | "extinguisherClass" | "manufacturer" | "model" | "capacityKg" | "siteId" | "building" | "floor" | "room" | "mountingLocation" | "status" | "complianceStatus" | "manufacturedAt" | "installedAt" | "expiresAt" | "lastInspectionAt" | "nextInspectionDue" | "lastMaintenanceAt" | "nextMaintenanceDue" | "pressurePsi" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["fireExtinguisher"]>
+export type FireExtinguisherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "assetTag" | "serialNumber" | "location" | "type" | "size" | "extinguisherClass" | "manufacturer" | "model" | "capacityKg" | "siteId" | "assignedToId" | "building" | "floor" | "room" | "mountingLocation" | "status" | "complianceStatus" | "manufacturedAt" | "installedAt" | "expiresAt" | "lastInspectionAt" | "nextInspectionDue" | "lastMaintenanceAt" | "nextMaintenanceDue" | "pressurePsi" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["fireExtinguisher"]>
 export type FireExtinguisherInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
   inspections?: boolean | Prisma.FireExtinguisher$inspectionsArgs<ExtArgs>
   maintenanceRecords?: boolean | Prisma.FireExtinguisher$maintenanceRecordsArgs<ExtArgs>
   complianceRecords?: boolean | Prisma.FireExtinguisher$complianceRecordsArgs<ExtArgs>
+  requests?: boolean | Prisma.FireExtinguisher$requestsArgs<ExtArgs>
   _count?: boolean | Prisma.FireExtinguisherCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FireExtinguisherIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
 }
 export type FireExtinguisherIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   site?: boolean | Prisma.FireExtinguisher$siteArgs<ExtArgs>
+  assignedTo?: boolean | Prisma.FireExtinguisher$assignedToArgs<ExtArgs>
 }
 
 export type $FireExtinguisherPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FireExtinguisher"
   objects: {
     site: Prisma.$SitePayload<ExtArgs> | null
+    assignedTo: Prisma.$UserPayload<ExtArgs> | null
     inspections: Prisma.$InspectionPayload<ExtArgs>[]
     maintenanceRecords: Prisma.$MaintenanceRecordPayload<ExtArgs>[]
     complianceRecords: Prisma.$ComplianceRecordPayload<ExtArgs>[]
+    requests: Prisma.$ExtinguisherRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1918,6 +2454,7 @@ export type $FireExtinguisherPayload<ExtArgs extends runtime.Types.Extensions.In
     model: string | null
     capacityKg: runtime.Decimal | null
     siteId: string | null
+    assignedToId: string | null
     building: string | null
     floor: string | null
     room: string | null
@@ -2330,9 +2867,11 @@ readonly fields: FireExtinguisherFieldRefs;
 export interface Prisma__FireExtinguisherClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   site<T extends Prisma.FireExtinguisher$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$siteArgs<ExtArgs>>): Prisma.Prisma__SiteClient<runtime.Types.Result.GetResult<Prisma.$SitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  assignedTo<T extends Prisma.FireExtinguisher$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$assignedToArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   inspections<T extends Prisma.FireExtinguisher$inspectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$inspectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   maintenanceRecords<T extends Prisma.FireExtinguisher$maintenanceRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$maintenanceRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   complianceRecords<T extends Prisma.FireExtinguisher$complianceRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$complianceRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplianceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  requests<T extends Prisma.FireExtinguisher$requestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FireExtinguisher$requestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtinguisherRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2373,6 +2912,7 @@ export interface FireExtinguisherFieldRefs {
   readonly model: Prisma.FieldRef<"FireExtinguisher", 'String'>
   readonly capacityKg: Prisma.FieldRef<"FireExtinguisher", 'Decimal'>
   readonly siteId: Prisma.FieldRef<"FireExtinguisher", 'String'>
+  readonly assignedToId: Prisma.FieldRef<"FireExtinguisher", 'String'>
   readonly building: Prisma.FieldRef<"FireExtinguisher", 'String'>
   readonly floor: Prisma.FieldRef<"FireExtinguisher", 'String'>
   readonly room: Prisma.FieldRef<"FireExtinguisher", 'String'>
@@ -2810,6 +3350,25 @@ export type FireExtinguisher$siteArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * FireExtinguisher.assignedTo
+ */
+export type FireExtinguisher$assignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * FireExtinguisher.inspections
  */
 export type FireExtinguisher$inspectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2879,6 +3438,30 @@ export type FireExtinguisher$complianceRecordsArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.ComplianceRecordScalarFieldEnum | Prisma.ComplianceRecordScalarFieldEnum[]
+}
+
+/**
+ * FireExtinguisher.requests
+ */
+export type FireExtinguisher$requestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExtinguisherRequest
+   */
+  select?: Prisma.ExtinguisherRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExtinguisherRequest
+   */
+  omit?: Prisma.ExtinguisherRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExtinguisherRequestInclude<ExtArgs> | null
+  where?: Prisma.ExtinguisherRequestWhereInput
+  orderBy?: Prisma.ExtinguisherRequestOrderByWithRelationInput | Prisma.ExtinguisherRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ExtinguisherRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExtinguisherRequestScalarFieldEnum | Prisma.ExtinguisherRequestScalarFieldEnum[]
 }
 
 /**

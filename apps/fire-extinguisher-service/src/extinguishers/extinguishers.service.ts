@@ -2,60 +2,102 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { toPublicExtinguisher } from "@shared/common/mappers/fire-extinguisher.mapper";
 import { deriveComplianceStatus } from "@shared/common/utils/compliance.util";
+import { coerceToDate } from "@shared/common/utils/date.util";
+import { Role } from "@shared/common/enums/role.enum";
 import type { RegisterExtinguisherDto } from "./dto/register-extinguisher.dto";
 import type { UpdateExtinguisherDto } from "./dto/update-extinguisher.dto";
 import type { parseListExtinguishersQuery } from "./dto/list-extinguishers-query.dto";
 
 type ListParams = ReturnType<typeof parseListExtinguishersQuery>;
+type ScopedListParams = ListParams & { requestedByUserId: string; requestedByRole: string };
 
 @Injectable()
 export class ExtinguishersService {
+  private readonly logger = new Logger(ExtinguishersService.name);
+
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async register(dto: RegisterExtinguisherDto) {
-    const existing = await this.prisma.fireExtinguisher.findUnique({
-      where: { serialNumber: dto.serialNumber.trim() },
-    });
-    if (existing) {
-      throw new ConflictException("Serial number already registered");
-    }
-
-    if (dto.siteId) {
-      await this.assertSiteExists(dto.siteId);
-    }
-
-    const complianceStatus = deriveComplianceStatus(dto.expiresAt);
-    const serial = dto.serialNumber.trim();
-
-    const row = await this.prisma.fireExtinguisher.create({
-      data: {
-        assetTag: serial,
-        serialNumber: serial,
-        location: dto.location.trim(),
+    this.logger.log(
+      `register: incoming payload ${JSON.stringify({
+        serialNumber: dto.serialNumber,
         type: dto.type,
         size: dto.size,
-        extinguisherClass: dto.type,
-        siteId: dto.siteId ?? null,
         status: dto.status,
-        complianceStatus,
+        siteId: dto.siteId,
         installedAt: dto.installedAt,
         expiresAt: dto.expiresAt,
-        notes: dto.notes?.trim() ?? "",
-      },
-      include: { site: true },
-    });
+        installedAtType: typeof dto.installedAt,
+        expiresAtType: typeof dto.expiresAt,
+      })}`,
+    );
 
-    return toPublicExtinguisher(row);
+    try {
+      const serial = dto.serialNumber.trim();
+
+      const existing = await this.prisma.fireExtinguisher.findUnique({
+        where: { serialNumber: serial },
+      });
+      if (existing) {
+        this.logger.warn(`register: serial number already registered (${serial})`);
+        throw new ConflictException("Serial number already registered");
+      }
+
+      if (dto.siteId) {
+        await this.assertSiteExists(dto.siteId);
+      }
+
+      const installedAt = coerceToDate(dto.installedAt, "installedAt");
+      const expiresAt = coerceToDate(dto.expiresAt, "expiresAt");
+
+      const complianceStatus = deriveComplianceStatus(expiresAt);
+      this.logger.debug(
+        `register: derived complianceStatus=${complianceStatus} for expiresAt=${expiresAt.toISOString()}`,
+      );
+
+      const row = await this.prisma.fireExtinguisher.create({
+        data: {
+          assetTag: serial,
+          serialNumber: serial,
+          location: dto.location.trim(),
+          type: dto.type,
+          size: dto.size,
+          extinguisherClass: dto.type,
+          siteId: dto.siteId ?? null,
+          status: dto.status,
+          complianceStatus,
+          installedAt,
+          expiresAt,
+          notes: dto.notes?.trim() ?? "",
+        },
+        include: { site: true },
+      });
+
+      this.logger.log(`register: created extinguisher id=${row.id} serial=${serial}`);
+      return toPublicExtinguisher(row);
+    } catch (error: unknown) {
+      this.logger.error(
+        `register: failed for serial=${dto.serialNumber}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw error;
+    }
   }
 
-  async list(params: ListParams) {
+  async list(params: ScopedListParams) {
+    const isRegularUser = params.requestedByRole === Role.user;
+
     const where = {
+      ...(isRegularUser ? { assignedToId: params.requestedByUserId } : {}),
       ...(params.status ? { status: params.status } : {}),
       ...(params.complianceStatus ? { complianceStatus: params.complianceStatus } : {}),
       ...(params.type ? { type: params.type } : {}),
@@ -103,33 +145,85 @@ export class ExtinguishersService {
   }
 
   async update(id: string, dto: UpdateExtinguisherDto) {
-    await this.view(id);
+    this.logger.log(
+      `update: id=${id} payload ${JSON.stringify({
+        ...dto,
+        installedAtType: typeof dto.installedAt,
+        expiresAtType: typeof dto.expiresAt,
+      })}`,
+    );
 
-    if (dto.siteId) {
-      await this.assertSiteExists(dto.siteId);
+    try {
+      await this.view(id);
+
+      if (dto.siteId) {
+        await this.assertSiteExists(dto.siteId);
+      }
+
+      const existing = await this.prisma.fireExtinguisher.findUnique({ where: { id } });
+
+      const installedAt =
+        dto.installedAt === undefined
+          ? undefined
+          : coerceToDate(dto.installedAt, "installedAt");
+      const expiresAt =
+        dto.expiresAt === undefined ? undefined : coerceToDate(dto.expiresAt, "expiresAt");
+
+      const effectiveExpiresAt = expiresAt ?? existing!.expiresAt;
+      const complianceStatus = deriveComplianceStatus(effectiveExpiresAt);
+
+      const row = await this.prisma.fireExtinguisher.update({
+        where: { id },
+        data: {
+          location: dto.location?.trim(),
+          type: dto.type,
+          size: dto.size,
+          extinguisherClass: dto.type ?? undefined,
+          siteId: dto.siteId === undefined ? undefined : dto.siteId,
+          status: dto.status,
+          complianceStatus,
+          installedAt,
+          expiresAt,
+          notes: dto.notes?.trim(),
+        },
+        include: { site: true },
+      });
+
+      this.logger.log(`update: updated extinguisher id=${id}`);
+      return toPublicExtinguisher(row);
+    } catch (error: unknown) {
+      this.logger.error(
+        `update: failed for id=${id}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw error;
     }
+  }
 
-    const existing = await this.prisma.fireExtinguisher.findUnique({ where: { id } });
-    const expiresAt = dto.expiresAt ?? existing!.expiresAt;
-    const complianceStatus = deriveComplianceStatus(expiresAt);
+  async assign(id: string, userId: string) {
+    await this.view(id);
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException("User not found");
 
     const row = await this.prisma.fireExtinguisher.update({
       where: { id },
-      data: {
-        location: dto.location?.trim(),
-        type: dto.type,
-        size: dto.size,
-        extinguisherClass: dto.type ?? undefined,
-        siteId: dto.siteId === undefined ? undefined : dto.siteId,
-        status: dto.status,
-        complianceStatus,
-        installedAt: dto.installedAt,
-        expiresAt: dto.expiresAt,
-        notes: dto.notes?.trim(),
-      },
+      data: { assignedToId: userId },
       include: { site: true },
     });
+    this.logger.log(`assign: extinguisher id=${id} assigned to userId=${userId}`);
+    return toPublicExtinguisher(row);
+  }
 
+  async unassign(id: string) {
+    await this.view(id);
+    const row = await this.prisma.fireExtinguisher.update({
+      where: { id },
+      data: { assignedToId: null },
+      include: { site: true },
+    });
+    this.logger.log(`unassign: extinguisher id=${id} unassigned`);
     return toPublicExtinguisher(row);
   }
 

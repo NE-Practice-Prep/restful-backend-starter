@@ -25,13 +25,16 @@ import {
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
 import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 import { Role } from "@shared/common/enums/role.enum";
+import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
 import { FIRE_SERVICE } from "../clients/microservices.constants";
 import { MicroserviceProxyService } from "../clients/microservice-proxy.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { RegisterExtinguisherDto } from "./dto/register-extinguisher.dto";
 import { UpdateExtinguisherDto } from "./dto/update-extinguisher.dto";
+import { AssignExtinguisherDto } from "./dto/assign-extinguisher.dto";
 import {
   ListExtinguishersQueryDto,
   parseListExtinguishersQuery,
@@ -57,16 +60,18 @@ export class FireExtinguishersGatewayController {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_REGISTER, dto);
   }
 
-  @ApiOperation({ summary: "List fire extinguishers and status" })
+  @ApiOperation({
+    summary: "List fire extinguishers — admins/inspectors see all, users see only their assigned",
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  list(@Query() query: ListExtinguishersQueryDto) {
-    return this.proxy.send(
-      this.fireClient,
-      FIRE_PATTERNS.EXTINGUISHER_LIST,
-      parseListExtinguishersQuery(query),
-    );
+  list(@CurrentUser() user: AuthenticatedUser, @Query() query: ListExtinguishersQueryDto) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_LIST, {
+      ...parseListExtinguishersQuery(query),
+      requestedByUserId: user.sub,
+      requestedByRole: user.role,
+    });
   }
 
   @ApiOperation({ summary: "View fire extinguisher details" })
@@ -87,6 +92,33 @@ export class FireExtinguishersGatewayController {
   @Patch(":id")
   update(@Param("id") id: string, @Body() dto: UpdateExtinguisherDto) {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_UPDATE, { id, dto });
+  }
+
+  @ApiOperation({ summary: "Assign extinguisher to a user" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiBody({ type: AssignExtinguisherDto })
+  @ApiForbiddenResponse({ description: "Requires admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Patch(":id/assign")
+  assign(@Param("id") id: string, @Body() dto: AssignExtinguisherDto) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_ASSIGN, {
+      id,
+      userId: dto.userId,
+    });
+  }
+
+  @ApiOperation({ summary: "Unassign extinguisher from its current user" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse()
+  @ApiForbiddenResponse({ description: "Requires admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Delete(":id/assign")
+  unassign(@Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_UNASSIGN, { id });
   }
 
   @ApiOperation({ summary: "Remove fire extinguisher" })

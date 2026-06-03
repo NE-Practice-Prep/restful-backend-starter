@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -13,12 +15,14 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
 
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
+import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 import { Role } from "@shared/common/enums/role.enum";
 import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
 import { FIRE_SERVICE } from "../clients/microservices.constants";
@@ -28,6 +32,7 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { LogMaintenanceDto } from "./dto/log-maintenance.dto";
+import { UpdateMaintenanceDto } from "./dto/update-maintenance.dto";
 import {
   ListMaintenanceQueryDto,
   parseListMaintenanceQuery,
@@ -74,5 +79,29 @@ export class MaintenanceGatewayController {
   @Get(":id")
   view(@Param("id") id: string) {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.MAINTENANCE_VIEW, { id });
+  }
+
+  @ApiOperation({ summary: "Update maintenance record" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiBody({ type: UpdateMaintenanceDto })
+  @ApiForbiddenResponse({ description: "Requires inspector or admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin, Role.inspector)
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() dto: UpdateMaintenanceDto) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.MAINTENANCE_UPDATE, { id, dto });
+  }
+
+  @ApiOperation({ summary: "Delete maintenance record" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ description: "Requires admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.MAINTENANCE_REMOVE, { id });
   }
 }

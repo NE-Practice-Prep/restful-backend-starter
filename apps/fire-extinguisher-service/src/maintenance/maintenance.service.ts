@@ -2,8 +2,10 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { toPublicMaintenance } from "@shared/common/mappers/fire-extinguisher.mapper";
+import { coerceOptionalDate } from "@shared/common/utils/date.util";
 import { ExtinguisherStatus } from "@shared/generated/prisma/enums";
 import type { LogMaintenanceDto } from "./dto/log-maintenance.dto";
+import type { UpdateMaintenanceDto } from "./dto/update-maintenance.dto";
 import type { parseListMaintenanceQuery } from "./dto/list-maintenance-query.dto";
 
 type ListParams = ReturnType<typeof parseListMaintenanceQuery>;
@@ -25,7 +27,8 @@ export class MaintenanceService {
       if (!inspection) throw new NotFoundException("Inspection not found");
     }
 
-    const performedAt = dto.performedAt ?? new Date();
+    const performedAt = coerceOptionalDate(dto.performedAt, "performedAt") ?? new Date();
+    const nextDueAt = coerceOptionalDate(dto.nextDueAt, "nextDueAt") ?? null;
     const statusAfter = dto.statusAfter ?? ExtinguisherStatus.in_service;
 
     const [row] = await this.prisma.$transaction([
@@ -38,7 +41,7 @@ export class MaintenanceService {
           description: dto.description.trim(),
           conditionsNoted: dto.conditionsNoted.trim(),
           performedAt,
-          nextDueAt: dto.nextDueAt ?? null,
+          nextDueAt,
           partsReplaced: dto.partsReplaced?.trim() ?? "",
           cost: dto.cost ?? null,
           statusAfter,
@@ -50,7 +53,7 @@ export class MaintenanceService {
         data: {
           status: statusAfter,
           lastMaintenanceAt: performedAt,
-          nextMaintenanceDue: dto.nextDueAt ?? null,
+          nextMaintenanceDue: nextDueAt,
         },
       }),
     ]);
@@ -93,6 +96,31 @@ export class MaintenanceService {
     });
     if (!row) throw new NotFoundException("Maintenance record not found");
     return toPublicMaintenance(row);
+  }
+
+  async update(id: string, dto: UpdateMaintenanceDto) {
+    await this.view(id);
+    const row = await this.prisma.maintenanceRecord.update({
+      where: { id },
+      data: {
+        type: dto.type,
+        description: dto.description?.trim(),
+        conditionsNoted: dto.conditionsNoted?.trim(),
+        performedAt: coerceOptionalDate(dto.performedAt, "performedAt") ?? undefined,
+        nextDueAt: coerceOptionalDate(dto.nextDueAt, "nextDueAt") ?? undefined,
+        partsReplaced: dto.partsReplaced?.trim(),
+        cost: dto.cost ?? undefined,
+        statusAfter: dto.statusAfter,
+      },
+      include: this.maintenanceInclude,
+    });
+    return toPublicMaintenance(row);
+  }
+
+  async remove(id: string) {
+    await this.view(id);
+    await this.prisma.maintenanceRecord.delete({ where: { id } });
+    return { ok: true };
   }
 
   private get maintenanceInclude() {

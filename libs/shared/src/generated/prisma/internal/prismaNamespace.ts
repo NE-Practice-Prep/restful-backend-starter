@@ -391,7 +391,8 @@ export const ModelName = {
   Inspection: 'Inspection',
   MaintenanceRecord: 'MaintenanceRecord',
   ComplianceRecord: 'ComplianceRecord',
-  Report: 'Report'
+  Report: 'Report',
+  ExtinguisherRequest: 'ExtinguisherRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "notification" | "site" | "fireExtinguisher" | "inspection" | "maintenanceRecord" | "complianceRecord" | "report"
+    modelProps: "user" | "notification" | "site" | "fireExtinguisher" | "inspection" | "maintenanceRecord" | "complianceRecord" | "report" | "extinguisherRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExtinguisherRequest: {
+      payload: Prisma.$ExtinguisherRequestPayload<ExtArgs>
+      fields: Prisma.ExtinguisherRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtinguisherRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtinguisherRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtinguisherRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtinguisherRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        findMany: {
+          args: Prisma.ExtinguisherRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>[]
+        }
+        create: {
+          args: Prisma.ExtinguisherRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        createMany: {
+          args: Prisma.ExtinguisherRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtinguisherRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtinguisherRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        update: {
+          args: Prisma.ExtinguisherRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtinguisherRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtinguisherRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtinguisherRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtinguisherRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtinguisherRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtinguisherRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtinguisherRequest>
+        }
+        groupBy: {
+          args: Prisma.ExtinguisherRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtinguisherRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtinguisherRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtinguisherRequestCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1108,6 +1183,7 @@ export const FireExtinguisherScalarFieldEnum = {
   model: 'model',
   capacityKg: 'capacityKg',
   siteId: 'siteId',
+  assignedToId: 'assignedToId',
   building: 'building',
   floor: 'floor',
   room: 'room',
@@ -1204,6 +1280,25 @@ export const ReportScalarFieldEnum = {
 } as const
 
 export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
+
+
+export const ExtinguisherRequestScalarFieldEnum = {
+  id: 'id',
+  requestedById: 'requestedById',
+  extinguisherId: 'extinguisherId',
+  quantity: 'quantity',
+  type: 'type',
+  size: 'size',
+  notes: 'notes',
+  status: 'status',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExtinguisherRequestScalarFieldEnum = (typeof ExtinguisherRequestScalarFieldEnum)[keyof typeof ExtinguisherRequestScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1484,6 +1579,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'RequestStatus'
+ */
+export type EnumRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RequestStatus[]'
+ */
+export type ListEnumRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1614,6 +1723,7 @@ export type GlobalOmitConfig = {
   maintenanceRecord?: Prisma.MaintenanceRecordOmit
   complianceRecord?: Prisma.ComplianceRecordOmit
   report?: Prisma.ReportOmit
+  extinguisherRequest?: Prisma.ExtinguisherRequestOmit
 }
 
 /* Types for Logging */

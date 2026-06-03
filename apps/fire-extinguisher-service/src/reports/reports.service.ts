@@ -61,6 +61,16 @@ export class ReportsService {
     return { data: rows.map(toPublicReport) };
   }
 
+  async remove(id: string, userId: string, isAdmin: boolean) {
+    const row = await this.prisma.report.findUnique({ where: { id } });
+    if (!row) throw new NotFoundException("Report not found");
+    if (!isAdmin && row.generatedById !== userId) {
+      throw new NotFoundException("Report not found");
+    }
+    await this.prisma.report.delete({ where: { id } });
+    return { ok: true };
+  }
+
   async view(id: string, userId: string, isAdmin: boolean) {
     const row = await this.prisma.report.findUnique({ where: { id } });
     if (!row) throw new NotFoundException("Report not found");

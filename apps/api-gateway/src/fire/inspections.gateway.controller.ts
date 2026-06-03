@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -14,11 +15,14 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+
+import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
 import { Role } from "@shared/common/enums/role.enum";
@@ -109,5 +113,17 @@ export class InspectionsGatewayController {
   @Patch(":id")
   update(@Param("id") id: string, @Body() dto: UpdateInspectionDto) {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.INSPECTION_UPDATE, { id, dto });
+  }
+
+  @ApiOperation({ summary: "Delete an inspection record" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ description: "Requires admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.INSPECTION_REMOVE, { id });
   }
 }

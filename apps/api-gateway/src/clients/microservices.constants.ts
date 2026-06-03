@@ -1,3 +1,4 @@
 export const AUTH_SERVICE = "AUTH_SERVICE";
 export const USERS_SERVICE = "USERS_SERVICE";
 export const FIRE_SERVICE = "FIRE_SERVICE";
+export const REPORTING_SERVICE = "REPORTING_SERVICE";

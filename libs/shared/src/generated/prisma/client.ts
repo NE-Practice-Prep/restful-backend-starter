@@ -81,3 +81,8 @@ export type ComplianceRecord = Prisma.ComplianceRecordModel
  * 
  */
 export type Report = Prisma.ReportModel
+/**
+ * Model ExtinguisherRequest
+ * 
+ */
+export type ExtinguisherRequest = Prisma.ExtinguisherRequestModel

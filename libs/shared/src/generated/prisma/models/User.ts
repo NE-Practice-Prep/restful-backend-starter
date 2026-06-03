@@ -292,6 +292,9 @@ export type UserWhereInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordListRelationFilter
   complianceChecks?: Prisma.ComplianceRecordListRelationFilter
   reportsGenerated?: Prisma.ReportListRelationFilter
+  assignedExtinguishers?: Prisma.FireExtinguisherListRelationFilter
+  extinguisherRequests?: Prisma.ExtinguisherRequestListRelationFilter
+  reviewedRequests?: Prisma.ExtinguisherRequestListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -319,6 +322,9 @@ export type UserOrderByWithRelationInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordOrderByRelationAggregateInput
   complianceChecks?: Prisma.ComplianceRecordOrderByRelationAggregateInput
   reportsGenerated?: Prisma.ReportOrderByRelationAggregateInput
+  assignedExtinguishers?: Prisma.FireExtinguisherOrderByRelationAggregateInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestOrderByRelationAggregateInput
+  reviewedRequests?: Prisma.ExtinguisherRequestOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -349,6 +355,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   maintenancePerformed?: Prisma.MaintenanceRecordListRelationFilter
   complianceChecks?: Prisma.ComplianceRecordListRelationFilter
   reportsGenerated?: Prisma.ReportListRelationFilter
+  assignedExtinguishers?: Prisma.FireExtinguisherListRelationFilter
+  extinguisherRequests?: Prisma.ExtinguisherRequestListRelationFilter
+  reviewedRequests?: Prisma.ExtinguisherRequestListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -424,6 +433,9 @@ export type UserCreateInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -451,6 +463,9 @@ export type UserUncheckedCreateInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUpdateInput = {
@@ -478,6 +493,9 @@ export type UserUpdateInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -505,6 +523,9 @@ export type UserUncheckedUpdateInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -685,6 +706,22 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
+export type UserCreateNestedOneWithoutAssignedExtinguishersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedCreateWithoutAssignedExtinguishersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedExtinguishersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAssignedExtinguishersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedCreateWithoutAssignedExtinguishersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedExtinguishersInput
+  upsert?: Prisma.UserUpsertWithoutAssignedExtinguishersInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignedExtinguishersInput, Prisma.UserUpdateWithoutAssignedExtinguishersInput>, Prisma.UserUncheckedUpdateWithoutAssignedExtinguishersInput>
+}
+
 export type UserCreateNestedOneWithoutInspectionsConductedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutInspectionsConductedInput, Prisma.UserUncheckedCreateWithoutInspectionsConductedInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutInspectionsConductedInput
@@ -759,6 +796,36 @@ export type UserUpdateOneRequiredWithoutReportsGeneratedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReportsGeneratedInput, Prisma.UserUpdateWithoutReportsGeneratedInput>, Prisma.UserUncheckedUpdateWithoutReportsGeneratedInput>
 }
 
+export type UserCreateNestedOneWithoutExtinguisherRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedCreateWithoutExtinguisherRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExtinguisherRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutReviewedRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedRequestsInput, Prisma.UserUncheckedCreateWithoutReviewedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutExtinguisherRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedCreateWithoutExtinguisherRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExtinguisherRequestsInput
+  upsert?: Prisma.UserUpsertWithoutExtinguisherRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExtinguisherRequestsInput, Prisma.UserUpdateWithoutExtinguisherRequestsInput>, Prisma.UserUncheckedUpdateWithoutExtinguisherRequestsInput>
+}
+
+export type UserUpdateOneWithoutReviewedRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedRequestsInput, Prisma.UserUncheckedCreateWithoutReviewedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedRequestsInput
+  upsert?: Prisma.UserUpsertWithoutReviewedRequestsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReviewedRequestsInput, Prisma.UserUpdateWithoutReviewedRequestsInput>, Prisma.UserUncheckedUpdateWithoutReviewedRequestsInput>
+}
+
 export type UserCreateWithoutNotificationsInput = {
   id?: string
   email: string
@@ -783,6 +850,9 @@ export type UserCreateWithoutNotificationsInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -809,6 +879,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -851,6 +924,9 @@ export type UserUpdateWithoutNotificationsInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -877,6 +953,141 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserCreateWithoutAssignedExtinguishersInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserUncheckedCreateWithoutAssignedExtinguishersInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionUncheckedCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserCreateOrConnectWithoutAssignedExtinguishersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedCreateWithoutAssignedExtinguishersInput>
+}
+
+export type UserUpsertWithoutAssignedExtinguishersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedUpdateWithoutAssignedExtinguishersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedCreateWithoutAssignedExtinguishersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAssignedExtinguishersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignedExtinguishersInput, Prisma.UserUncheckedUpdateWithoutAssignedExtinguishersInput>
+}
+
+export type UserUpdateWithoutAssignedExtinguishersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAssignedExtinguishersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUncheckedUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutInspectionsConductedInput = {
@@ -903,6 +1114,9 @@ export type UserCreateWithoutInspectionsConductedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutInspectionsConductedInput = {
@@ -929,6 +1143,9 @@ export type UserUncheckedCreateWithoutInspectionsConductedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutInspectionsConductedInput = {
@@ -960,6 +1177,9 @@ export type UserCreateWithoutInspectionsRequestedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutInspectionsRequestedInput = {
@@ -986,6 +1206,9 @@ export type UserUncheckedCreateWithoutInspectionsRequestedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutInspectionsRequestedInput = {
@@ -1028,6 +1251,9 @@ export type UserUpdateWithoutInspectionsConductedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInspectionsConductedInput = {
@@ -1054,6 +1280,9 @@ export type UserUncheckedUpdateWithoutInspectionsConductedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUpsertWithoutInspectionsRequestedInput = {
@@ -1091,6 +1320,9 @@ export type UserUpdateWithoutInspectionsRequestedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInspectionsRequestedInput = {
@@ -1117,6 +1349,9 @@ export type UserUncheckedUpdateWithoutInspectionsRequestedInput = {
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutMaintenancePerformedInput = {
@@ -1143,6 +1378,9 @@ export type UserCreateWithoutMaintenancePerformedInput = {
   inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutMaintenancePerformedInput = {
@@ -1169,6 +1407,9 @@ export type UserUncheckedCreateWithoutMaintenancePerformedInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutMaintenancePerformedInput = {
@@ -1211,6 +1452,9 @@ export type UserUpdateWithoutMaintenancePerformedInput = {
   inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMaintenancePerformedInput = {
@@ -1237,6 +1481,9 @@ export type UserUncheckedUpdateWithoutMaintenancePerformedInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutComplianceChecksInput = {
@@ -1263,6 +1510,9 @@ export type UserCreateWithoutComplianceChecksInput = {
   inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutComplianceChecksInput = {
@@ -1289,6 +1539,9 @@ export type UserUncheckedCreateWithoutComplianceChecksInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutComplianceChecksInput = {
@@ -1331,6 +1584,9 @@ export type UserUpdateWithoutComplianceChecksInput = {
   inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComplianceChecksInput = {
@@ -1357,6 +1613,9 @@ export type UserUncheckedUpdateWithoutComplianceChecksInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutReportsGeneratedInput = {
@@ -1383,6 +1642,9 @@ export type UserCreateWithoutReportsGeneratedInput = {
   inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
   maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserUncheckedCreateWithoutReportsGeneratedInput = {
@@ -1409,6 +1671,9 @@ export type UserUncheckedCreateWithoutReportsGeneratedInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
 }
 
 export type UserCreateOrConnectWithoutReportsGeneratedInput = {
@@ -1451,6 +1716,9 @@ export type UserUpdateWithoutReportsGeneratedInput = {
   inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
   maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsGeneratedInput = {
@@ -1477,6 +1745,273 @@ export type UserUncheckedUpdateWithoutReportsGeneratedInput = {
   inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
   maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
   complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserCreateWithoutExtinguisherRequestsInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  reviewedRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserUncheckedCreateWithoutExtinguisherRequestsInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionUncheckedCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserCreateOrConnectWithoutExtinguisherRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedCreateWithoutExtinguisherRequestsInput>
+}
+
+export type UserCreateWithoutReviewedRequestsInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestCreateNestedManyWithoutRequestedByInput
+}
+
+export type UserUncheckedCreateWithoutReviewedRequestsInput = {
+  id?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  passwordHash?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  phone?: string | null
+  location?: string | null
+  bio?: string
+  avatarUrl?: string | null
+  emailVerified?: boolean
+  emailVerificationCode?: string | null
+  emailVerificationExpiresAt?: Date | string | null
+  passwordResetCode?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  inspectionsConducted?: Prisma.InspectionUncheckedCreateNestedManyWithoutInspectorInput
+  inspectionsRequested?: Prisma.InspectionUncheckedCreateNestedManyWithoutRequestedByInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutPerformedByInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedCreateNestedManyWithoutCheckedByInput
+  reportsGenerated?: Prisma.ReportUncheckedCreateNestedManyWithoutGeneratedByInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedCreateNestedManyWithoutAssignedToInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedCreateNestedManyWithoutRequestedByInput
+}
+
+export type UserCreateOrConnectWithoutReviewedRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReviewedRequestsInput, Prisma.UserUncheckedCreateWithoutReviewedRequestsInput>
+}
+
+export type UserUpsertWithoutExtinguisherRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedUpdateWithoutExtinguisherRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedCreateWithoutExtinguisherRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExtinguisherRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExtinguisherRequestsInput, Prisma.UserUncheckedUpdateWithoutExtinguisherRequestsInput>
+}
+
+export type UserUpdateWithoutExtinguisherRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExtinguisherRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUncheckedUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  reviewedRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserUpsertWithoutReviewedRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReviewedRequestsInput, Prisma.UserUncheckedUpdateWithoutReviewedRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReviewedRequestsInput, Prisma.UserUncheckedCreateWithoutReviewedRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReviewedRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReviewedRequestsInput, Prisma.UserUncheckedUpdateWithoutReviewedRequestsInput>
+}
+
+export type UserUpdateWithoutReviewedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUpdateManyWithoutRequestedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReviewedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerificationExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordResetCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  inspectionsConducted?: Prisma.InspectionUncheckedUpdateManyWithoutInspectorNestedInput
+  inspectionsRequested?: Prisma.InspectionUncheckedUpdateManyWithoutRequestedByNestedInput
+  maintenancePerformed?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutPerformedByNestedInput
+  complianceChecks?: Prisma.ComplianceRecordUncheckedUpdateManyWithoutCheckedByNestedInput
+  reportsGenerated?: Prisma.ReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+  assignedExtinguishers?: Prisma.FireExtinguisherUncheckedUpdateManyWithoutAssignedToNestedInput
+  extinguisherRequests?: Prisma.ExtinguisherRequestUncheckedUpdateManyWithoutRequestedByNestedInput
 }
 
 
@@ -1491,6 +2026,9 @@ export type UserCountOutputType = {
   maintenancePerformed: number
   complianceChecks: number
   reportsGenerated: number
+  assignedExtinguishers: number
+  extinguisherRequests: number
+  reviewedRequests: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1500,6 +2038,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   maintenancePerformed?: boolean | UserCountOutputTypeCountMaintenancePerformedArgs
   complianceChecks?: boolean | UserCountOutputTypeCountComplianceChecksArgs
   reportsGenerated?: boolean | UserCountOutputTypeCountReportsGeneratedArgs
+  assignedExtinguishers?: boolean | UserCountOutputTypeCountAssignedExtinguishersArgs
+  extinguisherRequests?: boolean | UserCountOutputTypeCountExtinguisherRequestsArgs
+  reviewedRequests?: boolean | UserCountOutputTypeCountReviewedRequestsArgs
 }
 
 /**
@@ -1554,6 +2095,27 @@ export type UserCountOutputTypeCountReportsGeneratedArgs<ExtArgs extends runtime
   where?: Prisma.ReportWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAssignedExtinguishersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FireExtinguisherWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountExtinguisherRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExtinguisherRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReviewedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExtinguisherRequestWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1580,6 +2142,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   maintenancePerformed?: boolean | Prisma.User$maintenancePerformedArgs<ExtArgs>
   complianceChecks?: boolean | Prisma.User$complianceChecksArgs<ExtArgs>
   reportsGenerated?: boolean | Prisma.User$reportsGeneratedArgs<ExtArgs>
+  assignedExtinguishers?: boolean | Prisma.User$assignedExtinguishersArgs<ExtArgs>
+  extinguisherRequests?: boolean | Prisma.User$extinguisherRequestsArgs<ExtArgs>
+  reviewedRequests?: boolean | Prisma.User$reviewedRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1654,6 +2219,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   maintenancePerformed?: boolean | Prisma.User$maintenancePerformedArgs<ExtArgs>
   complianceChecks?: boolean | Prisma.User$complianceChecksArgs<ExtArgs>
   reportsGenerated?: boolean | Prisma.User$reportsGeneratedArgs<ExtArgs>
+  assignedExtinguishers?: boolean | Prisma.User$assignedExtinguishersArgs<ExtArgs>
+  extinguisherRequests?: boolean | Prisma.User$extinguisherRequestsArgs<ExtArgs>
+  reviewedRequests?: boolean | Prisma.User$reviewedRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1668,6 +2236,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     maintenancePerformed: Prisma.$MaintenanceRecordPayload<ExtArgs>[]
     complianceChecks: Prisma.$ComplianceRecordPayload<ExtArgs>[]
     reportsGenerated: Prisma.$ReportPayload<ExtArgs>[]
+    assignedExtinguishers: Prisma.$FireExtinguisherPayload<ExtArgs>[]
+    extinguisherRequests: Prisma.$ExtinguisherRequestPayload<ExtArgs>[]
+    reviewedRequests: Prisma.$ExtinguisherRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2088,6 +2659,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   maintenancePerformed<T extends Prisma.User$maintenancePerformedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$maintenancePerformedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   complianceChecks<T extends Prisma.User$complianceChecksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$complianceChecksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplianceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reportsGenerated<T extends Prisma.User$reportsGeneratedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reportsGeneratedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignedExtinguishers<T extends Prisma.User$assignedExtinguishersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedExtinguishersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FireExtinguisherPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  extinguisherRequests<T extends Prisma.User$extinguisherRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$extinguisherRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtinguisherRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewedRequests<T extends Prisma.User$reviewedRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtinguisherRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2669,6 +3243,78 @@ export type User$reportsGeneratedArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ReportScalarFieldEnum | Prisma.ReportScalarFieldEnum[]
+}
+
+/**
+ * User.assignedExtinguishers
+ */
+export type User$assignedExtinguishersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FireExtinguisher
+   */
+  select?: Prisma.FireExtinguisherSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FireExtinguisher
+   */
+  omit?: Prisma.FireExtinguisherOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FireExtinguisherInclude<ExtArgs> | null
+  where?: Prisma.FireExtinguisherWhereInput
+  orderBy?: Prisma.FireExtinguisherOrderByWithRelationInput | Prisma.FireExtinguisherOrderByWithRelationInput[]
+  cursor?: Prisma.FireExtinguisherWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FireExtinguisherScalarFieldEnum | Prisma.FireExtinguisherScalarFieldEnum[]
+}
+
+/**
+ * User.extinguisherRequests
+ */
+export type User$extinguisherRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExtinguisherRequest
+   */
+  select?: Prisma.ExtinguisherRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExtinguisherRequest
+   */
+  omit?: Prisma.ExtinguisherRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExtinguisherRequestInclude<ExtArgs> | null
+  where?: Prisma.ExtinguisherRequestWhereInput
+  orderBy?: Prisma.ExtinguisherRequestOrderByWithRelationInput | Prisma.ExtinguisherRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ExtinguisherRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExtinguisherRequestScalarFieldEnum | Prisma.ExtinguisherRequestScalarFieldEnum[]
+}
+
+/**
+ * User.reviewedRequests
+ */
+export type User$reviewedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExtinguisherRequest
+   */
+  select?: Prisma.ExtinguisherRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExtinguisherRequest
+   */
+  omit?: Prisma.ExtinguisherRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExtinguisherRequestInclude<ExtArgs> | null
+  where?: Prisma.ExtinguisherRequestWhereInput
+  orderBy?: Prisma.ExtinguisherRequestOrderByWithRelationInput | Prisma.ExtinguisherRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ExtinguisherRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExtinguisherRequestScalarFieldEnum | Prisma.ExtinguisherRequestScalarFieldEnum[]
 }
 
 /**

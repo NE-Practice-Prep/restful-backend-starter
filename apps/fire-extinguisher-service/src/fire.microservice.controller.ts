@@ -18,6 +18,7 @@ import type {
 } from "./inspections/dto/complete-inspection.dto";
 import type { parseListInspectionsQuery } from "./inspections/dto/list-inspections-query.dto";
 import type { LogMaintenanceDto } from "./maintenance/dto/log-maintenance.dto";
+import type { UpdateMaintenanceDto } from "./maintenance/dto/update-maintenance.dto";
 import type { parseListMaintenanceQuery } from "./maintenance/dto/list-maintenance-query.dto";
 import type { CheckComplianceDto } from "./compliance/dto/check-compliance.dto";
 import type { GenerateReportDto } from "./reports/dto/generate-report.dto";
@@ -42,7 +43,9 @@ export class FireMicroserviceController {
   }
 
   @MessagePattern(FIRE_PATTERNS.EXTINGUISHER_LIST)
-  async listExtinguishers(@Payload() params: ReturnType<typeof parseListExtinguishersQuery>) {
+  async listExtinguishers(
+    @Payload() params: ReturnType<typeof parseListExtinguishersQuery> & { requestedByUserId: string; requestedByRole: string },
+  ) {
     try {
       return await this.extinguishers.list(params);
     } catch (e: unknown) {
@@ -72,6 +75,24 @@ export class FireMicroserviceController {
   async removeExtinguisher(@Payload() data: { id: string }) {
     try {
       return await this.extinguishers.remove(data.id);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.EXTINGUISHER_ASSIGN)
+  async assignExtinguisher(@Payload() data: { id: string; userId: string }) {
+    try {
+      return await this.extinguishers.assign(data.id, data.userId);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.EXTINGUISHER_UNASSIGN)
+  async unassignExtinguisher(@Payload() data: { id: string }) {
+    try {
+      return await this.extinguishers.unassign(data.id);
     } catch (e: unknown) {
       throw toRpcException(e);
     }
@@ -126,6 +147,15 @@ export class FireMicroserviceController {
     }
   }
 
+  @MessagePattern(FIRE_PATTERNS.INSPECTION_REMOVE)
+  async removeInspection(@Payload() data: { id: string }) {
+    try {
+      return await this.inspections.remove(data.id);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
   @MessagePattern(FIRE_PATTERNS.MAINTENANCE_LOG)
   async logMaintenance(@Payload() data: { performedById: string; dto: LogMaintenanceDto }) {
     try {
@@ -153,6 +183,24 @@ export class FireMicroserviceController {
     }
   }
 
+  @MessagePattern(FIRE_PATTERNS.MAINTENANCE_UPDATE)
+  async updateMaintenance(@Payload() data: { id: string; dto: UpdateMaintenanceDto }) {
+    try {
+      return await this.maintenance.update(data.id, data.dto);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.MAINTENANCE_REMOVE)
+  async removeMaintenance(@Payload() data: { id: string }) {
+    try {
+      return await this.maintenance.remove(data.id);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
   @MessagePattern(FIRE_PATTERNS.COMPLIANCE_CHECK)
   async checkCompliance(@Payload() data: { checkedById: string; dto: CheckComplianceDto }) {
     try {
@@ -166,6 +214,24 @@ export class FireMicroserviceController {
   async listCompliance(@Payload() data: { extinguisherId?: string }) {
     try {
       return await this.compliance.list(data.extinguisherId);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.COMPLIANCE_VIEW)
+  async viewCompliance(@Payload() data: { id: string }) {
+    try {
+      return await this.compliance.view(data.id);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.COMPLIANCE_REMOVE)
+  async removeCompliance(@Payload() data: { id: string }) {
+    try {
+      return await this.compliance.remove(data.id);
     } catch (e: unknown) {
       throw toRpcException(e);
     }
@@ -204,6 +270,17 @@ export class FireMicroserviceController {
   ) {
     try {
       return await this.reports.view(data.id, data.userId, data.isAdmin);
+    } catch (e: unknown) {
+      throw toRpcException(e);
+    }
+  }
+
+  @MessagePattern(FIRE_PATTERNS.REPORT_REMOVE)
+  async removeReport(
+    @Payload() data: { id: string; userId: string; isAdmin: boolean },
+  ) {
+    try {
+      return await this.reports.remove(data.id, data.userId, data.isAdmin);
     } catch (e: unknown) {
       throw toRpcException(e);
     }

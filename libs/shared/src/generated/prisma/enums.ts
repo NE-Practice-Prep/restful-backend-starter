@@ -122,3 +122,13 @@ export const ReportStatus = {
 } as const
 
 export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const RequestStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+  cancelled: 'cancelled'
+} as const
+
+export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus]

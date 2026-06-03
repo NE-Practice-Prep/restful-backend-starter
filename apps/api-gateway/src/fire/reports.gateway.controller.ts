@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -8,7 +9,17 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import type { ClientProxy } from "@nestjs/microservices";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
+
+import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
 import { Role } from "@shared/common/enums/role.enum";
@@ -59,6 +70,21 @@ export class ReportsGatewayController {
   @Get(":id")
   view(@CurrentUser() user: AuthenticatedUser, @Param("id") id: string) {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.REPORT_VIEW, {
+      id,
+      userId: user.sub,
+      isAdmin: user.role === Role.admin,
+    });
+  }
+
+  @ApiOperation({ summary: "Delete a report" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ description: "Can only delete own reports unless admin" })
+  @UseGuards(JwtAuthGuard)
+  @Delete(":id")
+  remove(@CurrentUser() user: AuthenticatedUser, @Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.REPORT_REMOVE, {
       id,
       userId: user.sub,
       isAdmin: user.role === Role.admin,

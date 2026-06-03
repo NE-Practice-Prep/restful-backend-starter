@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -11,12 +13,16 @@ import type { ClientProxy } from "@nestjs/microservices";
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
 
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
+import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 import { Role } from "@shared/common/enums/role.enum";
 import type { AuthenticatedUser } from "@shared/types/authenticated-user.type";
 import { FIRE_SERVICE } from "../clients/microservices.constants";
@@ -48,6 +54,14 @@ export class ComplianceGatewayController {
     });
   }
 
+  @ApiOperation({ summary: "Real-time compliance dashboard summary" })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get("summary")
+  summary() {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_SUMMARY, {});
+  }
+
   @ApiOperation({ summary: "List compliance audit records" })
   @ApiBearerAuth()
   @ApiQuery({ name: "extinguisherId", required: false })
@@ -57,11 +71,24 @@ export class ComplianceGatewayController {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_LIST, { extinguisherId });
   }
 
-  @ApiOperation({ summary: "Real-time compliance dashboard summary" })
+  @ApiOperation({ summary: "View compliance record details" })
   @ApiBearerAuth()
+  @ApiParam({ name: "id" })
   @UseGuards(JwtAuthGuard)
-  @Get("summary")
-  summary() {
-    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_SUMMARY, {});
+  @Get(":id")
+  view(@Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_VIEW, { id });
+  }
+
+  @ApiOperation({ summary: "Delete compliance record" })
+  @ApiBearerAuth()
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ description: "Requires admin role" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_REMOVE, { id });
   }
 }

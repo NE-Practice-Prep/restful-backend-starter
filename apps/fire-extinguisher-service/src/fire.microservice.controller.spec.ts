@@ -5,6 +5,7 @@ import { RpcException } from "@nestjs/microservices";
 
 import { FIRE_PATTERNS } from "@shared/microservices/patterns";
 import { FireMicroserviceController } from "./fire.microservice.controller";
+import { SitesMicroserviceController } from "./sites/sites.microservice.controller";
 import {
   ExtinguisherSize,
   ExtinguisherType,
@@ -147,6 +148,21 @@ describe("FireMicroserviceController", () => {
       expect(typeof controller[name]).toBe("function");
     }
 
-    expect(Object.keys(FIRE_PATTERNS)).toHaveLength(19);
+    const sitesController = new SitesMicroserviceController({} as never);
+    const siteHandlerNames = [
+      "createSite",
+      "listSites",
+      "viewSite",
+      "updateSite",
+      "removeSite",
+    ] as const satisfies readonly (keyof SitesMicroserviceController)[];
+
+    for (const name of siteHandlerNames) {
+      expect(typeof sitesController[name]).toBe("function");
+    }
+
+    expect(Object.keys(FIRE_PATTERNS)).toHaveLength(
+      handlerNames.length + siteHandlerNames.length,
+    );
   });
 });

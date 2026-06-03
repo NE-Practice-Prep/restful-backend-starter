@@ -58,7 +58,8 @@ export const ModelName = {
   Inspection: 'Inspection',
   MaintenanceRecord: 'MaintenanceRecord',
   ComplianceRecord: 'ComplianceRecord',
-  Report: 'Report'
+  Report: 'Report',
+  ExtinguisherRequest: 'ExtinguisherRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -143,6 +144,7 @@ export const FireExtinguisherScalarFieldEnum = {
   model: 'model',
   capacityKg: 'capacityKg',
   siteId: 'siteId',
+  assignedToId: 'assignedToId',
   building: 'building',
   floor: 'floor',
   room: 'room',
@@ -239,6 +241,25 @@ export const ReportScalarFieldEnum = {
 } as const
 
 export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
+
+
+export const ExtinguisherRequestScalarFieldEnum = {
+  id: 'id',
+  requestedById: 'requestedById',
+  extinguisherId: 'extinguisherId',
+  quantity: 'quantity',
+  type: 'type',
+  size: 'size',
+  notes: 'notes',
+  status: 'status',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExtinguisherRequestScalarFieldEnum = (typeof ExtinguisherRequestScalarFieldEnum)[keyof typeof ExtinguisherRequestScalarFieldEnum]
 
 
 export const SortOrder = {

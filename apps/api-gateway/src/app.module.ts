@@ -7,6 +7,7 @@ import { AuthGatewayModule } from "./auth/auth.gateway.module";
 import { UsersGatewayModule } from "./users/users.gateway.module";
 import { NotificationsGatewayModule } from "./notifications/notifications.gateway.module";
 import { FireGatewayModule } from "./fire/fire.gateway.module";
+import { ReportingGatewayModule } from "./reporting/reporting.gateway.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FireGatewayModule } from "./fire/fire.gateway.module";
     UsersGatewayModule,
     NotificationsGatewayModule,
     FireGatewayModule,
+    ReportingGatewayModule,
   ],
   controllers: [AppController],
 })

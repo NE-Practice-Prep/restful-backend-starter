@@ -8,6 +8,7 @@ import {
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { Role } from "@shared/common/enums/role.enum";
 import { toPublicInspection } from "@shared/common/mappers/fire-extinguisher.mapper";
+import { coerceOptionalDate, coerceToDate } from "@shared/common/utils/date.util";
 import { notifyPersonnel } from "@shared/fire/notifications.helper";
 import {
   ExtinguisherStatus,
@@ -40,7 +41,9 @@ export class InspectionsService {
       await this.assertInspector(dto.inspectorId);
     }
 
-    if (dto.scheduledAt.getTime() <= Date.now()) {
+    const scheduledAt = coerceToDate(dto.scheduledAt, "scheduledAt");
+
+    if (scheduledAt.getTime() <= Date.now()) {
       throw new BadRequestException("Scheduled time must be in the future");
     }
 
@@ -49,7 +52,7 @@ export class InspectionsService {
         extinguisherId: dto.extinguisherId,
         inspectorId: dto.inspectorId ?? null,
         requestedById,
-        scheduledAt: dto.scheduledAt,
+        scheduledAt,
         status: InspectionStatus.scheduled,
       },
       include: this.inspectionInclude,
@@ -59,7 +62,7 @@ export class InspectionsService {
       where: { id: dto.extinguisherId },
       data: {
         status: ExtinguisherStatus.needs_inspection,
-        nextInspectionDue: dto.scheduledAt,
+        nextInspectionDue: scheduledAt,
       },
     });
 
@@ -68,7 +71,7 @@ export class InspectionsService {
     await notifyPersonnel(this.prisma, {
       type: "inspection_scheduled",
       title: "Inspection scheduled",
-      message: `Inspection for extinguisher ${extinguisher.serialNumber} at ${extinguisher.location} is scheduled for ${dto.scheduledAt.toISOString()}.`,
+      message: `Inspection for extinguisher ${extinguisher.serialNumber} at ${extinguisher.location} is scheduled for ${scheduledAt.toISOString()}.`,
       roles: [Role.admin, Role.inspector],
       userIds: notifyIds,
     });
@@ -158,6 +161,12 @@ export class InspectionsService {
     return toPublicInspection(row);
   }
 
+  async remove(id: string) {
+    await this.view(id);
+    await this.prisma.inspection.delete({ where: { id } });
+    return { ok: true };
+  }
+
   async update(id: string, dto: UpdateInspectionDto) {
     await this.view(id);
     if (dto.inspectorId) await this.assertInspector(dto.inspectorId);
@@ -166,7 +175,7 @@ export class InspectionsService {
       where: { id },
       data: {
         status: dto.status,
-        scheduledAt: dto.scheduledAt,
+        scheduledAt: coerceOptionalDate(dto.scheduledAt, "scheduledAt"),
         inspectorId: dto.inspectorId,
       },
       include: this.inspectionInclude,

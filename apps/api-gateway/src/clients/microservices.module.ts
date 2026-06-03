@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 
-import { AUTH_SERVICE, FIRE_SERVICE, USERS_SERVICE } from "./microservices.constants";
+import { AUTH_SERVICE, FIRE_SERVICE, REPORTING_SERVICE, USERS_SERVICE } from "./microservices.constants";
 import { MicroserviceProxyService } from "./microservice-proxy.service";
 
 @Global()
@@ -30,6 +30,14 @@ import { MicroserviceProxyService } from "./microservice-proxy.service";
         options: {
           host: (process.env.FIRE_SERVICE_HOST ?? "127.0.0.1").trim(),
           port: Number((process.env.FIRE_SERVICE_PORT ?? "3004").trim()),
+        },
+      },
+      {
+        name: REPORTING_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: (process.env.REPORTING_SERVICE_HOST ?? "127.0.0.1").trim(),
+          port: Number((process.env.REPORTING_SERVICE_PORT ?? "3005").trim()),
         },
       },
     ]),
