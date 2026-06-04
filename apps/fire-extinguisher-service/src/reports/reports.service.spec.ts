@@ -33,7 +33,7 @@ describe("ReportsService", () => {
 
       expect(result.status).toBe(ReportStatus.ready);
       expect(result.rowCount).toBe(2);
-      expect(result.data).toBeDefined();
+      expect((result as any).data).toBeDefined();
     });
 
     it("marks report failed when payload build throws", async () => {

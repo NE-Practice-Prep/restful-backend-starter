@@ -72,7 +72,15 @@ describe("ExtinguishersService", () => {
       prisma.fireExtinguisher.count.mockResolvedValue(1);
       prisma.fireExtinguisher.findMany.mockResolvedValue([makeExtinguisher()]);
 
-      const result = await service.list({ page: 1, limit: 10 });
+      const result = await service.list({
+        page: 1, limit: 10,
+        q: undefined,
+        status: undefined,
+        complianceStatus: undefined,
+        type: undefined,
+        requestedByUserId: "",
+        requestedByRole: ""
+      });
 
       expect(result.data).toHaveLength(1);
       expect(result.meta.total).toBe(1);

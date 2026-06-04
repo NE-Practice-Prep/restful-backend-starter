@@ -62,7 +62,10 @@ describe("MaintenanceService", () => {
       prisma.maintenanceRecord.count.mockResolvedValue(1);
       prisma.maintenanceRecord.findMany.mockResolvedValue([makeMaintenance()]);
 
-      const result = await service.list({ page: 1, limit: 10 });
+      const result = await service.list({
+        page: 1, limit: 10,
+        extinguisherId: undefined
+      });
 
       expect(result.data).toHaveLength(1);
       expect(result.meta.total).toBe(1);
