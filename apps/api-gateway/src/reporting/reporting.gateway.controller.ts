@@ -24,6 +24,10 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
 
+/**
+ * Aggregated analytics and dashboard HTTP routes.
+ * Proxies read-only queries to reporting-service (admin and inspector only).
+ */
 @ApiTags("reporting")
 @Controller("reporting")
 export class ReportingGatewayController {
@@ -59,6 +63,7 @@ export class ReportingGatewayController {
   @Roles(Role.admin, Role.inspector)
   @Get("stock/trend")
   stockTrend(@Query("period") period?: string) {
+    // Coerce unknown period values to the default before RPC.
     const validated =
       period === "daily" || period === "yearly" ? period : "monthly";
     return this.proxy.send(this.reportingClient, REPORTING_PATTERNS.STOCK_TREND, {
@@ -121,6 +126,7 @@ export class ReportingGatewayController {
     @Query("extinguisherId") extinguisherId?: string,
     @Query("since") since?: string,
   ) {
+    // Clamp pagination in the gateway so invalid query strings cannot bypass service limits.
     return this.proxy.send(
       this.reportingClient,
       REPORTING_PATTERNS.MAINTENANCE_HISTORY,

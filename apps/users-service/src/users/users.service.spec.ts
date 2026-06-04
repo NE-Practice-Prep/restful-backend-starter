@@ -37,11 +37,18 @@ function makePrisma() {
       update: vi.fn(),
       delete: vi.fn(),
     },
+    notification: {
+      create: vi.fn(),
+    },
   };
 }
 
 function makeEmail() {
-  return { sendVerificationCode: vi.fn(), sendInvitation: vi.fn() };
+  return {
+    sendVerificationCode: vi.fn(),
+    sendInvitation: vi.fn(),
+    sendAdminCreatedAccountEmail: vi.fn(),
+  };
 }
 
 describe("UsersService", () => {
@@ -98,6 +105,39 @@ describe("UsersService", () => {
           status: UserStatus.invited,
         }),
       ).rejects.toThrow(ConflictException);
+    });
+
+    it("sends a set-password email with reset OTP after admin creates a user", async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue(
+        makeDbUser({ status: UserStatus.invited, emailVerified: false }),
+      );
+      prisma.user.update.mockResolvedValue(makeDbUser());
+      prisma.notification.create.mockResolvedValue({});
+
+      await service.create({
+        firstName: "Bob",
+        lastName: "Example",
+        email: "bob@example.com",
+        role: Role.user,
+        status: UserStatus.invited,
+      });
+
+      expect(prisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "user-1" },
+          data: expect.objectContaining({
+            passwordResetCode: expect.stringMatching(/^\d{4}$/),
+            passwordResetExpiresAt: expect.any(Date),
+          }),
+        }),
+      );
+      expect(email.sendAdminCreatedAccountEmail).toHaveBeenCalledWith(
+        "alice@example.com",
+        "Alice Example",
+        expect.stringMatching(/^\d{4}$/),
+      );
+      expect(prisma.notification.create).toHaveBeenCalled();
     });
   });
 });

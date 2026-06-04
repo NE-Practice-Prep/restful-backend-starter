@@ -45,6 +45,10 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdateMeDto } from "./dto/update-me.dto";
 import { ListUsersQueryDto, parseListUsersQuery } from "./dto/list-users-query.dto";
 
+/**
+ * User profile and admin user-management HTTP routes.
+ * Proxies to users-service; avatar upload is buffered in-memory here before RPC.
+ */
 @ApiTags("users")
 @Controller("users")
 export class UsersGatewayController {
@@ -52,6 +56,8 @@ export class UsersGatewayController {
     @Inject(USERS_SERVICE) private readonly usersClient: ClientProxy,
     @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
   ) {}
+
+  // --- Current user (JWT; scoped to token subject) ---
 
   @ApiOperation({ summary: "Get current user profile" })
   @ApiBearerAuth()
@@ -101,6 +107,7 @@ export class UsersGatewayController {
     @CurrentUser() user: AuthenticatedUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    // Multer runs in the gateway; only the buffer/metadata is sent over RPC.
     if (!file) throw new BadRequestException("File is required");
     return this.proxy.send(this.usersClient, USERS_PATTERNS.UPLOAD_AVATAR, {
       userId: user.sub,
@@ -119,6 +126,8 @@ export class UsersGatewayController {
   removeAvatar(@CurrentUser() user: AuthenticatedUser) {
     return this.proxy.send(this.usersClient, USERS_PATTERNS.REMOVE_AVATAR, { userId: user.sub });
   }
+
+  // --- Admin CRUD (requires admin role) ---
 
   @ApiOperation({ summary: "List users" })
   @ApiBearerAuth()

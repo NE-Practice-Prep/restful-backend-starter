@@ -33,6 +33,10 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { CreateExtinguisherRequestDto } from "./dto/create-extinguisher-request.dto";
 import { ReviewRequestDto } from "./dto/review-request.dto";
 
+/**
+ * New extinguisher request workflow HTTP routes (submit, review, cancel).
+ * Proxies to fire-extinguisher-service; list pattern depends on caller role.
+ */
 @ApiTags("extinguisher-requests")
 @Controller("extinguisher-requests")
 export class RequestsGatewayController {
@@ -73,6 +77,7 @@ export class RequestsGatewayController {
     const parsedPage = Math.max(1, Number(page ?? 1) || 1);
     const parsedLimit = Math.min(100, Math.max(1, Number(limit ?? 20) || 20));
 
+    // Regular users hit a dedicated pattern so they never receive other people's requests.
     if (user.role === Role.user) {
       return this.proxy.send(this.fireClient, FIRE_PATTERNS.REQUEST_MY_LIST, {
         requestedById: user.sub,

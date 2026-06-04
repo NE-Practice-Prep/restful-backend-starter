@@ -10,6 +10,7 @@ import { ComplianceService } from "./compliance/compliance.service";
 import { ReportsService } from "./reports/reports.service";
 import { SitesService } from "./sites/sites.service";
 import { RequestsService } from "./requests/requests.service";
+import { ExpiryCheckScheduler } from "./schedulers/expiry-check.scheduler";
 
 @Module({
   controllers: [FireMicroserviceController, SitesMicroserviceController, RequestsMicroserviceController],
@@ -21,6 +22,7 @@ import { RequestsService } from "./requests/requests.service";
     ReportsService,
     SitesService,
     RequestsService,
+    ExpiryCheckScheduler,
   ],
 })
 export class FireModule {}

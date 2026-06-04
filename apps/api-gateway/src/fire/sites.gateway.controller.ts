@@ -34,6 +34,10 @@ import { CreateSiteDto } from "./dto/create-site.dto";
 import { UpdateSiteDto } from "./dto/update-site.dto";
 import { ListSitesQueryDto, parseListSitesQuery } from "./dto/list-sites-query.dto";
 
+/**
+ * Physical site/location HTTP routes for extinguisher placement.
+ * Proxies to fire-extinguisher-service; writes require admin role.
+ */
 @ApiTags("sites")
 @Controller("sites")
 export class SitesGatewayController {

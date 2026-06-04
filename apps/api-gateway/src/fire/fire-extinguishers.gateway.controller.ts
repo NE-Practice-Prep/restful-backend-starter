@@ -40,6 +40,10 @@ import {
   parseListExtinguishersQuery,
 } from "./dto/list-extinguishers-query.dto";
 
+/**
+ * Fire extinguisher inventory HTTP routes (register, assign, CRUD).
+ * Proxies to fire-extinguisher-service; non-admin list results are scoped server-side.
+ */
 @ApiTags("fire-extinguishers")
 @Controller("fire-extinguishers")
 export class FireExtinguishersGatewayController {
@@ -47,6 +51,8 @@ export class FireExtinguishersGatewayController {
     @Inject(FIRE_SERVICE) private readonly fireClient: ClientProxy,
     @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
   ) {}
+
+  // --- Admin-only mutations ---
 
   @ApiOperation({ summary: "Register a fire extinguisher" })
   @ApiBearerAuth()
@@ -59,6 +65,8 @@ export class FireExtinguishersGatewayController {
   register(@Body() dto: RegisterExtinguisherDto) {
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.EXTINGUISHER_REGISTER, dto);
   }
+
+  // --- Read access (role-aware filtering in fire-service) ---
 
   @ApiOperation({
     summary: "List fire extinguishers — admins/inspectors see all, users see only their assigned",

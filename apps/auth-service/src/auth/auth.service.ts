@@ -14,6 +14,10 @@ import * as bcrypt from "bcrypt";
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { Role } from "@shared/common/enums/role.enum";
 import { UserStatus } from "@shared/common/enums/user-status.enum";
+import {
+  issuePasswordResetOtp,
+  PASSWORD_RESET_OTP_TTL_MS,
+} from "@shared/auth/issue-password-reset-otp";
 import { EmailService } from "@shared/email/email.service";
 import { toCurrentUser, type DbUser } from "@shared/common/mappers/user.mapper";
 import type { RegisterDto } from "./dto/register.dto";
@@ -27,8 +31,6 @@ import type { VerifyPasswordResetOtpDto } from "@shared/dto/verify-password-rese
 import type { ResetPasswordDto } from "@shared/dto/reset-password.dto";
 const DEFAULT_EXPIRES_SECONDS = 3600;
 const REMEMBER_ME_EXPIRES_SECONDS = 30 * 24 * 3600;
-const PASSWORD_RESET_OTP_TTL_MS = 15 * 60 * 1000;
-
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -226,7 +228,10 @@ export class AuthService {
       return { ok: true };
     }
 
-    await this.issuePasswordResetOtp(user.id, user.email);
+    await issuePasswordResetOtp(this.prisma, user.id, user.email, {
+      sendEmail: (to, code) => this.email.sendPasswordResetCode(to, code),
+    });
+    this.logger.log(`Password reset OTP issued for ${email}`);
     return { ok: true };
   }
 
@@ -243,7 +248,10 @@ export class AuthService {
       return { ok: true };
     }
 
-    await this.issuePasswordResetOtp(user.id, user.email);
+    await issuePasswordResetOtp(this.prisma, user.id, user.email, {
+      sendEmail: (to, code) => this.email.sendPasswordResetCode(to, code),
+    });
+    this.logger.log(`Password reset OTP issued for ${email}`);
     return { ok: true };
   }
 
@@ -357,34 +365,6 @@ export class AuthService {
       user: toCurrentUser(user),
       emailVerified: user.emailVerified,
     };
-  }
-
-  private async issuePasswordResetOtp(userId: string, email: string) {
-    const code = this.generateVerificationCode();
-    const expiresAt = new Date(Date.now() + PASSWORD_RESET_OTP_TTL_MS);
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        passwordResetCode: code,
-        passwordResetExpiresAt: expiresAt,
-      },
-    });
-
-    await Promise.all([
-      this.email.sendPasswordResetCode(email, code),
-      this.prisma.notification.create({
-        data: {
-          userId,
-          type: "password_reset_requested",
-          title: "Password reset requested",
-          message:
-            "We sent an OTP code to your email. Use it to verify and reset your password.",
-        },
-      }),
-    ]);
-
-    this.logger.log(`Password reset OTP issued for ${email}`);
   }
 
   private generateVerificationCode(): string {

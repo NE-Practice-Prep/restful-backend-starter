@@ -33,6 +33,10 @@ import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { CheckComplianceDto } from "./dto/check-compliance.dto";
 
+/**
+ * Compliance check and audit-trail HTTP routes.
+ * Proxies to fire-extinguisher-service; list/view scope by caller role in the payload.
+ */
 @ApiTags("compliance")
 @Controller("compliance")
 export class ComplianceGatewayController {
@@ -74,6 +78,7 @@ export class ComplianceGatewayController {
     @CurrentUser() user: AuthenticatedUser,
     @Query("extinguisherId") extinguisherId?: string,
   ) {
+    // Fire-service filters rows: staff see all, users only assigned extinguishers.
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.COMPLIANCE_LIST, {
       extinguisherId,
       requestedByUserId: user.sub,

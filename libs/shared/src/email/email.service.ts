@@ -70,6 +70,37 @@ export class EmailService {
     });
   }
 
+  async sendAdminCreatedAccountEmail(
+    email: string,
+    name: string,
+    resetCode: string,
+  ): Promise<void> {
+    const appUrl = (process.env.APP_URL ?? "http://localhost:3000").trim();
+    const subject = "Your account has been created";
+    const text = [
+      `Hi ${name},`,
+      "",
+      `An administrator created an account for you using ${email}.`,
+      "",
+      "To access your account, set your password:",
+      `1. Open ${appUrl}/forgot-password`,
+      `2. Enter your email address (${email})`,
+      `3. Use this one-time code: ${resetCode} (expires in 15 minutes)`,
+      "4. Choose your new password",
+      "",
+      "If you did not expect this email, contact your administrator.",
+    ].join("\n");
+
+    const transporter = this.getTransporter();
+    if (!transporter) {
+      this.logger.warn(`SMTP not configured. Admin-created account email for ${email}: ${text}`);
+      return;
+    }
+
+    const from = (process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@example.com").trim();
+    await transporter.sendMail({ from, to: email, subject, text });
+  }
+
   async sendPasswordResetCode(email: string, code: string): Promise<void> {
     const subject = "Password reset OTP";
     const text = `Your password reset code is ${code}. It expires in 15 minutes.`;

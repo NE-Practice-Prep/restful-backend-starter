@@ -13,6 +13,7 @@ import { randomUUID } from "node:crypto";
 import { PrismaService } from "@shared/prisma/prisma.service";
 import { Role } from "@shared/common/enums/role.enum";
 import { UserStatus } from "@shared/common/enums/user-status.enum";
+import { issuePasswordResetOtp } from "@shared/auth/issue-password-reset-otp";
 import { EmailService } from "@shared/email/email.service";
 import { toCurrentUser, toWorkspaceUser } from "@shared/common/mappers/user.mapper";
 import { formatUserFullName } from "@shared/common/utils/user-name.util";
@@ -115,12 +116,12 @@ export class UsersService {
       select: this.workspaceUserSelect,
     });
 
-    if (dto.status === UserStatus.invited) {
-      await this.email.sendInvitation(
-        user.email,
-        formatUserFullName(user.firstName, user.lastName),
-      );
-    }
+    const fullName = formatUserFullName(user.firstName, user.lastName);
+    await issuePasswordResetOtp(this.prisma, user.id, user.email, {
+      sendEmail: (to, code) => this.email.sendAdminCreatedAccountEmail(to, fullName, code),
+      notificationMessage:
+        "Your account was created by an administrator. Use the code sent to your email to set your password.",
+    });
 
     return toWorkspaceUser(user);
   }

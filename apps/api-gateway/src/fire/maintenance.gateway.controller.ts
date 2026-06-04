@@ -38,6 +38,10 @@ import {
   parseListMaintenanceQuery,
 } from "./dto/list-maintenance-query.dto";
 
+/**
+ * Maintenance log HTTP routes for extinguishers.
+ * Proxies to fire-extinguisher-service; create/update restricted to inspector and admin.
+ */
 @ApiTags("maintenance")
 @Controller("maintenance")
 export class MaintenanceGatewayController {

@@ -29,6 +29,10 @@ import { VerifyPasswordResetOtpDto } from "./dto/verify-password-reset-otp.dto";
 import { AuthTokenResponseDto } from "./dto/auth-token-response.dto";
 import { OkResponseDto } from "@shared/common/dto/ok-response.dto";
 
+/**
+ * Public and authenticated auth HTTP routes.
+ * Proxies every handler to auth-service via MicroserviceProxyService.
+ */
 @ApiTags("auth")
 @Controller("auth")
 export class AuthGatewayController {
@@ -36,6 +40,8 @@ export class AuthGatewayController {
     @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
     @Inject(MicroserviceProxyService) private readonly proxy: MicroserviceProxyService,
   ) {}
+
+  // --- Registration & session (no JWT required) ---
 
   @ApiOperation({ summary: "Register a new account" })
   @ApiBody({ type: RegisterDto })
@@ -63,6 +69,8 @@ export class AuthGatewayController {
     return this.proxy.send(this.authClient, AUTH_PATTERNS.LOGOUT, {});
   }
 
+  // --- Email verification (JWT required; user identity from token) ---
+
   @ApiOperation({ summary: "Verify email with OTP code" })
   @ApiBearerAuth()
   @ApiBody({ type: VerifyEmailDto })
@@ -86,6 +94,8 @@ export class AuthGatewayController {
   resendVerification(@CurrentUser() user: AuthenticatedUser) {
     return this.proxy.send(this.authClient, AUTH_PATTERNS.RESEND_VERIFICATION, { user });
   }
+
+  // --- Password reset (OTP flow; no JWT until email is verified separately) ---
 
   @ApiOperation({ summary: "Request password reset OTP" })
   @ApiBody({ type: RequestPasswordResetDto })

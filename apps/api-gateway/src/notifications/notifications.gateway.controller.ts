@@ -26,6 +26,10 @@ import { MicroserviceProxyService } from "../clients/microservice-proxy.service"
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
+/**
+ * In-app notification HTTP routes for the authenticated user.
+ * Handled by auth-service (notifications share its data store).
+ */
 @ApiTags("notifications")
 @Controller("notifications")
 export class NotificationsGatewayController {

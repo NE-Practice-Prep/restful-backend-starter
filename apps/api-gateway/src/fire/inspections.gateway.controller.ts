@@ -43,6 +43,10 @@ import {
   parseListInspectionsQuery,
 } from "./dto/list-inspections-query.dto";
 
+/**
+ * Inspection scheduling and completion HTTP routes.
+ * Proxies to fire-extinguisher-service; visibility follows caller role on list/view.
+ */
 @ApiTags("inspections")
 @Controller("inspections")
 export class InspectionsGatewayController {

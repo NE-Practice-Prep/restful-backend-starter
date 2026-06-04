@@ -32,6 +32,10 @@ import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { GenerateReportDto } from "./dto/generate-report.dto";
 
+/**
+ * User-generated report snapshot HTTP routes.
+ * Proxies to fire-extinguisher-service; delete/view enforce owner-or-admin in the payload.
+ */
 @ApiTags("reports")
 @Controller("reports")
 export class ReportsGatewayController {
@@ -69,6 +73,7 @@ export class ReportsGatewayController {
   @UseGuards(JwtAuthGuard)
   @Get(":id")
   view(@CurrentUser() user: AuthenticatedUser, @Param("id") id: string) {
+    // isAdmin lets fire-service allow cross-user access for admins only.
     return this.proxy.send(this.fireClient, FIRE_PATTERNS.REPORT_VIEW, {
       id,
       userId: user.sub,
